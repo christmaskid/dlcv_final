@@ -41,7 +41,7 @@ datasets:
 
 network_g:
   type: EDLoRA
-  pretrained_path: experiments/pretrained_models/stable-diffusion-v1.5
+  pretrained_path: experiments/pretrained_models/stable-diffusion-v1-4
   finetune_cfg:
     text_embedding:
       enable_tuning: true
