@@ -62,7 +62,8 @@ def convert(args):
 						"concept_name": token_name
 					})
 
-			json.dump(merge_json_file, args.merge_json_path_prefix+"_"+"-".join(token_names), indent=4)
+			json.dump(open(merge_json_file, "r"), 
+				args.merge_json_path_prefix+"_"+"-".join(token_names), indent=4)
 
 
 if __name__=="__main__":
