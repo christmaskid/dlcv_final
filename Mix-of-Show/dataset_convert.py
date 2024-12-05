@@ -63,7 +63,7 @@ def convert(args):
 					})
 
 			json.dump(merge_json_file, 
-				open(args.merge_json_path_prefix+"_"+"-".join(token_names), "r"), indent=4)
+				open(args.merge_json_path_prefix+"_"+"-".join(token_names)+".json", "r"), indent=4)
 
 
 if __name__=="__main__":
