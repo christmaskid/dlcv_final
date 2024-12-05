@@ -48,7 +48,7 @@ def convert(args):
 		token_yaml_file.close()
 		template_yaml_file.close()
 
-	if args.merge_json_path is not None:
+	if args.input_json_path is not None:
 		val_json = json.load(open(args.input_json_path, "r"))
 		for k, v in val_json.items():
 			token_names = v["token_name"]
