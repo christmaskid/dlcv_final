@@ -313,7 +313,7 @@ if __name__ == '__main__':
     else:
         raise NotImplementedError
 
-    for i in range(args.n_samples):
+    for i in range(eval(args.n_samples)):
         image = inference_image(
             pipe,
             input_prompt=input_prompt,
