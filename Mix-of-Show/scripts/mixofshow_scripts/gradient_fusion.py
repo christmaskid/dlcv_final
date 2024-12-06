@@ -92,7 +92,7 @@ def update_quasi_newton(K_target, V_target, W, iters, device):
             loss = torch.norm(
                 F.linear(K_target.to(torch.float32), best_W.to(torch.float32)) - V_target.to(torch.float32), 2, dim=1)
 
-    logging.info('new_concept loss: %e' % loss.mean().item())
+    logger.info('new_concept loss: %e' % loss.mean().item())
     return best_W
 
 
@@ -139,7 +139,7 @@ def merge_lora_into_weight(original_state_dict, lora_state_dict, modification_la
             merge_params = original_params + alpha * lora_param
             new_state_dict[k] = merge_params
 
-    logging.info(f'load {load_cnt} LoRAs of {model_type}')
+    logger.info(f'load {load_cnt} LoRAs of {model_type}')
     return new_state_dict
 
 
@@ -234,7 +234,7 @@ def merge_new_concepts_(embedding_list, concept_list, tokenizer, text_encoder):
             embedding[concept_name])
 
         embedding_features.update({concept_name: embedding[concept_name]})
-        logging.info(
+        logger.info(
             f'concept {concept_name} is bind with token_id: [{min(new_token_ids)}, {max(new_token_ids)}]'
         )
 
@@ -368,7 +368,7 @@ def merge_kv_in_cross_attention(concept_list, optimize_iters, new_concept_cfg,
             else:
                 pass
 
-    logging.info(
+    logger.info(
         f'Unet have {len(cross_kv_layer_names)} linear layer (related to text feature) need to optimize'
     )
 
@@ -442,7 +442,7 @@ def merge_kv_in_cross_attention(concept_list, optimize_iters, new_concept_cfg,
         new_concept_input = new_concept_input_dict[layer_name]
         new_concept_output = new_concept_output_dict[layer_name]
 
-        logging.info(
+        logger.info(
             f'[{(idx + 1)}/{len(cross_kv_layer_names)}] optimizing {layer_name}')
 
         Wnew = update_quasi_newton(
@@ -487,7 +487,7 @@ def merge_text_encoder(concept_list, optimize_iters, new_concept_cfg,
         if any([name in key for key in LoRA_keys])
     ]
 
-    logging.info(f'text_encoder have {len(text_encoder_layer_names)} linear layer need to optimize')
+    logger.info(f'text_encoder have {len(text_encoder_layer_names)} linear layer need to optimize')
 
     global module_io_recoder, record_feature
     hooker_handlers = []
@@ -495,7 +495,7 @@ def merge_text_encoder(concept_list, optimize_iters, new_concept_cfg,
         if any([item in name for item in candidate_module_name]):
             hooker_handlers.append(module.register_forward_hook(hook=get_hooker(name)))
 
-    logging.info(f'add {len(hooker_handlers)} hooker to text_encoder')
+    logger.info(f'add {len(hooker_handlers)} hooker to text_encoder')
 
     original_state_dict = copy.deepcopy(text_encoder.state_dict())  # original state dict
 
@@ -557,7 +557,7 @@ def merge_text_encoder(concept_list, optimize_iters, new_concept_cfg,
         new_concept_input = new_concept_input_dict[layer_name]
         new_concept_target = new_concept_output_dict[layer_name]
 
-        logging.info(f'[{(idx + 1)}/{len(text_encoder_layer_names)}] optimizing {layer_name}')
+        logger.info(f'[{(idx + 1)}/{len(text_encoder_layer_names)}] optimizing {layer_name}')
 
         Wnew = update_quasi_newton(
             new_concept_input.to(W.dtype),  # our concept
@@ -567,7 +567,7 @@ def merge_text_encoder(concept_list, optimize_iters, new_concept_cfg,
             device=device)
         new_text_encoder_weights[layer_name] = Wnew
 
-    logging.info(f'remove {len(hooker_handlers)} hooker from text_encoder')
+    logger.info(f'remove {len(hooker_handlers)} hooker from text_encoder')
 
     # remove forward hooker
     for hook_handle in hooker_handlers:
@@ -644,7 +644,7 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
         if any([name in key for key in LoRA_keys])
     ]
 
-    logging.info(
+    logger.info(
         f'unet have {len(spatial_attention_layer_names)} linear layer need to optimize'
     )
 
@@ -655,7 +655,7 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
             hooker_handlers.append(
                 module.register_forward_hook(hook=get_hooker(name)))
 
-    logging.info(f'add {len(hooker_handlers)} hooker to unet')
+    logger.info(f'add {len(hooker_handlers)} hooker to unet')
 
     original_state_dict = copy.deepcopy(unet.state_dict())  # original state dict
     revise_unet_attention_forward(unet)
@@ -727,7 +727,7 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
         else:
             new_concept_output = new_concept_output.reshape(-1, new_concept_output.shape[-1])
 
-        logging.info(f'[{(idx + 1)}/{len(spatial_attention_layer_names)}] optimizing {layer_name}')
+        logger.info(f'[{(idx + 1)}/{len(spatial_attention_layer_names)}] optimizing {layer_name}')
 
         W = original_state_dict[layer_name].to(torch.float32)  # origin params
         Wnew = update_quasi_newton(
@@ -739,7 +739,7 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
         )
         new_spatial_attention_weights[layer_name] = Wnew
 
-    logging.info(f'remove {len(hooker_handlers)} hooker from unet')
+    logger.info(f'remove {len(hooker_handlers)} hooker from unet')
 
     for hook_handle in hooker_handlers:
         hook_handle.remove()
@@ -748,26 +748,26 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
 
 
 def compose_concepts(concept_cfg, optimize_textenc_iters, optimize_unet_iters, pretrained_model_path, save_path, suffix, device):
-    logging.info('------Step 1: load stable diffusion checkpoint------')
+    logger.info('------Step 1: load stable diffusion checkpoint------')
     pipe, train_scheduler, test_scheduler = init_stable_diffusion(pretrained_model_path, device)
     tokenizer, text_encoder, unet, vae = pipe.tokenizer, pipe.text_encoder, pipe.unet, pipe.vae
     for param in itertools.chain(text_encoder.parameters(), unet.parameters(), vae.parameters()):
         param.requires_grad = False
 
-    logging.info('------Step 2: load new concepts checkpoints------')
+    logger.info('------Step 2: load new concepts checkpoints------')
     embedding_list, text_encoder_list, unet_crosskv_list, unet_spatial_attn_list, concept_list = parse_new_concepts(concept_cfg)
 
     # step 1: inplace add new concept to tokenizer and embedding layers of text encoder
     if any([item is not None for item in embedding_list]):
-        logging.info('------Step 3: merge token embedding------')
+        logger.info('------Step 3: merge token embedding------')
         _, new_concept_cfg = merge_new_concepts_(embedding_list, concept_list, tokenizer, text_encoder)
     else:
         _, new_concept_cfg = {}, {}
-        logging.info('------Step 3: no new embedding, skip merging token embedding------')
+        logger.info('------Step 3: no new embedding, skip merging token embedding------')
 
     # step 2: construct reparameterized text_encoder
     if any([item is not None for item in text_encoder_list]):
-        logging.info('------Step 4: merge text encoder------')
+        logger.info('------Step 4: merge text encoder------')
         new_text_encoder_weights = merge_text_encoder(
             concept_list, optimize_textenc_iters, new_concept_cfg, tokenizer,
             text_encoder, text_encoder_list, device)
@@ -777,12 +777,12 @@ def compose_concepts(concept_cfg, optimize_textenc_iters, optimize_unet_iters, p
         text_encoder.load_state_dict(text_encoder_state_dict)
     else:
         new_text_encoder_weights = {}
-        logging.info('------Step 4: no new text encoder, skip merging text encoder------')
+        logger.info('------Step 4: no new text encoder, skip merging text encoder------')
 
     # step 3: merge unet (k,v in crosskv-attention) params, since they only receive input from text-encoder
 
     if any([item is not None for item in unet_crosskv_list]):
-        logging.info('------Step 5: merge kv of cross-attention in unet------')
+        logger.info('------Step 5: merge kv of cross-attention in unet------')
         new_kv_weights = merge_kv_in_cross_attention(
             concept_list, optimize_textenc_iters, new_concept_cfg,
             tokenizer, text_encoder, unet, unet_crosskv_list, device)
@@ -792,11 +792,11 @@ def compose_concepts(concept_cfg, optimize_textenc_iters, optimize_unet_iters, p
         unet.load_state_dict(unet_state_dict)
     else:
         new_kv_weights = {}
-        logging.info('------Step 5: no new kv of cross-attention in unet, skip merging kv------')
+        logger.info('------Step 5: no new kv of cross-attention in unet, skip merging kv------')
 
     # step 4: merge unet (q,k,v in self-attention, q in crosskv-attention)
     if any([item is not None for item in unet_spatial_attn_list]):
-        logging.info('------Step 6: merge spatial attention (q in cross-attention, qkv in self-attention) in unet------')
+        logger.info('------Step 6: merge spatial attention (q in cross-attention, qkv in self-attention) in unet------')
         new_spatial_attention_weights = merge_spatial_attention(
             concept_list, optimize_unet_iters, new_concept_cfg, tokenizer,
             text_encoder, unet, unet_spatial_attn_list, test_scheduler, device)
@@ -805,7 +805,7 @@ def compose_concepts(concept_cfg, optimize_textenc_iters, optimize_unet_iters, p
         unet.load_state_dict(unet_state_dict)
     else:
         new_spatial_attention_weights = {}
-        logging.info('------Step 6: no new spatial-attention in unet, skip merging spatial attention------')
+        logger.info('------Step 6: no new spatial-attention in unet, skip merging spatial attention------')
 
     checkpoint_save_path = f'{save_path}/combined_model_{suffix}'
     pipe.save_pretrained(checkpoint_save_path)
@@ -831,8 +831,8 @@ if __name__ == '__main__':
     exp_dir = f'{args.save_path}'
     os.makedirs(exp_dir, exist_ok=True)
     log_file = f'{exp_dir}/combined_model_{args.suffix}.log'
-    set_logger(log_file=log_file)
-    logging.info(args)
+    logger = get_root_logger(logger_name='mixofshow', log_level=logging.INFO, log_file=log_file)
+    logger.info(args)
 
     compose_concepts(args.concept_cfg,
                      args.optimize_textenc_iters,
