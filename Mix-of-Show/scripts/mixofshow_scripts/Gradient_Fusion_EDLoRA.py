@@ -583,7 +583,8 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
     logger.info(f'add {len(hooker_handlers)} hooker to unet')
 
     print("Memory:", torch.cuda.memory_allocated())
-    original_state_dict = copy.deepcopy(unet.state_dict())  # original state dict
+    # original_state_dict = copy.deepcopy(unet.state_dict())  # original state dict
+    original_state_dict = unet.state_dict()  # original state dict
     revise_unet_attention_forward(unet)
     print("Memory:", torch.cuda.memory_allocated())
 
