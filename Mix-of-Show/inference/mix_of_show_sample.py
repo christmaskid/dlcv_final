@@ -5,6 +5,7 @@ import os.path
 import torch
 from diffusers import Adapter, StableDiffusionAdapterPipeline, StableDiffusionPipeline
 from PIL import Image
+import random
 
 from mixofshow.archs.edlora_override import revise_unet_attention_forward
 from mixofshow.utils.diffusers_sample_util import StableDiffusion_PPlus_Sample, StableDiffusion_Sample
@@ -314,12 +315,15 @@ if __name__ == '__main__':
         raise NotImplementedError
 
     for i in range(eval(args.n_samples)):
+        flag = False
+        if args.seed is None:
+            flag = True
+            args.seed = random.randint(1, 9999)
         image = inference_image(
             pipe,
             input_prompt=input_prompt,
             input_neg_prompt=[args.negative_prompt] * len(input_prompt),
-            generator=torch.Generator(device).manual_seed(args.seed) if args.seed is not None \
-                else torch.Generator(device).seed(),
+            generator=torch.Generator(device).manual_seed(args.seed),
             sketch_adaptor_weight=args.sketch_adaptor_weight,
             region_sketch_adaptor_weight=args.region_sketch_adaptor_weight,
             keypose_adaptor_weight=args.keypose_adaptor_weight,
@@ -348,6 +352,10 @@ if __name__ == '__main__':
 
         os.makedirs(save_dir, exist_ok=True)
         image[0].save(os.path.join(save_dir, save_name))
+
+        if flag:
+            flag = False
+            args.seed = None
 
     with open(save_config_path, 'w') as fw:
         fw.writelines(configs)
