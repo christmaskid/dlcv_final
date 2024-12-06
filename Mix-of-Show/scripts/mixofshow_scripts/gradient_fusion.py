@@ -692,6 +692,8 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
         # record record_num * batch size feature for one concept
 
         for layer_name in spatial_attention_layer_names:
+            print(layer_name)
+            print(module_io_recoder.keys())
             input_feature_list = module_io_recoder[layer_name.replace('.weight', '')]['input']
             output_feature_list = module_io_recoder[layer_name.replace('.weight', '')]['output']
 
