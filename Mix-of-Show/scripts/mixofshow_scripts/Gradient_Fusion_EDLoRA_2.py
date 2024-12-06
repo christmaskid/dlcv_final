@@ -598,6 +598,8 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
     new_concept_output_dict = {}
 
     for idx, layer_name in enumerate(spatial_attention_layer_names):
+        print(layer_name, flush=True)
+
         for i, (concept, tuned_state_dict) in enumerate(zip(concept_list, unet_spatial_attn_list)):
             # set unet
             module_io_recoder = {}  # reinit module io recorder
@@ -694,7 +696,6 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
             device=device)
         new_spatial_attention_weights[layer_name] = Wnew
 
-        del original_state_dict[layer_name]
 
 
     logger.info(f'remove {len(hooker_handlers)} hooker from unet')
