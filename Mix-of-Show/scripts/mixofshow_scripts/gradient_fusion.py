@@ -12,7 +12,7 @@ import torch.optim as optim
 from diffusers import DDPMScheduler, DPMSolverMultistepScheduler, StableDiffusionPipeline
 from tqdm import tqdm
 
-from mixofshow.models.edlora import revise_edlora_unet_attention_forward
+from mixofshow.archs.edlora_override import revise_unet_attention_forward
 from mixofshow.pipelines.pipeline_edlora import bind_concept_prompt
 from mixofshow.utils.util import set_logger
 
@@ -658,7 +658,7 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
     logging.info(f'add {len(hooker_handlers)} hooker to unet')
 
     original_state_dict = copy.deepcopy(unet.state_dict())  # original state dict
-    revise_edlora_unet_attention_forward(unet)
+    revise_unet_attention_forward(unet)
 
     new_concept_input_dict = {}
     new_concept_output_dict = {}
