@@ -72,7 +72,7 @@ def update_quasi_newton(K_target, V_target, W, iters, device):
 
         if loss < best_loss:
             best_loss = loss
-            best_W = W.clone()#.cpu()
+            best_W = W.clone().cpu()
         loss.backward()
         return loss
 
@@ -153,15 +153,15 @@ def get_hooker(module_name):
         if module_name not in module_io_recoder:
             module_io_recoder[module_name] = {'input': [], 'output': []}
         if record_feature:
-            module_io_recoder[module_name]['input'].append(feature_in[0])#.cpu())
+            module_io_recoder[module_name]['input'].append(feature_in[0].cpu())
             if module.bias is not None:
                 if len(feature_out.shape) == 4:
                     bias = module.bias.unsqueeze(-1).unsqueeze(-1)
                 else:
                     bias = module.bias
-                module_io_recoder[module_name]['output'].append((feature_out - bias))#.cpu())  # remove bias
+                module_io_recoder[module_name]['output'].append((feature_out - bias).cpu())  # remove bias
             else:
-                module_io_recoder[module_name]['output'].append(feature_out)#.cpu())
+                module_io_recoder[module_name]['output'].append(feature_out.cpu())
 
     return hook
 
@@ -378,10 +378,10 @@ def merge_kv_in_cross_attention(concept_list, optimize_iters, new_concept_cfg, t
 
             # print(merge_params.shape, prompt_feature.shape)
             # torch.Size([320, 768]) torch.Size([6, 768])
-            # new_concept_input_dict[layer_name].append(prompt_feature)
-            # new_concept_output_dict[layer_name].append((merge_params.cpu() @ prompt_feature.T).T)
-            new_concept_input_dict[layer_name].append(prompt_feature.cuda())
-            new_concept_output_dict[layer_name].append((merge_params @ prompt_feature.cuda().T).T)
+            new_concept_input_dict[layer_name].append(prompt_feature)
+            new_concept_output_dict[layer_name].append((merge_params.cpu() @ prompt_feature.T).T)
+            # new_concept_input_dict[layer_name].append(prompt_feature.cuda())
+            # new_concept_output_dict[layer_name].append((merge_params @ prompt_feature.cuda().T).T)
 
     for k, v in new_concept_input_dict.items():
         new_concept_input_dict[k] = torch.cat(v, 0)  # torch.Size([14, 768])
@@ -656,6 +656,7 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
             del text_input_features, text_output_features
             del module_io_recoder[layer_name.replace('.weight', '')]
 
+        del merge_io_recorder
         torch.cuda.empty_cache()
         gc.collect()
         print("Memory:", torch.cuda.max_memory_allocated())
