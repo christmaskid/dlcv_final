@@ -123,7 +123,7 @@ def merge_lora_into_weight(original_state_dict, lora_state_dict, modification_la
 
     for k in modification_layer_names:
         lora_down_name = get_lora_down_name(k)
-        lora_up_name = lora_down_name.replace('lora_down', 'lora_up').replace('lora_down', 'lora_up')
+        lora_up_name = lora_down_name.replace('lora.down', 'lora.up').replace('lora.down', 'lora.up')
 
         if lora_up_name in lora_state_dict:
             load_cnt += 1
@@ -398,7 +398,7 @@ def merge_kv_in_cross_attention(concept_list, optimize_iters, new_concept_cfg,
 
             # hard coded here: in unet, self/crosskv attention disable bias parameter
             lora_down_name = layer_name.replace('to_k.weight', 'to_k_lora.down.weight')
-            lora_up_name = lora_down_name.replace('lora_down', 'lora_up')
+            lora_up_name = lora_down_name.replace('lora.down', 'lora.up')
 
             alpha = concept['unet_alpha']
 
