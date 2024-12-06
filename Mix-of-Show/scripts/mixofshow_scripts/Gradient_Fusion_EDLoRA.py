@@ -368,7 +368,7 @@ def merge_kv_in_cross_attention(concept_list, optimize_iters, new_concept_cfg, t
             layer_concept_prompt = list(layer_prompts[layer_idx])
 
             prompt_feature = get_text_feature(
-                layer_concept_prompt, tokenizer, text_encoder, device, return_type='category_embedding')#.cpu()
+                layer_concept_prompt, tokenizer, text_encoder, device, return_type='category_embedding').cpu()
 
             if layer_name not in new_concept_input_dict:
                 new_concept_input_dict[layer_name] = []
