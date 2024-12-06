@@ -667,7 +667,7 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
         # set unet
         module_io_recoder = {}  # reinit module io recorder
 
-        print(Concept)
+        print(concept)
         print(original_state_dict.keys())
         print(merged_state_dict.keys())
 
