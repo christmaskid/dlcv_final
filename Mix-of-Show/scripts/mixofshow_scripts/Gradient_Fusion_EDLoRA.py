@@ -621,6 +621,8 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
             record_nums=50,
             batch_size=1)
         # record record_num * batch size feature for one concept
+        
+        del tuned_state_dict
         print("Memory:", torch.cuda.max_memory_allocated())
 
         for layer_name in spatial_attention_layer_names:
@@ -645,10 +647,10 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
             del input_feature_list, output_feature_list
             del text_input_features, text_output_features
             del module_io_recoder[layer_name.replace('.weight', '')]
-            del tuned_state_dict
-            torch.cuda.empty_cache()
-            gc.collect()
-            print("Memory:", torch.cuda.max_memory_allocated())
+
+        torch.cuda.empty_cache()
+        gc.collect()
+        print("Memory:", torch.cuda.max_memory_allocated())
 
     # print("Memory:", torch.cuda.memory_allocated())
     # for k, v in new_concept_input_dict.items():
