@@ -14,7 +14,7 @@ from tqdm import tqdm
 
 from mixofshow.archs.edlora_override import revise_unet_attention_forward
 from mixofshow.utils.diffusers_sample_util import bind_concept_prompt
-from mixofshow.utils.util import set_logger
+from mixofshow.utils import get_root_logger
 
 TEMPLATE_SIMPLE = 'photo of a {}'
 
