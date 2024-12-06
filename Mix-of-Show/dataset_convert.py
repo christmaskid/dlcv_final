@@ -53,7 +53,7 @@ def convert(args):
 		yaml_content = yaml_content.replace("<text_encoder_enable_tuning>", args.text_encoder_enable_tuning)
 		yaml_content = yaml_content.replace("<unet_enable_tuning>", args.unet_enable_tuning)
 		yaml_content = yaml_content.replace("<embedding_lr>", str(args.embedding_lr))
-		yaml_content = yaml_content.replace("<text_encooder_lr>", str(args.text_encooder_lr))
+		yaml_content = yaml_content.replace("<text_encoder_lr>", str(args.text_encoder_lr))
 		yaml_content = yaml_content.replace("<unet_lr>", str(args.unet_lr))
 		yaml_content = yaml_content.replace("<n_iterations>", str(args.n_iterations))
 		yaml_content = yaml_content.replace("<lora_rank>", str(args.lora_rank))
