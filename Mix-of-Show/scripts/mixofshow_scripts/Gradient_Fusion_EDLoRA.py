@@ -548,9 +548,11 @@ def decode_to_latents(concept_prompt, new_concept_cfg, tokenizer, text_encoder, 
 
         # expand the latents if we are doing classifier-free guidance to avoid doing two forward passes.
         latent_model_input = latents
+        del latents
         latent_model_input = test_scheduler.scale_model_input(latent_model_input, t)
 
         noise_pred = unet(latent_model_input, t, encoder_hidden_states=text_embeddings).sample
+        del latent_model_input
 
         # compute the previous noisy sample x_t -> x_t-1
         latents = test_scheduler.step(noise_pred, t, latents).prev_sample
@@ -558,8 +560,11 @@ def decode_to_latents(concept_prompt, new_concept_cfg, tokenizer, text_encoder, 
         print("3.5", t, "Memory:", torch.cuda.max_memory_allocated())
 
     # return latents, text_embeddings
+
     latents = latents.cpu()
     del latents, text_embeddings, latent_model_input, noise_pred
+    test_scheduler.prev_sample = None
+    test_scheduler.pred_original_sample = None
     print("3.9 Memory:", torch.cuda.max_memory_allocated())
 
 
