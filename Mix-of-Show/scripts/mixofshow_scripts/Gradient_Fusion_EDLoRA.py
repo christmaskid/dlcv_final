@@ -555,7 +555,8 @@ def decode_to_latents(concept_prompt, new_concept_cfg, tokenizer, text_encoder, 
         # compute the previous noisy sample x_t -> x_t-1
         latents = test_scheduler.step(noise_pred, t, latents).prev_sample
 
-    return latents, text_embeddings
+    # return latents, text_embeddings
+    del latents, text_embeddings
 
 
 def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, tokenizer, text_encoder, unet,
@@ -583,8 +584,7 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
     logger.info(f'add {len(hooker_handlers)} hooker to unet')
 
     print("Memory:", torch.cuda.memory_allocated())
-    # original_state_dict = copy.deepcopy(unet.state_dict())  # original state dict
-    original_state_dict = unet.state_dict()  # original state dict
+    original_state_dict = copy.deepcopy(unet.state_dict())  # original state dict
     revise_unet_attention_forward(unet)
     print("Memory:", torch.cuda.memory_allocated())
 
@@ -602,7 +602,9 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
             model_type='unet',
             alpha=concept['unet_alpha'],
             device=device)
+        print("Memory:", torch.cuda.memory_allocated())
         unet.load_state_dict(merged_state_dict)  # load merged parameters
+        print("Memory:", torch.cuda.memory_allocated())
 
         concept_name = concept['concept_name']
         concept_prompt = TEMPLATE_SIMPLE.format(concept_name)
