@@ -45,7 +45,7 @@ class EDLoRA(Stable_Diffusion):
     def set_finetune_cfg(self, finetune_cfg):
         logger = get_root_logger()
         params_to_freeze = [self.vae.parameters(), self.text_encoder.parameters(), self.unet.parameters()]
-        print("finetune_cfg:", finetune_cfg, flush=True)
+        print(f"finetune_cfg:{finetune_cfg}")
 
         # step 1: close all parameters, required_grad to False
         for params in itertools.chain(*params_to_freeze):
@@ -72,7 +72,7 @@ class EDLoRA(Stable_Diffusion):
         # 2. text encoder
         if finetune_cfg['text_encoder']['enable_tuning'] and finetune_cfg['text_encoder'].get('lora_cfg'):
             text_encoder_cfg = finetune_cfg['text_encoder']
-            logger.info(text_encoder_cfg)
+            logger.info(f"{text_encoder_cfg}")
 
             where = text_encoder_cfg['lora_cfg'].pop('where')
             assert where in ['CLIPEncoderLayer', 'CLIPAttention', 'CLIPSdpaAttention']
