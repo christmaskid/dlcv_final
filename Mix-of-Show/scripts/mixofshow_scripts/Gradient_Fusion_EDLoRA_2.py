@@ -645,7 +645,7 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
             if new_concept_input is None:
                 new_concept_input = torch.empty_like(text_input_features)[None].repeat(len(concept_list), 1, 1, 1) #[]
                 new_concept_output = torch.empty_like(text_output_features)[None].repeat(len(concept_list), 1, 1, 1) #[]
-                print("Add key:", layer_name, ", shape:", new_concept_input_dict[layer_name].shape, flush=True)
+                print("Add key:", layer_name, ", shape:", new_concept_input.shape, flush=True)
                 print("Memory:", torch.cuda.max_memory_allocated())
 
             new_concept_input[i] = text_input_features
@@ -660,13 +660,11 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
 
 
         # step 5: begin update model
-        new_concept_input = new_concept_input_dict[layer_name]
         if len(new_concept_input.shape) == 4:
             new_concept_input = new_concept_input
         else:
             new_concept_input = new_concept_input.reshape(-1, new_concept_input.shape[-1])
 
-        new_concept_output = new_concept_output_dict[layer_name]
         if len(new_concept_output.shape) == 4:
             new_concept_output = new_concept_output
         else:
