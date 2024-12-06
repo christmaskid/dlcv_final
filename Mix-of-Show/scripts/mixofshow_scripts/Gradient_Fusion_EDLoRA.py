@@ -556,7 +556,7 @@ def decode_to_latents(concept_prompt, new_concept_cfg, tokenizer, text_encoder, 
         latents = test_scheduler.step(noise_pred, t, latents).prev_sample
 
     # return latents, text_embeddings
-    del latents, text_embeddings
+    del latents, text_embeddings, latent_model_input, noise_pred
 
 
 def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, tokenizer, text_encoder, unet,
@@ -583,10 +583,10 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
 
     logger.info(f'add {len(hooker_handlers)} hooker to unet')
 
-    print("Memory:", torch.cuda.memory_allocated())
+    print("0 Memory:", torch.cuda.memory_allocated())
     original_state_dict = copy.deepcopy(unet.state_dict())  # original state dict
     revise_unet_attention_forward(unet)
-    print("Memory:", torch.cuda.memory_allocated())
+    print("1 Memory:", torch.cuda.memory_allocated())
 
     new_concept_input_dict = {}
     new_concept_output_dict = {}
@@ -602,9 +602,9 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
             model_type='unet',
             alpha=concept['unet_alpha'],
             device=device)
-        print("Memory:", torch.cuda.max_memory_allocated())
+        print("2 Memory:", torch.cuda.max_memory_allocated())
         unet.load_state_dict(merged_state_dict)  # load merged parameters
-        print("Memory:", torch.cuda.max_memory_allocated())
+        print("3 Memory:", torch.cuda.max_memory_allocated())
 
         concept_name = concept['concept_name']
         concept_prompt = TEMPLATE_SIMPLE.format(concept_name)
@@ -624,8 +624,8 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
         # record record_num * batch size feature for one concept
 
         del tuned_state_dict
-        print("Memory:", torch.cuda.max_memory_allocated())
         text_encoder = text_encoder.cpu()
+        print("Memory:", torch.cuda.max_memory_allocated())
 
         for layer_name in spatial_attention_layer_names:
             input_feature_list = module_io_recoder[layer_name.replace('.weight', '')]['input']
