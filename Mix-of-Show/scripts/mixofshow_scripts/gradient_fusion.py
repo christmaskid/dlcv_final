@@ -124,6 +124,9 @@ def merge_lora_into_weight(original_state_dict, lora_state_dict, modification_la
     for k in modification_layer_names:
         lora_down_name = get_lora_down_name(k)
         lora_up_name = lora_down_name.replace('lora_down', 'lora_up')
+        print(k)
+        print(lora_down_name)
+        print(lora_up_name)
 
         if lora_up_name in lora_state_dict:
             load_cnt += 1
