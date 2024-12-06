@@ -476,11 +476,12 @@ def merge_text_encoder(concept_list, optimize_iters, new_concept_cfg,
     LoRA_keys = []
     for textenc_lora in text_encoder_list:
         LoRA_keys += list(textenc_lora.keys())
+    print("LoRA_keys", LoRA_keys)
     LoRA_keys = set([
         key.replace('.lora_down', '').replace('.lora_up', '').replace('.lora.down', '').replace('.lora.up', '')
         for key in LoRA_keys
     ])
-    print(LoRA_keys)
+    print(" -> LoRA_keys", LoRA_keys)
     text_encoder_layer_names = LoRA_keys
 
     candidate_module_name = [
