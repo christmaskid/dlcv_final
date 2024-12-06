@@ -509,6 +509,7 @@ def merge_text_encoder(concept_list, optimize_iters, new_concept_cfg,
         logger.info(f'{concept}')
         logger.info(f"{original_state_dict.keys()}")
         logger.info(f"{lora_state_dict.keys()}")
+        print(text_encoder_layer_names)
 
         merged_state_dict = merge_lora_into_weight(
             original_state_dict,
