@@ -551,7 +551,6 @@ def decode_to_latents(concept_prompt, new_concept_cfg, tokenizer, text_encoder, 
         latent_model_input = test_scheduler.scale_model_input(latent_model_input, t)
 
         noise_pred = unet(latent_model_input, t, encoder_hidden_states=text_embeddings).sample
-        del latent_model_input
 
         # compute the previous noisy sample x_t -> x_t-1
         latents = test_scheduler.step(noise_pred, t, latents).prev_sample
@@ -598,43 +597,43 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
     new_concept_input_dict = {}
     new_concept_output_dict = {}
 
-    for i, (concept, tuned_state_dict) in enumerate(zip(concept_list, unet_spatial_attn_list)):
-        # set unet
-        module_io_recoder = {}  # reinit module io recorder
+    for idx, layer_name in enumerate(spatial_attention_layer_names):
+        for i, (concept, tuned_state_dict) in enumerate(zip(concept_list, unet_spatial_attn_list)):
+            # set unet
+            module_io_recoder = {}  # reinit module io recorder
 
-        merged_state_dict = merge_lora_into_weight(
-            original_state_dict,
-            tuned_state_dict,
-            spatial_attention_layer_names,
-            model_type='unet',
-            alpha=concept['unet_alpha'],
-            device=device)
-        print("2 Memory:", torch.cuda.max_memory_allocated())
-        unet.load_state_dict(merged_state_dict)  # load merged parameters
-        print("3 Memory:", torch.cuda.max_memory_allocated())
+            merged_state_dict = merge_lora_into_weight(
+                original_state_dict,
+                tuned_state_dict,
+                spatial_attention_layer_names,
+                model_type='unet',
+                alpha=concept['unet_alpha'],
+                device=device)
+            print("2 Memory:", torch.cuda.max_memory_allocated())
+            unet.load_state_dict(merged_state_dict)  # load merged parameters
+            print("3 Memory:", torch.cuda.max_memory_allocated())
 
-        concept_name = concept['concept_name']
-        concept_prompt = TEMPLATE_SIMPLE.format(concept_name)
+            concept_name = concept['concept_name']
+            concept_prompt = TEMPLATE_SIMPLE.format(concept_name)
 
-        text_encoder = text_encoder.cuda()
-        decode_to_latents(
-            concept_prompt,
-            new_concept_cfg,
-            tokenizer,
-            text_encoder,
-            unet,
-            test_scheduler,
-            num_inference_steps=50,
-            device=device,
-            record_nums=50,
-            batch_size=1)
-        # record record_num * batch size feature for one concept
+            text_encoder = text_encoder.cuda()
+            decode_to_latents(
+                concept_prompt,
+                new_concept_cfg,
+                tokenizer,
+                text_encoder,
+                unet,
+                test_scheduler,
+                num_inference_steps=50,
+                device=device,
+                record_nums=50,
+                batch_size=1)
+            # record record_num * batch size feature for one concept
 
-        del tuned_state_dict
-        text_encoder = text_encoder.cpu()
-        print("4 Memory:", torch.cuda.max_memory_allocated())
+            del tuned_state_dict
+            text_encoder = text_encoder.cpu()
+            print("4 Memory:", torch.cuda.max_memory_allocated())
 
-        for layer_name in spatial_attention_layer_names:
             input_feature_list = module_io_recoder[layer_name.replace('.weight', '')]['input']
             output_feature_list = module_io_recoder[layer_name.replace('.weight', '')]['output']
 
@@ -657,22 +656,21 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
             del text_input_features, text_output_features
             del module_io_recoder[layer_name.replace('.weight', '')]
 
-        torch.cuda.empty_cache()
-        gc.collect()
+            torch.cuda.empty_cache()
+            gc.collect()
+            print("Memory:", torch.cuda.max_memory_allocated())
+
+        # print("Memory:", torch.cuda.memory_allocated())
+        # for k, v in new_concept_input_dict.items():
+        #     new_concept_input_dict[k] = torch.cat(v, 0)
+
+        # for k, v in new_concept_output_dict.items():
+        #     new_concept_output_dict[k] = torch.cat(v, 0)
         print("Memory:", torch.cuda.max_memory_allocated())
 
-    # print("Memory:", torch.cuda.memory_allocated())
-    # for k, v in new_concept_input_dict.items():
-    #     new_concept_input_dict[k] = torch.cat(v, 0)
+        new_spatial_attention_weights = {}
 
-    # for k, v in new_concept_output_dict.items():
-    #     new_concept_output_dict[k] = torch.cat(v, 0)
-    print("Memory:", torch.cuda.max_memory_allocated())
-
-    new_spatial_attention_weights = {}
-
-    # step 5: begin update model
-    for idx, layer_name in enumerate(spatial_attention_layer_names):
+        # step 5: begin update model
         new_concept_input = new_concept_input_dict[layer_name]
         if len(new_concept_input.shape) == 4:
             new_concept_input = new_concept_input
