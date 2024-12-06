@@ -505,7 +505,7 @@ def merge_text_encoder(concept_list, optimize_iters, new_concept_cfg,
     for concept, lora_state_dict in zip(concept_list, text_encoder_list):
         logger.info(f'{concept}')
         logger.info(f"{original_state_dict.keys()}")
-        logger.info(f"{tuned_state_dict.keys()}")
+        logger.info(f"{lora_state_dict.keys()}")
 
         merged_state_dict = merge_lora_into_weight(
             original_state_dict,
