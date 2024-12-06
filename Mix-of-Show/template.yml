@@ -30,9 +30,9 @@ datasets:
   val_vis:
     name: PromptDataset
     type: PromptDataset
-    prompts: datasets/validation_prompts/single-concept/characters/test_woman.txt
+    prompts: <prompts_path>
     num_samples_per_prompt: 1
-    latent_size: [ 4,64,64 ]
+    latent_size: <latent_size> #[ 4,64,64 ]
     replace_mapping:
       <TOK>: <new_concept_token>
     use_shuffle: false
@@ -44,22 +44,22 @@ network_g:
   pretrained_path: experiments/pretrained_models/stable-diffusion-v1-4
   finetune_cfg:
     text_embedding:
-      enable_tuning: true
-      lr: !!float 1e-3
+      enable_tuning: <embedding_enable_tuning> #true
+      lr: !!float <embedding_lr> #1e-3
     text_encoder:
-      enable_tuning: true
+      enable_tuning: <text_encoder_enable_tuning> #true
       lora_cfg:
-        rank: 4
-        alpha: 1.0
+        rank: <lora_rank> #4
+        alpha: <lora_alpha> #1.0
         where: CLIPAttention
-      lr: !!float 1e-5
+      lr: !!float <text_encoder_lr> #1e-5
     unet:
-      enable_tuning: true
+      enable_tuning: <unet_enable_tuning> #true
       lora_cfg:
-        rank: 4
-        alpha: 1.0
+        rank: <lora_rank> #4
+        alpha: <lora_alpha> #1.0
         where: CrossAttention
-      lr: !!float 1e-4
+      lr: !!float <unet_lr> #1e-4
   new_concept_token: <new_concept_token>
   noise_offset: 0.01
   initializer_token: <rand-0.013>
@@ -89,22 +89,22 @@ train:
 
   scheduler:
     type: LinearLR
-    num_epochs: 1000
+    num_epochs: <n_iterations> #1000
 
-  total_iter: 1000 # 5 epoch
+  total_iter: <n_iterations> #1000 # 5 epoch
   warmup_iter: -1  # no warm up
 
 # validation settings
 val:
-  val_freq: !!float 1000
+  val_freq: !!float <n_iterations>
   save_img: true
   compose_visualize: true
   pbar: true
   suffix: ~  # add suffix to saved images, if None, use exp name
 
   sample:
-    num_inference_steps: 50
-    guidance_scale: 7.5
+    num_inference_steps: <num_inference_steps> #50
+    guidance_scale: <guidance_scale> #7.5
 
   metrics: ~
 
