@@ -555,8 +555,12 @@ def decode_to_latents(concept_prompt, new_concept_cfg, tokenizer, text_encoder, 
         # compute the previous noisy sample x_t -> x_t-1
         latents = test_scheduler.step(noise_pred, t, latents).prev_sample
 
+        print("3.5", t, "Memory:", torch.cuda.max_memory_allocated())
+
     # return latents, text_embeddings
+    latents = latents.cpu()
     del latents, text_embeddings, latent_model_input, noise_pred
+    print("3.9 Memory:", torch.cuda.max_memory_allocated())
 
 
 def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, tokenizer, text_encoder, unet,
@@ -625,7 +629,7 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
 
         del tuned_state_dict
         text_encoder = text_encoder.cpu()
-        print("Memory:", torch.cuda.max_memory_allocated())
+        print("4 Memory:", torch.cuda.max_memory_allocated())
 
         for layer_name in spatial_attention_layer_names:
             input_feature_list = module_io_recoder[layer_name.replace('.weight', '')]['input']
