@@ -9,7 +9,7 @@ datasets:
   train:
     name: LoraDataset
     type: LoraDataset
-    concept_list: <concept_list> #datasets/data_cfgs/edlora/single-concept/characters/real/hermione.json
+    concept_list: <concept_list>
     use_caption: true
     instance_transform:
       - { type: Resize, size: 512}
@@ -51,7 +51,7 @@ network_g:
       lora_cfg:
         rank: <lora_rank> #4
         alpha: <lora_alpha> #1.0
-        where: CLIPAttention
+        where: CLIPSdpaAttention
       lr: !!float <text_encoder_lr> #1e-5
     unet:
       enable_tuning: <unet_enable_tuning> #true

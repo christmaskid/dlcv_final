@@ -72,10 +72,10 @@ class EDLoRA(Stable_Diffusion):
         # 2. text encoder
         if finetune_cfg['text_encoder']['enable_tuning'] and finetune_cfg['text_encoder'].get('lora_cfg'):
             text_encoder_cfg = finetune_cfg['text_encoder']
-            print(text_encoder_cfg)
+            logger.info(text_encoder_cfg)
 
             where = text_encoder_cfg['lora_cfg'].pop('where')
-            assert where in ['CLIPEncoderLayer', 'CLIPAttention']
+            assert where in ['CLIPEncoderLayer', 'CLIPAttention', 'CLIPSdpaAttention']
 
             self.text_encoder_lora = nn.ModuleList()
             params_list = []
