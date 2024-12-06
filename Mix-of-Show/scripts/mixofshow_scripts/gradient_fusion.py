@@ -503,6 +503,9 @@ def merge_text_encoder(concept_list, optimize_iters, new_concept_cfg,
     new_concept_output_dict = {}
 
     for concept, lora_state_dict in zip(concept_list, text_encoder_list):
+        logger.info(f'{concept}')
+        logger.info(f"{original_state_dict.keys()}")
+        logger.info(f"{tuned_state_dict.keys()}")
 
         merged_state_dict = merge_lora_into_weight(
             original_state_dict,
@@ -666,10 +669,6 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
     for concept, tuned_state_dict in zip(concept_list, unet_spatial_attn_list):
         # set unet
         module_io_recoder = {}  # reinit module io recorder
-
-        print(concept)
-        print(original_state_dict.keys())
-        print(tuned_state_dict.keys())
 
         merged_state_dict = merge_lora_into_weight(
             original_state_dict,
