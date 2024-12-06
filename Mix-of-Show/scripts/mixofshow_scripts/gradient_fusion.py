@@ -123,7 +123,7 @@ def merge_lora_into_weight(original_state_dict, lora_state_dict, modification_la
 
     for k in modification_layer_names:
         lora_down_name = get_lora_down_name(k)
-        lora_up_name = lora_down_name.replace('lora_down', 'lora_up')
+        lora_up_name = lora_down_name.replace('lora_down', 'lora_up').replace('lora.down', 'lora_up')
         print(k)
         print(lora_down_name)
         print(lora_up_name)
@@ -477,9 +477,10 @@ def merge_text_encoder(concept_list, optimize_iters, new_concept_cfg,
     for textenc_lora in text_encoder_list:
         LoRA_keys += list(textenc_lora.keys())
     LoRA_keys = set([
-        key.replace('.lora_down', '').replace('.lora_up', '')
+        key.replace('.lora_down', '').replace('.lora_up', '').replace('.lora.down', '').replace('.lora.up', '')
         for key in LoRA_keys
     ])
+    print(LoRA_keys)
     text_encoder_layer_names = LoRA_keys
 
     candidate_module_name = [
@@ -636,7 +637,7 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
     for unet_lora in unet_spatial_attn_list:
         LoRA_keys += list(unet_lora.keys())
     LoRA_keys = set([
-        key.replace('.lora_down', '').replace('.lora_up', '')
+        key.replace('.lora_down', '').replace('.lora_up', '').replace('.lora.down', '').replace('.lora.up', '')
         for key in LoRA_keys
     ])
     spatial_attention_layer_names = LoRA_keys
