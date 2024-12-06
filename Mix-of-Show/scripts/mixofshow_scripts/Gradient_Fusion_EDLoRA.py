@@ -586,9 +586,6 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
     original_state_dict = copy.deepcopy(unet.state_dict())  # original state dict
     revise_unet_attention_forward(unet)
     print("Memory:", torch.cuda.memory_allocated())
-    torch.cuda.empty_cache()
-    gc.collect()
-    print("Memory:", torch.cuda.memory_allocated())
 
     new_concept_input_dict = {}
     new_concept_output_dict = {}
@@ -643,8 +640,10 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
 
             del input_feature_list, output_feature_list
             del text_input_features, text_output_features
+            del module_io_recoder[layer_name.replace('.weight', '')]
             torch.cuda.empty_cache()
             gc.collect()
+            print("Memory:", torch.cuda.memory_allocated())
 
     # print("Memory:", torch.cuda.memory_allocated())
     # for k, v in new_concept_input_dict.items():
