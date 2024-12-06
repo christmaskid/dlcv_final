@@ -669,7 +669,7 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
 
         print(concept)
         print(original_state_dict.keys())
-        print(merged_state_dict.keys())
+        print(tuned_state_dict.keys())
 
         merged_state_dict = merge_lora_into_weight(
             original_state_dict,
