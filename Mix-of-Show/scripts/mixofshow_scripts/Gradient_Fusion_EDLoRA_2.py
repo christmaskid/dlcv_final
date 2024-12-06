@@ -581,6 +581,7 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
 
     logger.info(f'unet have {len(spatial_attention_layer_names)} linear layer need to optimize')
 
+    new_spatial_attention_weights = {}
 
     for idx, layer_name in enumerate(spatial_attention_layer_names):
         print(layer_name, flush=True)
@@ -598,8 +599,8 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
         revise_unet_attention_forward(unet)
         print("1 Memory:", torch.cuda.memory_allocated())
 
-        new_concept_input_dict = {}
-        new_concept_output_dict = {}
+        new_concept_input = None
+        new_concept_output = None
 
         for i, (concept, tuned_state_dict) in enumerate(zip(concept_list, unet_spatial_attn_list)):
             # set unet
@@ -626,9 +627,9 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
                 text_encoder,
                 unet,
                 test_scheduler,
-                num_inference_steps=50,
+                num_inference_steps=40,
                 device=device,
-                record_nums=50,
+                record_nums=40,
                 batch_size=1)
             # record record_num * batch size feature for one concept
 
@@ -641,35 +642,22 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
             text_input_features, text_output_features = \
                 torch.cat(input_feature_list, 0), torch.cat(output_feature_list, 0)
 
-            if layer_name not in new_concept_output_dict:
-                new_concept_input_dict[layer_name] = torch.empty_like(text_input_features)[None].repeat(len(concept_list), 1, 1, 1) #[]
-                new_concept_output_dict[layer_name] = torch.empty_like(text_output_features)[None].repeat(len(concept_list), 1, 1, 1) #[]
+            if new_concept_input is None:
+                new_concept_input = torch.empty_like(text_input_features)[None].repeat(len(concept_list), 1, 1, 1) #[]
+                new_concept_output = torch.empty_like(text_output_features)[None].repeat(len(concept_list), 1, 1, 1) #[]
                 print("Add key:", layer_name, ", shape:", new_concept_input_dict[layer_name].shape, flush=True)
                 print("Memory:", torch.cuda.max_memory_allocated())
 
-            # new_concept_input_dict[layer_name].append(text_input_features)
-            # new_concept_output_dict[layer_name].append(text_output_features)
-            new_concept_input_dict[layer_name][i] = text_input_features
-            new_concept_output_dict[layer_name][i] = text_output_features
+            new_concept_input[i] = text_input_features
+            new_concept_output[i] = text_output_features
             print("Memory:", torch.cuda.max_memory_allocated())
 
             del input_feature_list, output_feature_list
             del text_input_features, text_output_features
-            del module_io_recoder[layer_name.replace('.weight', '')]
-
             torch.cuda.empty_cache()
             gc.collect()
             print("Memory:", torch.cuda.max_memory_allocated())
 
-        # print("Memory:", torch.cuda.memory_allocated())
-        # for k, v in new_concept_input_dict.items():
-        #     new_concept_input_dict[k] = torch.cat(v, 0)
-
-        # for k, v in new_concept_output_dict.items():
-        #     new_concept_output_dict[k] = torch.cat(v, 0)
-        print("Memory:", torch.cuda.max_memory_allocated())
-
-        new_spatial_attention_weights = {}
 
         # step 5: begin update model
         new_concept_input = new_concept_input_dict[layer_name]
@@ -693,12 +681,21 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
             W.clone(),
             iters=optimize_iters,
             device=device)
+
         new_spatial_attention_weights[layer_name] = Wnew
+
+
+        del new_concept_input
+        del new_concept_output
+        del original_state_dict, merged_state_dict
+        del W, Wnew
 
         logger.info(f'remove {len(hooker_handlers)} hooker from unet')
 
         for hook_handle in hooker_handlers:
             hook_handle.remove()
+
+        print("5 Memory:", torch.cuda.memory_allocated())
 
     return new_spatial_attention_weights
 
