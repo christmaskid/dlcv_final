@@ -123,10 +123,7 @@ def merge_lora_into_weight(original_state_dict, lora_state_dict, modification_la
 
     for k in modification_layer_names:
         lora_down_name = get_lora_down_name(k)
-        lora_up_name = lora_down_name.replace('lora_down', 'lora_up').replace('lora.down', 'lora_up')
-        print(k)
-        print(lora_down_name)
-        print(lora_up_name)
+        lora_up_name = lora_down_name.replace('lora_down', 'lora_up').replace('lora_down', 'lora_up')
 
         if lora_up_name in lora_state_dict:
             load_cnt += 1
@@ -476,12 +473,10 @@ def merge_text_encoder(concept_list, optimize_iters, new_concept_cfg,
     LoRA_keys = []
     for textenc_lora in text_encoder_list:
         LoRA_keys += list(textenc_lora.keys())
-    print("LoRA_keys", LoRA_keys)
     LoRA_keys = set([
         key.replace('_lora.down', '').replace('_lora.up', '')
         for key in LoRA_keys
     ])
-    print(" -> LoRA_keys", LoRA_keys)
     text_encoder_layer_names = LoRA_keys
 
     candidate_module_name = [
@@ -508,10 +503,6 @@ def merge_text_encoder(concept_list, optimize_iters, new_concept_cfg,
     new_concept_output_dict = {}
 
     for concept, lora_state_dict in zip(concept_list, text_encoder_list):
-        logger.info(f'{concept}')
-        logger.info(f"{original_state_dict.keys()}")
-        logger.info(f"{lora_state_dict.keys()}")
-        print(text_encoder_layer_names)
 
         merged_state_dict = merge_lora_into_weight(
             original_state_dict,
