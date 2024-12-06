@@ -623,9 +623,9 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
             text_encoder,
             unet,
             test_scheduler,
-            num_inference_steps=50,
+            num_inference_steps=40,
             device=device,
-            record_nums=50,
+            record_nums=40,
             batch_size=1)
         # record record_num * batch size feature for one concept
 
