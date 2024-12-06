@@ -9,5 +9,4 @@ python inference/mix_of_show_sample.py \
   --pipeline_type="sd_pplus" \
   --prompt="${context_prompt}" \
   --suffix="_241207" \
-  --n_samples=20 \
-  --seed=641
+  --n_samples=20

@@ -247,7 +247,7 @@ def parse_args():
     parser.add_argument('--prompt', default='photo of a toy', type=str)
     parser.add_argument('--negative_prompt', default='', type=str)
     parser.add_argument('--prompt_rewrite', default='', type=str)
-    parser.add_argument('--seed', default=16141, type=int)
+    parser.add_argument('--seed', default=None, type=int)
     parser.add_argument('--suffix', default='', type=str)
     parser.add_argument('--no_region', action='store_true')
     parser.add_argument('--n_samples', default=1)
@@ -318,7 +318,8 @@ if __name__ == '__main__':
             pipe,
             input_prompt=input_prompt,
             input_neg_prompt=[args.negative_prompt] * len(input_prompt),
-            generator=torch.Generator(device).manual_seed(args.seed),
+            generator=torch.Generator(device).manual_seed(args.seed) if args.seed is not None \
+                else torch.Generator(device).seed(),
             sketch_adaptor_weight=args.sketch_adaptor_weight,
             region_sketch_adaptor_weight=args.region_sketch_adaptor_weight,
             keypose_adaptor_weight=args.keypose_adaptor_weight,
