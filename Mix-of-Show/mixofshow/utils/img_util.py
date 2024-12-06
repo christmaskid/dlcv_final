@@ -31,7 +31,8 @@ def pil_imwrite(img, file_path, auto_mkdir=True):
 def draw_prompt(text, height, width, font_size=45):
     img = Image.new('RGB', (width, height), (255, 255, 255))
     draw = ImageDraw.Draw(img)
-    font = ImageFont.truetype(osp.join(osp.dirname(osp.abspath(__file__)), 'arial.ttf'), font_size)
+    # font = ImageFont.truetype(osp.join(osp.dirname(osp.abspath(__file__)), 'arial.ttf'), font_size)
+    font = ImageFont.load_default() # to run offline on colab
 
     guess_count = 0
 
