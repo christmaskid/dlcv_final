@@ -62,6 +62,8 @@ def convert(args):
 
 		yaml_content = yaml_content.replace("<num_inference_steps>", str(args.num_inference_steps))
 		yaml_content = yaml_content.replace("<guidance_scale>", str(args.guidance_scale))
+
+		yaml_content = yaml_content.replace("<save_checkpoint_freq>", str(args.save_checkpoint_freq))
 		
 		token_yaml_file.write(yaml_content)
 		token_yaml_file.close()
@@ -108,6 +110,8 @@ if __name__=="__main__":
 
 	parser.add_argument("--num_inference_steps", default=50)
 	parser.add_argument("--guidance_scale", default=7.5)
+
+	parser.add_argument("--save_checkpoint_freq", default=200)
 
 	args = parser.parse_args()
 
