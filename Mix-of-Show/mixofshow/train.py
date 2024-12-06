@@ -128,6 +128,7 @@ def train_pipeline(root_path):
 
     # create model
     model = build_model(opt)
+    print(model.state_dict().keys())
     return # debug
 
     if resume_state:  # resume training
