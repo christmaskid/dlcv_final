@@ -95,8 +95,8 @@ def update_quasi_newton(K_target, V_target, W, iters, device):
     logger.info('new_concept loss: %e' % loss.mean().item())
     return best_W
 
-
 def merge_lora_into_weight(original_state_dict, lora_state_dict, modification_layer_names, model_type, alpha, device):
+
     def get_lora_down_name(original_layer_name):
         if model_type == 'text_encoder':
             lora_down_name = original_layer_name.replace('q_proj.weight', 'q_proj_lora.down.weight') \
@@ -117,13 +117,14 @@ def merge_lora_into_weight(original_state_dict, lora_state_dict, modification_la
 
         return lora_down_name
 
+    logger = get_root_logger()
     assert model_type in ['unet', 'text_encoder']
     new_state_dict = copy.deepcopy(original_state_dict)
-    load_cnt = 0
 
+    load_cnt = 0
     for k in modification_layer_names:
         lora_down_name = get_lora_down_name(k)
-        lora_up_name = lora_down_name.replace('lora.down', 'lora.up').replace('lora.down', 'lora.up')
+        lora_up_name = lora_down_name.replace('lora.down', 'lora.up')
 
         if lora_up_name in lora_state_dict:
             load_cnt += 1
@@ -131,8 +132,7 @@ def merge_lora_into_weight(original_state_dict, lora_state_dict, modification_la
             lora_down_params = lora_state_dict[lora_down_name].to(device)
             lora_up_params = lora_state_dict[lora_up_name].to(device)
             if len(original_params.shape) == 4:
-                lora_param = lora_up_params.squeeze(
-                ) @ lora_down_params.squeeze()
+                lora_param = lora_up_params.squeeze() @ lora_down_params.squeeze()
                 lora_param = lora_param.unsqueeze(-1).unsqueeze(-1)
             else:
                 lora_param = lora_up_params @ lora_down_params
