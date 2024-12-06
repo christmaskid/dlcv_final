@@ -99,21 +99,21 @@ def update_quasi_newton(K_target, V_target, W, iters, device):
 def merge_lora_into_weight(original_state_dict, lora_state_dict, modification_layer_names, model_type, alpha, device):
     def get_lora_down_name(original_layer_name):
         if model_type == 'text_encoder':
-            lora_down_name = original_layer_name.replace('q_proj.weight', 'q_proj.lora_down.weight') \
-                .replace('k_proj.weight', 'k_proj.lora_down.weight') \
-                .replace('v_proj.weight', 'v_proj.lora_down.weight') \
-                .replace('out_proj.weight', 'out_proj.lora_down.weight') \
-                .replace('fc1.weight', 'fc1.lora_down.weight') \
-                .replace('fc2.weight', 'fc2.lora_down.weight')
+            lora_down_name = original_layer_name.replace('q_proj.weight', 'q_proj_lora.down.weight') \
+                .replace('k_proj.weight', 'k_proj_lora.down.weight') \
+                .replace('v_proj.weight', 'v_proj_lora.down.weight') \
+                .replace('out_proj.weight', 'out_proj_lora.down.weight') \
+                .replace('fc1.weight', 'fc1_lora.down.weight') \
+                .replace('fc2.weight', 'fc2_lora.down.weight')
         else:
-            lora_down_name = k.replace('to_q.weight', 'to_q.lora_down.weight') \
-                .replace('to_k.weight', 'to_k.lora_down.weight') \
-                .replace('to_v.weight', 'to_v.lora_down.weight') \
-                .replace('to_out.0.weight', 'to_out.0.lora_down.weight') \
-                .replace('ff.net.0.proj.weight', 'ff.net.0.proj.lora_down.weight') \
-                .replace('ff.net.2.weight', 'ff.net.2.lora_down.weight') \
-                .replace('proj_out.weight', 'proj_out.lora_down.weight') \
-                .replace('proj_in.weight', 'proj_in.lora_down.weight')
+            lora_down_name = k.replace('to_q.weight', 'to_q_lora.down.weight') \
+                .replace('to_k.weight', 'to_k_lora.down.weight') \
+                .replace('to_v.weight', 'to_v_lora.down.weight') \
+                .replace('to_out.0.weight', 'to_out.0_lora.down.weight') \
+                .replace('ff.net.0.proj.weight', 'ff.net.0.proj_lora.down.weight') \
+                .replace('ff.net.2.weight', 'ff.net.2_lora.down.weight') \
+                .replace('proj_out.weight', 'proj_out_lora.down.weight') \
+                .replace('proj_in.weight', 'proj_in_lora.down.weight')
 
         return lora_down_name
 
@@ -400,7 +400,7 @@ def merge_kv_in_cross_attention(concept_list, optimize_iters, new_concept_cfg,
             original_params = original_unet_state_dict[layer_name]
 
             # hard coded here: in unet, self/crosskv attention disable bias parameter
-            lora_down_name = layer_name.replace('to_k.weight', 'to_k.lora_down.weight').replace('to_v.weight', 'to_v.lora_down.weight')
+            lora_down_name = layer_name.replace('to_k.weight', 'to_k_lora.down.weight')
             lora_up_name = lora_down_name.replace('lora_down', 'lora_up')
 
             alpha = concept['unet_alpha']
@@ -478,7 +478,7 @@ def merge_text_encoder(concept_list, optimize_iters, new_concept_cfg,
         LoRA_keys += list(textenc_lora.keys())
     print("LoRA_keys", LoRA_keys)
     LoRA_keys = set([
-        key.replace('.lora_down', '').replace('.lora_up', '').replace('.lora.down', '').replace('.lora.up', '')
+        key.replace('_lora.down', '').replace('_lora.up', '')
         for key in LoRA_keys
     ])
     print(" -> LoRA_keys", LoRA_keys)
@@ -638,7 +638,7 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
     for unet_lora in unet_spatial_attn_list:
         LoRA_keys += list(unet_lora.keys())
     LoRA_keys = set([
-        key.replace('.lora_down', '').replace('.lora_up', '').replace('.lora.down', '').replace('.lora.up', '')
+        key.replace('_lora.down', '').replace('_lora.up', '').replace('_lora.down', '').replace('_lora.up', '')
         for key in LoRA_keys
     ])
     spatial_attention_layer_names = LoRA_keys
