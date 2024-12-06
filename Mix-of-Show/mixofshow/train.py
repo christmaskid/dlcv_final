@@ -128,8 +128,6 @@ def train_pipeline(root_path):
 
     # create model
     model = build_model(opt)
-    print(model.get_bare_model(model.net_g).delta_state_dict())
-    return # debug
 
     if resume_state:  # resume training
         model.resume_training(resume_state)  # handle optimizers and schedulers
