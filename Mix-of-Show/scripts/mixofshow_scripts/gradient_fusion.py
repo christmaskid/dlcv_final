@@ -71,7 +71,7 @@ def update_quasi_newton(K_target, V_target, W, iters, device):
 
         if loss < best_loss:
             best_loss = loss
-            best_W = W.clone().cpu()
+            best_W = W.clone()#.cpu()
         loss.backward()
         return loss
 
@@ -152,17 +152,17 @@ def get_hooker(module_name):
         if module_name not in module_io_recoder:
             module_io_recoder[module_name] = {'input': [], 'output': []}
         if record_feature:
-            module_io_recoder[module_name]['input'].append(feature_in[0].cpu())
+            module_io_recoder[module_name]['input'].append(feature_in[0])#.cpu())
             if module.bias is not None:
                 if len(feature_out.shape) == 4:
                     bias = module.bias.unsqueeze(-1).unsqueeze(-1)
                 else:
                     bias = module.bias
                 module_io_recoder[module_name]['output'].append(
-                    (feature_out - bias).cpu())  # remove bias
+                    (feature_out - bias))#.cpu())  # remove bias
             else:
                 module_io_recoder[module_name]['output'].append(
-                    feature_out.cpu())
+                    feature_out)#.cpu())
 
     return hook
 
@@ -414,7 +414,7 @@ def merge_kv_in_cross_attention(concept_list, optimize_iters, new_concept_cfg,
                 tokenizer,
                 text_encoder,
                 device,
-                return_type='category_embedding').cpu()
+                return_type='category_embedding')#.cpu()
 
             if layer_name not in new_concept_input_dict:
                 new_concept_input_dict[layer_name] = []
@@ -426,7 +426,7 @@ def merge_kv_in_cross_attention(concept_list, optimize_iters, new_concept_cfg,
             # torch.Size([320, 768]) torch.Size([6, 768])
             new_concept_input_dict[layer_name].append(prompt_feature)
             new_concept_output_dict[layer_name].append(
-                (merge_params.cpu() @ prompt_feature.T).T)
+                (merge_params @ prompt_feature.T).T)
 
     for k, v in new_concept_input_dict.items():
         new_concept_input_dict[k] = torch.cat(v, 0)  # torch.Size([14, 768])
@@ -666,6 +666,10 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
     for concept, tuned_state_dict in zip(concept_list, unet_spatial_attn_list):
         # set unet
         module_io_recoder = {}  # reinit module io recorder
+
+        print(Concept)
+        print(original_state_dict.keys())
+        print(merged_state_dict.keys())
 
         merged_state_dict = merge_lora_into_weight(
             original_state_dict,
