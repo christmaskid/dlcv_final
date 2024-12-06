@@ -656,7 +656,6 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
             del text_input_features, text_output_features
             del module_io_recoder[layer_name.replace('.weight', '')]
 
-        del merge_io_recorder
         torch.cuda.empty_cache()
         gc.collect()
         print("Memory:", torch.cuda.max_memory_allocated())
