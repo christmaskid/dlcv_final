@@ -250,6 +250,7 @@ def parse_args():
     parser.add_argument('--seed', default=16141, type=int)
     parser.add_argument('--suffix', default='', type=str)
     parser.add_argument('--no_region', action='store_true')
+    parser.add_argument('--n_samples', default=1)
     return parser.parse_args()
 
 
@@ -312,39 +313,40 @@ if __name__ == '__main__':
     else:
         raise NotImplementedError
 
-    image = inference_image(
-        pipe,
-        input_prompt=input_prompt,
-        input_neg_prompt=[args.negative_prompt] * len(input_prompt),
-        generator=torch.Generator(device).manual_seed(args.seed),
-        sketch_adaptor_weight=args.sketch_adaptor_weight,
-        region_sketch_adaptor_weight=args.region_sketch_adaptor_weight,
-        keypose_adaptor_weight=args.keypose_adaptor_weight,
-        region_keypose_adaptor_weight=args.region_keypose_adaptor_weight,
-        pipeline_type=args.pipeline_type,
-        **kwargs)
+    for i in range(args.n_samples):
+        image = inference_image(
+            pipe,
+            input_prompt=input_prompt,
+            input_neg_prompt=[args.negative_prompt] * len(input_prompt),
+            generator=torch.Generator(device).manual_seed(args.seed),
+            sketch_adaptor_weight=args.sketch_adaptor_weight,
+            region_sketch_adaptor_weight=args.region_sketch_adaptor_weight,
+            keypose_adaptor_weight=args.keypose_adaptor_weight,
+            region_keypose_adaptor_weight=args.region_keypose_adaptor_weight,
+            pipeline_type=args.pipeline_type,
+            **kwargs)
 
-    print(f'save to: {args.save_dir}')
+        print(f'save to: {args.save_dir}')
 
-    configs = [
-        f'pretrained_model: {args.pretrained_model}\n', f'combined_model: {args.combined_model}\n',
-        f'context_prompt: {args.prompt}\n', f'neg_context_prompt: {args.negative_prompt}\n',
-        f'sketch_condition: {args.sketch_condition}\n', f'sketch_adaptor_weight: {args.sketch_adaptor_weight}\n',
-        f'region_sketch_adaptor_weight: {args.region_sketch_adaptor_weight}\n',
-        f'keypose_condition: {args.keypose_condition}\n', f'keypose_adaptor_weight: {args.keypose_adaptor_weight}\n',
-        f'region_keypose_adaptor_weight: {args.region_keypose_adaptor_weight}\n', f'random seed: {args.seed}\n',
-        f'prompt_rewrite: {args.prompt_rewrite}\n'
-    ]
-    hash_code = hashlib.sha256(''.join(configs).encode('utf-8')).hexdigest()[:8]
+        configs = [
+            f'pretrained_model: {args.pretrained_model}\n', f'combined_model: {args.combined_model}\n',
+            f'context_prompt: {args.prompt}\n', f'neg_context_prompt: {args.negative_prompt}\n',
+            f'sketch_condition: {args.sketch_condition}\n', f'sketch_adaptor_weight: {args.sketch_adaptor_weight}\n',
+            f'region_sketch_adaptor_weight: {args.region_sketch_adaptor_weight}\n',
+            f'keypose_condition: {args.keypose_condition}\n', f'keypose_adaptor_weight: {args.keypose_adaptor_weight}\n',
+            f'region_keypose_adaptor_weight: {args.region_keypose_adaptor_weight}\n', f'random seed: {args.seed}\n',
+            f'prompt_rewrite: {args.prompt_rewrite}\n'
+        ]
+        hash_code = hashlib.sha256(''.join(configs).encode('utf-8')).hexdigest()[:8]
 
-    save_prompt = save_prompt.replace(' ', '_')
-    save_name = f'{save_prompt}---{args.suffix}---{hash_code}.png'
-    save_dir = os.path.join(args.save_dir, f'seed_{args.seed}')
-    save_path = os.path.join(save_dir, save_name)
-    save_config_path = os.path.join(save_dir, save_name.replace('.png', '.txt'))
+        save_prompt = save_prompt.replace(' ', '_')
+        save_name = f'{save_prompt}---{args.suffix}---{hash_code}--{i}.png'
+        save_dir = os.path.join(args.save_dir, f'seed_{args.seed}')
+        save_path = os.path.join(save_dir, save_name)
+        save_config_path = os.path.join(save_dir, save_name.replace('.png', '.txt'))
 
-    os.makedirs(save_dir, exist_ok=True)
-    image[0].save(os.path.join(save_dir, save_name))
+        os.makedirs(save_dir, exist_ok=True)
+        image[0].save(os.path.join(save_dir, save_name))
 
     with open(save_config_path, 'w') as fw:
         fw.writelines(configs)
