@@ -13,7 +13,7 @@ from diffusers import DDPMScheduler, DPMSolverMultistepScheduler, StableDiffusio
 from tqdm import tqdm
 
 from mixofshow.archs.edlora_override import revise_unet_attention_forward
-from mixofshow.pipelines.pipeline_edlora import bind_concept_prompt
+from mixofshow.utils.diffusers_sample_util import bind_concept_prompt
 from mixofshow.utils.util import set_logger
 
 TEMPLATE_SIMPLE = 'photo of a {}'
