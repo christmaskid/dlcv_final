@@ -525,8 +525,8 @@ def decode_to_latents(concept_prompt, new_concept_cfg, tokenizer, text_encoder, 
     text_embeddings = text_embeddings.repeat((batch_size, 1, 1, 1))
 
     # sd 1.x
-    height = 512
-    width = 512
+    height = 256#512
+    width = 256#512
 
     latents = torch.randn((batch_size, unet.in_channels, height // 8, width // 8), )
     latents = latents.to(device)
@@ -555,14 +555,7 @@ def decode_to_latents(concept_prompt, new_concept_cfg, tokenizer, text_encoder, 
         # compute the previous noisy sample x_t -> x_t-1
         latents = test_scheduler.step(noise_pred, t, latents).prev_sample
 
-        # print("3.5", t, "Memory:", torch.cuda.max_memory_allocated())
-
-    # return latents, text_embeddings
-
-    del latents, text_embeddings, latent_model_input, noise_pred
-    test_scheduler.prev_sample = None
-    test_scheduler.pred_original_sample = None
-    # print("3.9 Memory:", torch.cuda.max_memory_allocated())
+    return latents, text_embeddings
 
 
 def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, tokenizer, text_encoder, unet,
@@ -589,10 +582,8 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
 
     logger.info(f'add {len(hooker_handlers)} hooker to unet')
 
-    # print("0 Memory:", torch.cuda.memory_allocated())
     original_state_dict = copy.deepcopy(unet.state_dict())  # original state dict
     revise_unet_attention_forward(unet)
-    # print("1 Memory:", torch.cuda.memory_allocated())
 
     new_concept_input_dict = {}
     new_concept_output_dict = {}
@@ -608,9 +599,7 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
             model_type='unet',
             alpha=concept['unet_alpha'],
             device=device)
-        # print("2 Memory:", torch.cuda.max_memory_allocated())
         unet.load_state_dict(merged_state_dict)  # load merged parameters
-        # print("3 Memory:", torch.cuda.max_memory_allocated())
 
         concept_name = concept['concept_name']
         concept_prompt = TEMPLATE_SIMPLE.format(concept_name)
@@ -631,7 +620,6 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
 
         del tuned_state_dict
         text_encoder = text_encoder.cpu()
-        print("4 Memory:", torch.cuda.max_memory_allocated())
 
         for layer_name in spatial_attention_layer_names:
             input_feature_list = module_io_recoder[layer_name.replace('.weight', '')]['input']
@@ -662,11 +650,9 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
 
     # print("Memory:", torch.cuda.memory_allocated())
     # for k, v in new_concept_input_dict.items():
-    #     new_concept_input_dict[k] = torch.cat(v, 0)
 
     # for k, v in new_concept_output_dict.items():
     #     new_concept_output_dict[k] = torch.cat(v, 0)
-    # print("Memory:", torch.cuda.max_memory_allocated())
 
     new_spatial_attention_weights = {}
 
@@ -694,8 +680,6 @@ def merge_spatial_attention(concept_list, optimize_iters, new_concept_cfg, token
             iters=optimize_iters,
             device=device)
         new_spatial_attention_weights[layer_name] = Wnew
-
-        del original_state_dict[layer_name]
 
 
     logger.info(f'remove {len(hooker_handlers)} hooker from unet')
