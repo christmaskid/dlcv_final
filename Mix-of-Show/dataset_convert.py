@@ -101,7 +101,7 @@ def convert(args):
 						"lora_path": "experiments/"+token_name[1:-1]+"/models/net_g_1000.pth",
 						"unet_alpha": 1.0, 
 						"text_encoder_alpha": 1.0,
-						"concept_name": token_name
+						"concept_name": " " .join(new_concepts_tokens[token_name[1:-1]])
 					})
 
 			json.dump(merge_json_file, 
