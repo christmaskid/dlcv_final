@@ -7,6 +7,17 @@ prompts = [
 	"a photo of <TOK>"
 ]
 
+semantics = {
+	"cat2": "cat",
+	"pet_cat1": "cat",
+	"dog": "dog",
+	"dog6": "dog",
+	"flower_1": "flower",
+	"wearable_glasses": "glasses",
+	"watercolor": "watercolor",
+	"vase": "vase"
+}
+
 def check_path(_path):
 	if not os.path.exists(_path):
 		os.mkdir(_path)
@@ -48,6 +59,7 @@ def convert(args):
 		yaml_content = yaml_content.replace("<new_concept_token>", "<"+token_name+">")
 		yaml_content = yaml_content.replace("<concept_list>", out_json_path)
 		yaml_content = yaml_content.replace("<prompts_path>", args.prompts_path)
+		yaml_content = yaml_content.replace("<semantic>", semantics[token_name])
 
 		yaml_content = yaml_content.replace("<embedding_enable_tuning>", args.embedding_enable_tuning)
 		yaml_content = yaml_content.replace("<text_encoder_enable_tuning>", args.text_encoder_enable_tuning)
@@ -74,9 +86,7 @@ def convert(args):
 		for k, v in val_json.items():
 			token_names = v["token_name"]
 			merge_json_file = []
-			print(v)
-			print("-".join(token[1:-1] for token in token_names))
-			continue
+			fn = "-".join(token[1:-1] for token in token_names)
 
 			for token_name in token_names:
 				merge_json_file.append({
@@ -87,9 +97,9 @@ def convert(args):
 					})
 
 			json.dump(merge_json_file, 
-				open(args.merge_json_path_prefix+"_"+"-".join(token_names)+".json", "w"), indent=4)
+				open(args.merge_json_path_prefix+"_"+fn+".json", "w"), indent=4)
 
-			inf_bash_file = open("mix_of_show_"+"-".join(token_names)+".txt", "w")
+			inf_bash_file = open("mix_of_show_"+fn+".txt", "w")
 			s = """
 combined_model_root="experiments/composed_edlora/stable-diffusion-v1-4/"
 expdir="{}"
@@ -102,7 +112,7 @@ python inference/mix_of_show_sample.py \\
   --pipeline_type="sd_pplus" \\
   --prompt="${{context_prompt}}" \\
   --suffix="" \\
-  --n_samples=20""".format("-".join(token[1:-1] for token in token_names), "a")
+  --n_samples=20""".format("-".join(token[1:-1] for token in token_names), v["prompt"])
 			inf_bash_file.write(s)
 
 
