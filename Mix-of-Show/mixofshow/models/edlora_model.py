@@ -29,20 +29,25 @@ class EDLoraModel(FinetuneModel):
     def optimize_parameters(self, current_iter):
         loss_dict = OrderedDict()
 
-        self.get_bare_model(self.net_g).unet.train()
-        self.get_bare_model(self.net_g).text_encoder.train()
+        finetune_cfg = self.opt['network_g']['finetune_cfg']
 
-        drop_start_iter = self.opt['train'].get('drop_start_iter')
-        unet_kv_drop_rate = self.opt['train'].get('unet_kv_drop_rate', 0)
+        if finetune_cfg['text_encoder']['enable_tuning']:
+            self.get_bare_model(self.net_g).text_encoder.train()
 
-        if drop_start_iter is not None and current_iter > drop_start_iter:
+        if finetune_cfg['unet']['enable_tuning']:
+            self.get_bare_model(self.net_g).unet.train()
+            
+            drop_start_iter = self.opt['train'].get('drop_start_iter')
+            unet_kv_drop_rate = self.opt['train'].get('unet_kv_drop_rate', 0)
 
-            for v in self.get_bare_model(self.net_g).unet_lora:
-                if any([blk_name in v.name
-                        for blk_name in self.unet_kv_block_name]) and random.random() < unet_kv_drop_rate:
-                    v.enable_drop = True
-                else:
-                    v.enable_drop = False
+            if drop_start_iter is not None and current_iter > drop_start_iter:
+
+                for v in self.get_bare_model(self.net_g).unet_lora:
+                    if any([blk_name in v.name
+                            for blk_name in self.unet_kv_block_name]) and random.random() < unet_kv_drop_rate:
+                        v.enable_drop = True
+                    else:
+                        v.enable_drop = False
 
         self.optimizer_g.zero_grad()
         loss = self.net_g(self.images, self.prompts, self.masks)
