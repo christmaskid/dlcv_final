@@ -107,7 +107,7 @@ def convert(args):
 			json.dump(merge_json_file, 
 				open(args.merge_json_path_prefix+"_"+fn+".json", "w"), indent=4)
 
-			inf_bash_file = open("mix_of_show_"+fn+".txt", "w")
+			inf_bash_file = open("mix_of_show_"+fn+".sh", "w")
 			prompt = v["prompt"]
 			for token in new_concepts_tokens:
 				prompt = prompt.replace("<"+token+">", " ".join(new_concepts_tokens[token]))
