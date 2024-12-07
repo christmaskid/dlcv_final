@@ -74,6 +74,9 @@ def convert(args):
 		for k, v in val_json.items():
 			token_names = v["token_name"]
 			merge_json_file = []
+			print(v)
+			print("-".join(token[1:-1] for token in token_names))
+			continue
 
 			for token_name in token_names:
 				merge_json_file.append({
@@ -85,6 +88,24 @@ def convert(args):
 
 			json.dump(merge_json_file, 
 				open(args.merge_json_path_prefix+"_"+"-".join(token_names)+".json", "w"), indent=4)
+
+			inf_bash_file = open("mix_of_show_"+"-".join(token_names)+".txt", "w")
+			s = """
+combined_model_root="experiments/composed_edlora/stable-diffusion-v1-4/"
+expdir="{}"
+
+context_prompt="{}"
+python inference/mix_of_show_sample.py \\
+  --pretrained_model="experiments/pretrained_models/stable-diffusion-v1-4" \\
+  --combined_model="${{combined_model_root}}/${{expdir}}/combined_model_.pth" \\
+  --save_dir="results/multi-concept/${{expdir}}" \\
+  --pipeline_type="sd_pplus" \\
+  --prompt="${{context_prompt}}" \\
+  --suffix="" \\
+  --n_samples=20""".format("-".join(token[1:-1] for token in token_names), "a")
+			inf_bash_file.write(s)
+
+
 
 
 if __name__=="__main__":
