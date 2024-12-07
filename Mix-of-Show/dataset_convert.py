@@ -112,7 +112,7 @@ def convert(args):
 			for token in new_concepts_tokens:
 				prompt = prompt.replace("<"+token+">", " ".join(new_concepts_tokens[token]))
 			s = """
-combined_model_root="experiments/composed_edlora/stable-diffusion-v1-4/"
+combined_model_root="experiments/composed_edlora/stable-diffusion-v1-4"
 expdir="{}"
 
 context_prompt="{}"
@@ -123,7 +123,7 @@ python inference/mix_of_show_sample.py \\
   --pipeline_type="sd_pplus" \\
   --prompt="${{context_prompt}}" \\
   --suffix="" \\
-  --n_samples=20""".format("-".join(token[1:-1] for token in token_names), prompt)
+  --n_samples=20""".format("+".join(token[1:-1] for token in token_names), prompt)
 			inf_bash_file.write(s)
 
 
