@@ -19,7 +19,7 @@ datasets:
       - { type: ShuffleCaption, keep_token_num: 1 }
       - { type: EnhanceText, enhance_type: human }
     replace_mapping:
-      <TOK>: <new_concept_token> #<hermione1> <hermione2>
+      <TOK>: <replace_mapping>
     dataset_enlarge_ratio: 100
     use_shuffle: true
     num_worker_per_gpu: 2
@@ -34,7 +34,7 @@ datasets:
     num_samples_per_prompt: 1
     latent_size: <latent_size> #[ 4,64,64 ]
     replace_mapping:
-      <TOK>: <new_concept_token>
+      <TOK>: <replace_mapping>
     use_shuffle: false
     num_worker_per_gpu: 2
     batch_size_per_gpu: 1

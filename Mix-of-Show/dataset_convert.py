@@ -18,6 +18,8 @@ semantics = {
 	"vase": "vase"
 }
 
+new_concepts_tokens = {}
+
 def check_path(_path):
 	if not os.path.exists(_path):
 		os.mkdir(_path)
@@ -55,10 +57,16 @@ def convert(args):
 		token_yaml_file = open(token_name+".yml", "w")
 
 		yaml_content = ''.join(template_yaml_file.readlines())
+
+		new_concepts = ["<{}_1>".format(token_name), "<{}_2>".format(token_name)]
+		new_concepts_tokens[token_name] = new_concepts
+
 		yaml_content = yaml_content.replace("<name>", token_name)
-		yaml_content = yaml_content.replace("<new_concept_token>", "<"+token_name+">")
+		yaml_content = yaml_content.replace("<replace_mapping>", " ".join(new_concepts))
+		yaml_content = yaml_content.replace("<new_concept_token>", "+".join(new_concepts))
 		yaml_content = yaml_content.replace("<concept_list>", out_json_path)
 		yaml_content = yaml_content.replace("<prompts_path>", args.prompts_path)
+
 		yaml_content = yaml_content.replace("<semantic>", semantics[token_name])
 
 		yaml_content = yaml_content.replace("<embedding_enable_tuning>", args.embedding_enable_tuning)
@@ -100,6 +108,9 @@ def convert(args):
 				open(args.merge_json_path_prefix+"_"+fn+".json", "w"), indent=4)
 
 			inf_bash_file = open("mix_of_show_"+fn+".txt", "w")
+			prompt = v["prompt"]
+			for token in new_concepts_tokens:
+				prompt = prompt.replace("<"+token+">", " ".join(new_concepts_tokens[token]))
 			s = """
 combined_model_root="experiments/composed_edlora/stable-diffusion-v1-4/"
 expdir="{}"
@@ -112,7 +123,7 @@ python inference/mix_of_show_sample.py \\
   --pipeline_type="sd_pplus" \\
   --prompt="${{context_prompt}}" \\
   --suffix="" \\
-  --n_samples=20""".format("-".join(token[1:-1] for token in token_names), v["prompt"])
+  --n_samples=20""".format("-".join(token[1:-1] for token in token_names), prompt)
 			inf_bash_file.write(s)
 
 
