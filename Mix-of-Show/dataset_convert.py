@@ -174,7 +174,7 @@ python inference/mix_of_show_sample.py \\
   				prompt,
   				args.neg_prompt,
   				region_prompts,
-  				prompt_rewrit,
+  				prompt_rewrite,
 
   				sketch_adaptor_weight,
   				sketch_condition,
