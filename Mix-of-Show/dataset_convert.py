@@ -28,9 +28,9 @@ all_region_prompts = {
 		("A <vase_1> <vase_2>", "[212,152,482,331]")
 		],
 	"2": [
-		("A <dog_1> <dog_2> near a forest.", "[133,8,437,147]"), 
-		("A <pet_cat1_1> <pet_cat1_2> near a forest.", "[168,185,449,334]"),
-		("A <dog6_1> <dog6_2> near a forest.","[168,347,454,490]")
+		("A <dog_1> <dog_2> near a forest.", "[213,6,493,276]"), 
+		("A <pet_cat1_1> <pet_cat1_2> near a forest.", "[0,161,257,362]"),
+		("A <dog6_1> <dog6_2> near a forest.","[263,298,512,512]")
 		],
 	"3": [
 		("A <cat2_1> <cat2_2> in a <watercolor_1> <watercolor_2> style.","[107,96,512,406]"), 
