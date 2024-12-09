@@ -286,7 +286,7 @@ if __name__ == '__main__':
         if width_sketch != 0 and width_pose != 0:
             assert width_sketch == width_pose and height_sketch == height_pose, 'conditions should be same size'
         width, height = max(width_pose, width_sketch), max(height_pose, height_sketch)
-        print(width, height, flushh=True)
+        print(width, height, flush=True)
 
         kwargs = {
             'sketch_condition': sketch_condition,
