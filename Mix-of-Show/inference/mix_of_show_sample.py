@@ -225,6 +225,7 @@ def prepare_text(prompt, region_prompts, height, width):
             pos[1], pos[3] = pos[1] / width, pos[3] / width
 
         region_collection.append((prompt_region, neg_prompt_region, pos))
+    print(prompt, region_collection, flush=True)
     return (prompt, region_collection)
 
 
