@@ -161,10 +161,10 @@ prompt_rewrite = "{4}"
 python inference/mix_of_show_sample.py \\
   --pretrained_model="experiments/pretrained_models/stable-diffusion-v1-4" \\
   --combined_model="${{combined_model_root}}/${{expdir}}/combined_model_.pth" \\
-	--sketch_adaptor_model="experiments/pretrained_models/t2i_adpator/t2iadapter_sketch_sd14v1.pth" \\
+	--sketch_adaptor_model="experiments/pretrained_models/t2i_adapter/t2iadapter_sketch_sd14v1.pth" \\
 	--sketch_adaptor_weight=${{sketch_adaptor_weight}}\\
 	--sketch_condition=${{sketch_condition}} \\
-	--keypose_adaptor_model="experiments/pretrained_models/t2i_adpator/t2iadapter_openpose_sd14v1.pth" \\
+	--keypose_adaptor_model="experiments/pretrained_models/t2i_adapter/t2iadapter_openpose_sd14v1.pth" \\
 	--keypose_adaptor_weight=${{keypose_adaptor_weight}}\\
 	--keypose_condition=${{keypose_condition}} \\
   --save_dir="results/multi-concept/${{expdir}}" \\
