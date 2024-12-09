@@ -148,7 +148,7 @@ expdir="{0}"
 
 keypose_condition=''
 keypose_adaptor_weight=1.0
-sketch_condition='''datasets/validation_spatial_condition/characters-objects/harry_heminone_scene_sketch.png'
+sketch_condition='datasets/validation_spatial_condition/characters-objects/harry_heminone_scene_sketch.png'
 sketch_adaptor_weight=1.0
 
 context_prompt="{1}"
