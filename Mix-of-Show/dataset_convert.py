@@ -161,6 +161,7 @@ python inference/mix_of_show_sample.py \\
   --prompt="${{context_prompt}}" \\
   --negative_prompt="${{context_neg_prompt}}" \\
   --prompt_rewrite="${{prompt_rewrite}}" \\
+  --pipeline_type="adaptor_pplus" \\
   --suffix="" \\
   --n_samples=20""".format(
   				"+".join(token[1:-1] for token in token_names), 
