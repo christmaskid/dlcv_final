@@ -196,6 +196,8 @@ def encode_region_prompt_pplus(self,
 
     if prompt_embeds is None:
         context_prompt, region_list = prompt[0][0], prompt[0][1]
+        print("Prompt:", prompt)
+        print(context_prompt, region_list)
         context_prompt = bind_concept_prompt([context_prompt], new_concept_cfg)
         context_prompt_input_ids = self.tokenizer(
             context_prompt,
