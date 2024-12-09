@@ -146,6 +146,11 @@ def convert(args):
 combined_model_root="experiments/composed_edlora/stable-diffusion-v1-4"
 expdir="{0}"
 
+keypose_condition=''
+keypose_adaptor_weight=1.0
+sketch_condition=''
+sketch_adaptor_weight=1.0
+
 context_prompt="{1}"
 context_neg_prompt="{2}"
 
@@ -157,11 +162,11 @@ python inference/mix_of_show_sample.py \\
   --pretrained_model="experiments/pretrained_models/stable-diffusion-v1-4" \\
   --combined_model="${{combined_model_root}}/${{expdir}}/combined_model_.pth" \\
 	--sketch_adaptor_model="experiments/pretrained_models/t2i_adpator/t2iadapter_sketch_sd14v1.pth" \\
-	--sketch_adaptor_weight=${5}\\
-	--sketch_condition=${6} \\
+	--sketch_adaptor_weight=${{sketch_adaptor_weight}}\\
+	--sketch_condition=${{sketch_condition}} \\
 	--keypose_adaptor_model="experiments/pretrained_models/t2i_adpator/t2iadapter_openpose_sd14v1.pth" \\
-	--keypose_adaptor_weight=${7}\\
-	--keypose_condition=${8} \\
+	--keypose_adaptor_weight=${{keypose_adaptor_weight}}\\
+	--keypose_condition=${{keypose_condition}} \\
   --save_dir="results/multi-concept/${{expdir}}" \\
   --pipeline_type="sd_pplus" \\
   --prompt="${{context_prompt}}" \\
@@ -174,12 +179,7 @@ python inference/mix_of_show_sample.py \\
   				prompt,
   				args.neg_prompt,
   				region_prompts,
-  				prompt_rewrite,
-
-  				sketch_adaptor_weight,
-  				sketch_condition,
-  				keypose_adaptor_weight,
-  				keypose_condition
+  				prompt_rewrite
   			)
 			inf_bash_file.write(s)
 
