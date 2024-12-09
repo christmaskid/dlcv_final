@@ -140,7 +140,7 @@ def convert(args):
 				region_prompts += "region{}_prompt='[{}]'\n".format(j+1, region_prompt)
 				region_prompts += "region{}_neg_prompt=\"[${{context_neg_prompt}}]\"\n".format(j+1)
 				region_prompts += "region{}='{}'\n\n".format(j+1, bbox)
-				prompt_rewrite += "${{region{}_prompt-*-${{region{}_neg_prompt}}-*-${{region{}}}".format(j+1,j+1,j+1)
+				prompt_rewrite += "${{region{}_prompt}}-*-${{region{}_neg_prompt}}-*-${{region{}}}".format(j+1,j+1,j+1)
 
 			s = """
 combined_model_root="experiments/composed_edlora/stable-diffusion-v1-4"
@@ -156,6 +156,12 @@ prompt_rewrite = "{4}"
 python inference/mix_of_show_sample.py \\
   --pretrained_model="experiments/pretrained_models/stable-diffusion-v1-4" \\
   --combined_model="${{combined_model_root}}/${{expdir}}/combined_model_.pth" \\
+	--sketch_adaptor_model="experiments/pretrained_models/t2i_adpator/t2iadapter_sketch_sd14v1.pth" \\
+	--sketch_adaptor_weight=${5}\\
+	--sketch_condition=${6} \\
+	--keypose_adaptor_model="experiments/pretrained_models/t2i_adpator/t2iadapter_openpose_sd14v1.pth" \\
+	--keypose_adaptor_weight=${7}\\
+	--keypose_condition=${8} \\
   --save_dir="results/multi-concept/${{expdir}}" \\
   --pipeline_type="sd_pplus" \\
   --prompt="${{context_prompt}}" \\
@@ -168,7 +174,12 @@ python inference/mix_of_show_sample.py \\
   				prompt,
   				args.neg_prompt,
   				region_prompts,
-  				prompt_rewrite
+  				prompt_rewrit,
+
+  				sketch_adaptor_weight,
+  				sketch_condition,
+  				keypose_adaptor_weight,
+  				keypose_condition
   			)
 			inf_bash_file.write(s)
 

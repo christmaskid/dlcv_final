@@ -90,6 +90,8 @@ class EDLoRA(Stable_Diffusion):
             params_group_list.append({'params': params_list, 'lr': text_encoder_cfg['lr']})
             logger.info(
                 f"optimizing text_encoder ({len(self.text_encoder_lora)} LoRAs), using lr: {text_encoder_cfg['lr']}")
+        else:
+            self.text_encoder_lora = None
 
         # 3. unet
         revise_unet_attention_forward(self.unet)  # multi-layer embedding
