@@ -20,22 +20,29 @@ semantics = {
 
 all_region_prompts = {
 	"0": [
-		("A <cat2_1> <cat2_2> on the right.", '[0,0,512,256]'), 
-		("A <dog6_1> <dog6_2> on the left.", '[0,256,512,512]')
+		("A <cat2_1> <cat2_2> on the right.", '[168,280,424,508]'), 
+		("A <dog6_1> <dog6_2> on the left.", '[164,33,432,245]')
 		],
 	"1": [
-		("A <flower_1_1> <flower_1_2>.", "[30,200,320,256]"), 
-		("A <vase_1> <vase_2>", "[168, 144, 512, 384]")
+		("A <flower_1_1> <flower_1_2>.", "[77,152,383,287]"), 
+		("A <vase_1> <vase_2>", "[212,152,482,331]")
 		],
 	"2": [
-		("A <dog_1> <dog_2> near a forest.", "[119,30,385,151]"), 
-		("A <pet_cat1_1> <pet_cat1_2> near a forest.", "[111,197,384,314]"),
-		("A <dog6_1> <dog6_2> near a forest.","[276,139,384,480]")
+		("A <dog_1> <dog_2> near a forest.", "[133,8,437,147]"), 
+		("A <pet_cat1_1> <pet_cat1_2> near a forest.", "[168,185,449,334]"),
+		("A <dog6_1> <dog6_2> near a forest.","[168,347,454,490]")
 		],
 	"3": [
-		("A <cat2_1> <cat2_2> in a <watercolor_1> <watercolor_2> style.","[60,90,512,452]"), 
-		("A <wearable_glasses_1> <wearable_glasses_2> in a <watercolor_1> <watercolor_2> style.","[111,142,215,386]")
+		("A <cat2_1> <cat2_2> in a <watercolor_1> <watercolor_2> style.","[107,96,512,406]"), 
+		("A <wearable_glasses_1> <wearable_glasses_2> in a <watercolor_1> <watercolor_2> style.","[169,85,230,391]")
 		]
+}
+
+sketches = {
+	"0": "cat_dog.png",
+	"1": "flower_vase.png",
+	"2": "dog_cat_dog.png",
+	"3": "cat_glasses.png"
 }
 
 new_concepts_tokens = {}
@@ -148,15 +155,15 @@ expdir="{0}"
 
 keypose_condition=''
 keypose_adaptor_weight=1.0
-sketch_condition='datasets/validation_spatial_condition/two_objects.png'
+sketch_condition='datasets/validation_spatial_condition/{1}'
 sketch_adaptor_weight=1.0
 
-context_prompt="{1}"
-context_neg_prompt="{2}"
+context_prompt="{2}"
+context_neg_prompt="{3}"
 
-{3}
+{4}
 
-prompt_rewrite="{4}"
+prompt_rewrite="{5}"
 
 python inference/mix_of_show_sample.py \\
   --pretrained_model="experiments/pretrained_models/stable-diffusion-v1-4" \\
@@ -176,6 +183,7 @@ python inference/mix_of_show_sample.py \\
   --suffix="" \\
   --n_samples=20""".format(
   				"+".join(token[1:-1] for token in token_names), 
+  				sketches[k],
   				prompt,
   				args.neg_prompt,
   				region_prompts,
