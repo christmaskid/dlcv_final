@@ -1,4 +1,4 @@
-# GENERATE TIME: Fri Dec  6 09:51:04 2024
+# GENERATE TIME: Mon Dec  9 05:13:15 2024
 # CMD:
 # mixofshow/train.py -opt /content/dlcv_final/Mix-of-Show/cat2.yml --launcher pytorch
 
@@ -23,7 +23,7 @@ datasets:
       - { type: ShuffleCaption, keep_token_num: 1 }
       - { type: EnhanceText, enhance_type: human }
     replace_mapping:
-      <TOK>: <cat2> #<hermione1> <hermione2>
+      <TOK>: <cat2_1> <cat2_2>
     dataset_enlarge_ratio: 100
     use_shuffle: true
     num_worker_per_gpu: 2
@@ -38,7 +38,7 @@ datasets:
     num_samples_per_prompt: 1
     latent_size: [4, 64, 64] #[ 4,64,64 ]
     replace_mapping:
-      <TOK>: <cat2>
+      <TOK>: <cat2_1> <cat2_2>
     use_shuffle: false
     num_worker_per_gpu: 2
     batch_size_per_gpu: 1
@@ -64,9 +64,9 @@ network_g:
         alpha: 1 #1.0
         where: CrossAttention
       lr: !!float 0.0001 #1e-4
-  new_concept_token: <cat2>
+  new_concept_token: <cat2_1>+<cat2_2>
   noise_offset: 0.01
-  initializer_token: <rand-0.013>
+  initializer_token: <rand-0.013>+cat
   sd_version: v1
   test_sampler_type: ddim
 
