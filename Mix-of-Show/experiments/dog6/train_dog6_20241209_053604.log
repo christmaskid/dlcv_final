@@ -1,0 +1,1226 @@
+2024-12-09 05:36:04,358 INFO: 
+Version Information: 
+OpenStory
+	PyTorch: 2.3.1+cu121
+	TorchVision: 0.18.1+cu121
+2024-12-09 05:36:04,358 INFO: 
+  name: dog6
+  model_type: EDLoraModel
+  world_size: 1
+  num_gpu: 1
+  manual_seed: 0
+  datasets:[
+    train:[
+      name: LoraDataset
+      type: LoraDataset
+      concept_list: /content/Data/jsons/dog6.json
+      use_caption: True
+      instance_transform: [OrderedDict([('type', 'Resize'), ('size', 512)]), OrderedDict([('type', 'HumanResizeCropFinal'), ('size', 512), ('crop_p', 0.5)]), OrderedDict([('type', 'ToTensor')]), OrderedDict([('type', 'Normalize'), ('mean', [0.5]), ('std', [0.5])]), OrderedDict([('type', 'ShuffleCaption'), ('keep_token_num', 1)]), OrderedDict([('type', 'EnhanceText'), ('enhance_type', 'human')])]
+      replace_mapping:[
+        <TOK>: <dog6_1> <dog6_2>
+      ]
+      dataset_enlarge_ratio: 100
+      use_shuffle: True
+      num_worker_per_gpu: 2
+      batch_size_per_gpu: 1
+      pin_memory: True
+      prefetch_mode: cuda
+      phase: train
+    ]
+    val_vis:[
+      name: PromptDataset
+      type: PromptDataset
+      prompts: /content/dlcv_final/Mix-of-Show/datasets/validation_prompts/val.txt
+      num_samples_per_prompt: 1
+      latent_size: [4, 64, 64]
+      replace_mapping:[
+        <TOK>: <dog6_1> <dog6_2>
+      ]
+      use_shuffle: False
+      num_worker_per_gpu: 2
+      batch_size_per_gpu: 1
+      phase: val
+    ]
+  ]
+  network_g:[
+    type: EDLoRA
+    pretrained_path: experiments/pretrained_models/stable-diffusion-v1-4
+    finetune_cfg:[
+      text_embedding:[
+        enable_tuning: True
+        lr: 0.001
+      ]
+      text_encoder:[
+        enable_tuning: True
+        lora_cfg:[
+          rank: 4
+          alpha: 1
+          where: CLIPSdpaAttention
+        ]
+        lr: 1e-05
+      ]
+      unet:[
+        enable_tuning: True
+        lora_cfg:[
+          rank: 4
+          alpha: 1
+          where: CrossAttention
+        ]
+        lr: 0.0001
+      ]
+    ]
+    new_concept_token: <dog6_1>+<dog6_2>
+    noise_offset: 0.01
+    initializer_token: <rand-0.013>+dog
+    sd_version: v1
+    test_sampler_type: ddim
+  ]
+  path:[
+    pretrain_network_g: None
+    experiments_root: /content/dlcv_final/Mix-of-Show/experiments/dog6
+    models: /content/dlcv_final/Mix-of-Show/experiments/dog6/models
+    training_states: /content/dlcv_final/Mix-of-Show/experiments/dog6/training_states
+    log: /content/dlcv_final/Mix-of-Show/experiments/dog6
+    visualization: /content/dlcv_final/Mix-of-Show/experiments/dog6/visualization
+  ]
+  train:[
+    optim_g:[
+      type: AdamW
+      lr: 0.0
+      scale_lr: False
+      weight_decay: 0.01
+      betas: [0.9, 0.999]
+    ]
+    kde_opt:[
+      type: KDELoss
+      loss_weight: 0.002
+      bandwidth: 0.5
+    ]
+    drop_start_iter: -1
+    unet_kv_drop_rate: 0.0
+    scheduler:[
+      type: LinearLR
+      num_epochs: 1000
+    ]
+    total_iter: 1000
+    warmup_iter: -1
+  ]
+  val:[
+    val_freq: 1000.0
+    save_img: True
+    compose_visualize: True
+    pbar: True
+    suffix: None
+    sample:[
+      num_inference_steps: 50
+      guidance_scale: 7.5
+    ]
+    metrics: None
+  ]
+  logger:[
+    print_freq: 10
+    save_checkpoint_freq: 200.0
+    use_tb_logger: False
+    wandb:[
+      project: None
+      resume_id: None
+    ]
+  ]
+  dist_params:[
+    backend: nccl
+    port: 29500
+  ]
+  dist: True
+  rank: 0
+  auto_resume: False
+  is_train: True
+  root_path: /content/dlcv_final/Mix-of-Show
+
+2024-12-09 05:36:04,359 INFO: Transform [Resize] is created.
+2024-12-09 05:36:04,359 INFO: Transform [HumanResizeCropFinal] is created.
+2024-12-09 05:36:04,359 INFO: Transform [ToTensor] is created.
+2024-12-09 05:36:04,359 INFO: Transform [Normalize] is created.
+2024-12-09 05:36:04,359 INFO: Transform [ShuffleCaption] is created.
+2024-12-09 05:36:04,359 INFO: Transform [EnhanceText] is created.
+2024-12-09 05:36:04,359 INFO: Dataset [LoraDataset] - LoraDataset is built.
+2024-12-09 05:36:04,360 INFO: Training statistics:
+	Number of train images: 5
+	Dataset enlarge ratio: 100
+	Batch size per gpu: 1
+	World size (gpu number): 1
+	Require iter number per epoch: 500
+	Total epochs: 2; iters: 1000.
+2024-12-09 05:36:04,360 INFO: Dataset [PromptDataset] - PromptDataset is built.
+2024-12-09 05:36:04,360 INFO: Number of val images/folders in PromptDataset: 1
+2024-12-09 05:36:05,625 INFO: 49408 is random initialized by: <rand-0.013>
+2024-12-09 05:36:05,625 INFO: 49409 is random initialized by: <rand-0.013>
+2024-12-09 05:36:05,625 INFO: 49410 is random initialized by: <rand-0.013>
+2024-12-09 05:36:05,625 INFO: 49411 is random initialized by: <rand-0.013>
+2024-12-09 05:36:05,625 INFO: 49412 is random initialized by: <rand-0.013>
+2024-12-09 05:36:05,625 INFO: 49413 is random initialized by: <rand-0.013>
+2024-12-09 05:36:05,625 INFO: 49414 is random initialized by: <rand-0.013>
+2024-12-09 05:36:05,626 INFO: 49415 is random initialized by: <rand-0.013>
+2024-12-09 05:36:05,626 INFO: 49416 is random initialized by: <rand-0.013>
+2024-12-09 05:36:05,626 INFO: 49417 is random initialized by: <rand-0.013>
+2024-12-09 05:36:05,626 INFO: 49418 is random initialized by: <rand-0.013>
+2024-12-09 05:36:05,626 INFO: 49419 is random initialized by: <rand-0.013>
+2024-12-09 05:36:05,626 INFO: 49420 is random initialized by: <rand-0.013>
+2024-12-09 05:36:05,626 INFO: 49421 is random initialized by: <rand-0.013>
+2024-12-09 05:36:05,626 INFO: 49422 is random initialized by: <rand-0.013>
+2024-12-09 05:36:05,626 INFO: 49423 is random initialized by: <rand-0.013>
+2024-12-09 05:36:06,283 INFO: 49424 is random initialized by: dog, 1929
+2024-12-09 05:36:06,284 INFO: 49425 is random initialized by: dog, 1929
+2024-12-09 05:36:06,284 INFO: 49426 is random initialized by: dog, 1929
+2024-12-09 05:36:06,284 INFO: 49427 is random initialized by: dog, 1929
+2024-12-09 05:36:06,285 INFO: 49428 is random initialized by: dog, 1929
+2024-12-09 05:36:06,285 INFO: 49429 is random initialized by: dog, 1929
+2024-12-09 05:36:06,285 INFO: 49430 is random initialized by: dog, 1929
+2024-12-09 05:36:06,285 INFO: 49431 is random initialized by: dog, 1929
+2024-12-09 05:36:06,285 INFO: 49432 is random initialized by: dog, 1929
+2024-12-09 05:36:06,286 INFO: 49433 is random initialized by: dog, 1929
+2024-12-09 05:36:06,286 INFO: 49434 is random initialized by: dog, 1929
+2024-12-09 05:36:06,286 INFO: 49435 is random initialized by: dog, 1929
+2024-12-09 05:36:06,286 INFO: 49436 is random initialized by: dog, 1929
+2024-12-09 05:36:06,286 INFO: 49437 is random initialized by: dog, 1929
+2024-12-09 05:36:06,287 INFO: 49438 is random initialized by: dog, 1929
+2024-12-09 05:36:06,287 INFO: 49439 is random initialized by: dog, 1929
+2024-12-09 05:36:06,291 INFO: optimizing embedding using lr: 0.001
+2024-12-09 05:36:06,305 INFO: optimizing text_encoder (48 LoRAs), using lr: 1e-05
+2024-12-09 05:36:06,344 INFO: optimizing unet (128 LoRAs), using lr: 0.0001
+2024-12-09 05:36:06,344 INFO: Network [EDLoRA] is created.
+2024-12-09 05:36:08,122 INFO: Network: DistributedDataParallel - EDLoRA, with parameters: 1,067,351,979
+2024-12-09 05:36:08,123 INFO: EDLoRA(
+  (vae): AutoencoderKL(
+    (encoder): Encoder(
+      (conv_in): Conv2d(3, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (down_blocks): ModuleList(
+        (0): DownEncoderBlock2D(
+          (resnets): ModuleList(
+            (0-1): 2 x ResnetBlock2D(
+              (norm1): GroupNorm(32, 128, eps=1e-06, affine=True)
+              (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (norm2): GroupNorm(32, 128, eps=1e-06, affine=True)
+              (dropout): Dropout(p=0.0, inplace=False)
+              (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (nonlinearity): SiLU()
+            )
+          )
+          (downsamplers): ModuleList(
+            (0): Downsample2D(
+              (conv): Conv2d(128, 128, kernel_size=(3, 3), stride=(2, 2))
+            )
+          )
+        )
+        (1): DownEncoderBlock2D(
+          (resnets): ModuleList(
+            (0): ResnetBlock2D(
+              (norm1): GroupNorm(32, 128, eps=1e-06, affine=True)
+              (conv1): Conv2d(128, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (norm2): GroupNorm(32, 256, eps=1e-06, affine=True)
+              (dropout): Dropout(p=0.0, inplace=False)
+              (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (nonlinearity): SiLU()
+              (conv_shortcut): Conv2d(128, 256, kernel_size=(1, 1), stride=(1, 1))
+            )
+            (1): ResnetBlock2D(
+              (norm1): GroupNorm(32, 256, eps=1e-06, affine=True)
+              (conv1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (norm2): GroupNorm(32, 256, eps=1e-06, affine=True)
+              (dropout): Dropout(p=0.0, inplace=False)
+              (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (nonlinearity): SiLU()
+            )
+          )
+          (downsamplers): ModuleList(
+            (0): Downsample2D(
+              (conv): Conv2d(256, 256, kernel_size=(3, 3), stride=(2, 2))
+            )
+          )
+        )
+        (2): DownEncoderBlock2D(
+          (resnets): ModuleList(
+            (0): ResnetBlock2D(
+              (norm1): GroupNorm(32, 256, eps=1e-06, affine=True)
+              (conv1): Conv2d(256, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (norm2): GroupNorm(32, 512, eps=1e-06, affine=True)
+              (dropout): Dropout(p=0.0, inplace=False)
+              (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (nonlinearity): SiLU()
+              (conv_shortcut): Conv2d(256, 512, kernel_size=(1, 1), stride=(1, 1))
+            )
+            (1): ResnetBlock2D(
+              (norm1): GroupNorm(32, 512, eps=1e-06, affine=True)
+              (conv1): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (norm2): GroupNorm(32, 512, eps=1e-06, affine=True)
+              (dropout): Dropout(p=0.0, inplace=False)
+              (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (nonlinearity): SiLU()
+            )
+          )
+          (downsamplers): ModuleList(
+            (0): Downsample2D(
+              (conv): Conv2d(512, 512, kernel_size=(3, 3), stride=(2, 2))
+            )
+          )
+        )
+        (3): DownEncoderBlock2D(
+          (resnets): ModuleList(
+            (0-1): 2 x ResnetBlock2D(
+              (norm1): GroupNorm(32, 512, eps=1e-06, affine=True)
+              (conv1): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (norm2): GroupNorm(32, 512, eps=1e-06, affine=True)
+              (dropout): Dropout(p=0.0, inplace=False)
+              (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (nonlinearity): SiLU()
+            )
+          )
+        )
+      )
+      (mid_block): UNetMidBlock2D(
+        (attentions): ModuleList(
+          (0): AttentionBlock(
+            (group_norm): GroupNorm(32, 512, eps=1e-06, affine=True)
+            (query): Linear(in_features=512, out_features=512, bias=True)
+            (key): Linear(in_features=512, out_features=512, bias=True)
+            (value): Linear(in_features=512, out_features=512, bias=True)
+            (proj_attn): Linear(in_features=512, out_features=512, bias=True)
+          )
+        )
+        (resnets): ModuleList(
+          (0-1): 2 x ResnetBlock2D(
+            (norm1): GroupNorm(32, 512, eps=1e-06, affine=True)
+            (conv1): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (norm2): GroupNorm(32, 512, eps=1e-06, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+          )
+        )
+      )
+      (conv_norm_out): GroupNorm(32, 512, eps=1e-06, affine=True)
+      (conv_act): SiLU()
+      (conv_out): Conv2d(512, 8, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    )
+    (decoder): Decoder(
+      (conv_in): Conv2d(4, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (up_blocks): ModuleList(
+        (0-1): 2 x UpDecoderBlock2D(
+          (resnets): ModuleList(
+            (0-2): 3 x ResnetBlock2D(
+              (norm1): GroupNorm(32, 512, eps=1e-06, affine=True)
+              (conv1): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (norm2): GroupNorm(32, 512, eps=1e-06, affine=True)
+              (dropout): Dropout(p=0.0, inplace=False)
+              (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (nonlinearity): SiLU()
+            )
+          )
+          (upsamplers): ModuleList(
+            (0): Upsample2D(
+              (conv): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            )
+          )
+        )
+        (2): UpDecoderBlock2D(
+          (resnets): ModuleList(
+            (0): ResnetBlock2D(
+              (norm1): GroupNorm(32, 512, eps=1e-06, affine=True)
+              (conv1): Conv2d(512, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (norm2): GroupNorm(32, 256, eps=1e-06, affine=True)
+              (dropout): Dropout(p=0.0, inplace=False)
+              (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (nonlinearity): SiLU()
+              (conv_shortcut): Conv2d(512, 256, kernel_size=(1, 1), stride=(1, 1))
+            )
+            (1-2): 2 x ResnetBlock2D(
+              (norm1): GroupNorm(32, 256, eps=1e-06, affine=True)
+              (conv1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (norm2): GroupNorm(32, 256, eps=1e-06, affine=True)
+              (dropout): Dropout(p=0.0, inplace=False)
+              (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (nonlinearity): SiLU()
+            )
+          )
+          (upsamplers): ModuleList(
+            (0): Upsample2D(
+              (conv): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            )
+          )
+        )
+        (3): UpDecoderBlock2D(
+          (resnets): ModuleList(
+            (0): ResnetBlock2D(
+              (norm1): GroupNorm(32, 256, eps=1e-06, affine=True)
+              (conv1): Conv2d(256, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (norm2): GroupNorm(32, 128, eps=1e-06, affine=True)
+              (dropout): Dropout(p=0.0, inplace=False)
+              (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (nonlinearity): SiLU()
+              (conv_shortcut): Conv2d(256, 128, kernel_size=(1, 1), stride=(1, 1))
+            )
+            (1-2): 2 x ResnetBlock2D(
+              (norm1): GroupNorm(32, 128, eps=1e-06, affine=True)
+              (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (norm2): GroupNorm(32, 128, eps=1e-06, affine=True)
+              (dropout): Dropout(p=0.0, inplace=False)
+              (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (nonlinearity): SiLU()
+            )
+          )
+        )
+      )
+      (mid_block): UNetMidBlock2D(
+        (attentions): ModuleList(
+          (0): AttentionBlock(
+            (group_norm): GroupNorm(32, 512, eps=1e-06, affine=True)
+            (query): Linear(in_features=512, out_features=512, bias=True)
+            (key): Linear(in_features=512, out_features=512, bias=True)
+            (value): Linear(in_features=512, out_features=512, bias=True)
+            (proj_attn): Linear(in_features=512, out_features=512, bias=True)
+          )
+        )
+        (resnets): ModuleList(
+          (0-1): 2 x ResnetBlock2D(
+            (norm1): GroupNorm(32, 512, eps=1e-06, affine=True)
+            (conv1): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (norm2): GroupNorm(32, 512, eps=1e-06, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+          )
+        )
+      )
+      (conv_norm_out): GroupNorm(32, 128, eps=1e-06, affine=True)
+      (conv_act): SiLU()
+      (conv_out): Conv2d(128, 3, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    )
+    (quant_conv): Conv2d(8, 8, kernel_size=(1, 1), stride=(1, 1))
+    (post_quant_conv): Conv2d(4, 4, kernel_size=(1, 1), stride=(1, 1))
+  )
+  (text_encoder): CLIPTextModel(
+    (text_model): CLIPTextTransformer(
+      (embeddings): CLIPTextEmbeddings(
+        (token_embedding): Embedding(49440, 768)
+        (position_embedding): Embedding(77, 768)
+      )
+      (encoder): CLIPEncoder(
+        (layers): ModuleList(
+          (0-11): 12 x CLIPEncoderLayer(
+            (self_attn): CLIPSdpaAttention(
+              (k_proj): Linear(in_features=768, out_features=768, bias=True)
+              (v_proj): Linear(in_features=768, out_features=768, bias=True)
+              (q_proj): Linear(in_features=768, out_features=768, bias=True)
+              (out_proj): Linear(in_features=768, out_features=768, bias=True)
+            )
+            (layer_norm1): LayerNorm((768,), eps=1e-05, elementwise_affine=True)
+            (mlp): CLIPMLP(
+              (activation_fn): QuickGELUActivation()
+              (fc1): Linear(in_features=768, out_features=3072, bias=True)
+              (fc2): Linear(in_features=3072, out_features=768, bias=True)
+            )
+            (layer_norm2): LayerNorm((768,), eps=1e-05, elementwise_affine=True)
+          )
+        )
+      )
+      (final_layer_norm): LayerNorm((768,), eps=1e-05, elementwise_affine=True)
+    )
+  )
+  (unet): UNet2DConditionModel(
+    (conv_in): Conv2d(4, 320, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (time_proj): Timesteps()
+    (time_embedding): TimestepEmbedding(
+      (linear_1): Linear(in_features=320, out_features=1280, bias=True)
+      (act): SiLU()
+      (linear_2): Linear(in_features=1280, out_features=1280, bias=True)
+    )
+    (down_blocks): ModuleList(
+      (0): CrossAttnDownBlock2D(
+        (attentions): ModuleList(
+          (0-1): 2 x Transformer2DModel(
+            (norm): GroupNorm(32, 320, eps=1e-06, affine=True)
+            (proj_in): Conv2d(320, 320, kernel_size=(1, 1), stride=(1, 1))
+            (transformer_blocks): ModuleList(
+              (0): BasicTransformerBlock(
+                (attn1): CrossAttention(
+                  (to_q): Linear(in_features=320, out_features=320, bias=False)
+                  (to_k): Linear(in_features=320, out_features=320, bias=False)
+                  (to_v): Linear(in_features=320, out_features=320, bias=False)
+                  (to_out): ModuleList(
+                    (0): Linear(in_features=320, out_features=320, bias=True)
+                    (1): Dropout(p=0.0, inplace=False)
+                  )
+                )
+                (ff): FeedForward(
+                  (net): ModuleList(
+                    (0): GEGLU(
+                      (proj): Linear(in_features=320, out_features=2560, bias=True)
+                    )
+                    (1): Dropout(p=0.0, inplace=False)
+                    (2): Linear(in_features=1280, out_features=320, bias=True)
+                  )
+                )
+                (attn2): CrossAttention(
+                  (to_q): Linear(in_features=320, out_features=320, bias=False)
+                  (to_k): Linear(in_features=768, out_features=320, bias=False)
+                  (to_v): Linear(in_features=768, out_features=320, bias=False)
+                  (to_out): ModuleList(
+                    (0): Linear(in_features=320, out_features=320, bias=True)
+                    (1): Dropout(p=0.0, inplace=False)
+                  )
+                )
+                (norm1): LayerNorm((320,), eps=1e-05, elementwise_affine=True)
+                (norm2): LayerNorm((320,), eps=1e-05, elementwise_affine=True)
+                (norm3): LayerNorm((320,), eps=1e-05, elementwise_affine=True)
+              )
+            )
+            (proj_out): Conv2d(320, 320, kernel_size=(1, 1), stride=(1, 1))
+          )
+        )
+        (resnets): ModuleList(
+          (0-1): 2 x ResnetBlock2D(
+            (norm1): GroupNorm(32, 320, eps=1e-05, affine=True)
+            (conv1): Conv2d(320, 320, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (time_emb_proj): Linear(in_features=1280, out_features=320, bias=True)
+            (norm2): GroupNorm(32, 320, eps=1e-05, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(320, 320, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+          )
+        )
+        (downsamplers): ModuleList(
+          (0): Downsample2D(
+            (conv): Conv2d(320, 320, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+          )
+        )
+      )
+      (1): CrossAttnDownBlock2D(
+        (attentions): ModuleList(
+          (0-1): 2 x Transformer2DModel(
+            (norm): GroupNorm(32, 640, eps=1e-06, affine=True)
+            (proj_in): Conv2d(640, 640, kernel_size=(1, 1), stride=(1, 1))
+            (transformer_blocks): ModuleList(
+              (0): BasicTransformerBlock(
+                (attn1): CrossAttention(
+                  (to_q): Linear(in_features=640, out_features=640, bias=False)
+                  (to_k): Linear(in_features=640, out_features=640, bias=False)
+                  (to_v): Linear(in_features=640, out_features=640, bias=False)
+                  (to_out): ModuleList(
+                    (0): Linear(in_features=640, out_features=640, bias=True)
+                    (1): Dropout(p=0.0, inplace=False)
+                  )
+                )
+                (ff): FeedForward(
+                  (net): ModuleList(
+                    (0): GEGLU(
+                      (proj): Linear(in_features=640, out_features=5120, bias=True)
+                    )
+                    (1): Dropout(p=0.0, inplace=False)
+                    (2): Linear(in_features=2560, out_features=640, bias=True)
+                  )
+                )
+                (attn2): CrossAttention(
+                  (to_q): Linear(in_features=640, out_features=640, bias=False)
+                  (to_k): Linear(in_features=768, out_features=640, bias=False)
+                  (to_v): Linear(in_features=768, out_features=640, bias=False)
+                  (to_out): ModuleList(
+                    (0): Linear(in_features=640, out_features=640, bias=True)
+                    (1): Dropout(p=0.0, inplace=False)
+                  )
+                )
+                (norm1): LayerNorm((640,), eps=1e-05, elementwise_affine=True)
+                (norm2): LayerNorm((640,), eps=1e-05, elementwise_affine=True)
+                (norm3): LayerNorm((640,), eps=1e-05, elementwise_affine=True)
+              )
+            )
+            (proj_out): Conv2d(640, 640, kernel_size=(1, 1), stride=(1, 1))
+          )
+        )
+        (resnets): ModuleList(
+          (0): ResnetBlock2D(
+            (norm1): GroupNorm(32, 320, eps=1e-05, affine=True)
+            (conv1): Conv2d(320, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (time_emb_proj): Linear(in_features=1280, out_features=640, bias=True)
+            (norm2): GroupNorm(32, 640, eps=1e-05, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(640, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+            (conv_shortcut): Conv2d(320, 640, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (1): ResnetBlock2D(
+            (norm1): GroupNorm(32, 640, eps=1e-05, affine=True)
+            (conv1): Conv2d(640, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (time_emb_proj): Linear(in_features=1280, out_features=640, bias=True)
+            (norm2): GroupNorm(32, 640, eps=1e-05, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(640, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+          )
+        )
+        (downsamplers): ModuleList(
+          (0): Downsample2D(
+            (conv): Conv2d(640, 640, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+          )
+        )
+      )
+      (2): CrossAttnDownBlock2D(
+        (attentions): ModuleList(
+          (0-1): 2 x Transformer2DModel(
+            (norm): GroupNorm(32, 1280, eps=1e-06, affine=True)
+            (proj_in): Conv2d(1280, 1280, kernel_size=(1, 1), stride=(1, 1))
+            (transformer_blocks): ModuleList(
+              (0): BasicTransformerBlock(
+                (attn1): CrossAttention(
+                  (to_q): Linear(in_features=1280, out_features=1280, bias=False)
+                  (to_k): Linear(in_features=1280, out_features=1280, bias=False)
+                  (to_v): Linear(in_features=1280, out_features=1280, bias=False)
+                  (to_out): ModuleList(
+                    (0): Linear(in_features=1280, out_features=1280, bias=True)
+                    (1): Dropout(p=0.0, inplace=False)
+                  )
+                )
+                (ff): FeedForward(
+                  (net): ModuleList(
+                    (0): GEGLU(
+                      (proj): Linear(in_features=1280, out_features=10240, bias=True)
+                    )
+                    (1): Dropout(p=0.0, inplace=False)
+                    (2): Linear(in_features=5120, out_features=1280, bias=True)
+                  )
+                )
+                (attn2): CrossAttention(
+                  (to_q): Linear(in_features=1280, out_features=1280, bias=False)
+                  (to_k): Linear(in_features=768, out_features=1280, bias=False)
+                  (to_v): Linear(in_features=768, out_features=1280, bias=False)
+                  (to_out): ModuleList(
+                    (0): Linear(in_features=1280, out_features=1280, bias=True)
+                    (1): Dropout(p=0.0, inplace=False)
+                  )
+                )
+                (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+                (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+                (norm3): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              )
+            )
+            (proj_out): Conv2d(1280, 1280, kernel_size=(1, 1), stride=(1, 1))
+          )
+        )
+        (resnets): ModuleList(
+          (0): ResnetBlock2D(
+            (norm1): GroupNorm(32, 640, eps=1e-05, affine=True)
+            (conv1): Conv2d(640, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (time_emb_proj): Linear(in_features=1280, out_features=1280, bias=True)
+            (norm2): GroupNorm(32, 1280, eps=1e-05, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(1280, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+            (conv_shortcut): Conv2d(640, 1280, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (1): ResnetBlock2D(
+            (norm1): GroupNorm(32, 1280, eps=1e-05, affine=True)
+            (conv1): Conv2d(1280, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (time_emb_proj): Linear(in_features=1280, out_features=1280, bias=True)
+            (norm2): GroupNorm(32, 1280, eps=1e-05, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(1280, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+          )
+        )
+        (downsamplers): ModuleList(
+          (0): Downsample2D(
+            (conv): Conv2d(1280, 1280, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+          )
+        )
+      )
+      (3): DownBlock2D(
+        (resnets): ModuleList(
+          (0-1): 2 x ResnetBlock2D(
+            (norm1): GroupNorm(32, 1280, eps=1e-05, affine=True)
+            (conv1): Conv2d(1280, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (time_emb_proj): Linear(in_features=1280, out_features=1280, bias=True)
+            (norm2): GroupNorm(32, 1280, eps=1e-05, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(1280, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+          )
+        )
+      )
+    )
+    (up_blocks): ModuleList(
+      (0): UpBlock2D(
+        (resnets): ModuleList(
+          (0-2): 3 x ResnetBlock2D(
+            (norm1): GroupNorm(32, 2560, eps=1e-05, affine=True)
+            (conv1): Conv2d(2560, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (time_emb_proj): Linear(in_features=1280, out_features=1280, bias=True)
+            (norm2): GroupNorm(32, 1280, eps=1e-05, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(1280, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+            (conv_shortcut): Conv2d(2560, 1280, kernel_size=(1, 1), stride=(1, 1))
+          )
+        )
+        (upsamplers): ModuleList(
+          (0): Upsample2D(
+            (conv): Conv2d(1280, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+          )
+        )
+      )
+      (1): CrossAttnUpBlock2D(
+        (attentions): ModuleList(
+          (0-2): 3 x Transformer2DModel(
+            (norm): GroupNorm(32, 1280, eps=1e-06, affine=True)
+            (proj_in): Conv2d(1280, 1280, kernel_size=(1, 1), stride=(1, 1))
+            (transformer_blocks): ModuleList(
+              (0): BasicTransformerBlock(
+                (attn1): CrossAttention(
+                  (to_q): Linear(in_features=1280, out_features=1280, bias=False)
+                  (to_k): Linear(in_features=1280, out_features=1280, bias=False)
+                  (to_v): Linear(in_features=1280, out_features=1280, bias=False)
+                  (to_out): ModuleList(
+                    (0): Linear(in_features=1280, out_features=1280, bias=True)
+                    (1): Dropout(p=0.0, inplace=False)
+                  )
+                )
+                (ff): FeedForward(
+                  (net): ModuleList(
+                    (0): GEGLU(
+                      (proj): Linear(in_features=1280, out_features=10240, bias=True)
+                    )
+                    (1): Dropout(p=0.0, inplace=False)
+                    (2): Linear(in_features=5120, out_features=1280, bias=True)
+                  )
+                )
+                (attn2): CrossAttention(
+                  (to_q): Linear(in_features=1280, out_features=1280, bias=False)
+                  (to_k): Linear(in_features=768, out_features=1280, bias=False)
+                  (to_v): Linear(in_features=768, out_features=1280, bias=False)
+                  (to_out): ModuleList(
+                    (0): Linear(in_features=1280, out_features=1280, bias=True)
+                    (1): Dropout(p=0.0, inplace=False)
+                  )
+                )
+                (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+                (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+                (norm3): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              )
+            )
+            (proj_out): Conv2d(1280, 1280, kernel_size=(1, 1), stride=(1, 1))
+          )
+        )
+        (resnets): ModuleList(
+          (0-1): 2 x ResnetBlock2D(
+            (norm1): GroupNorm(32, 2560, eps=1e-05, affine=True)
+            (conv1): Conv2d(2560, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (time_emb_proj): Linear(in_features=1280, out_features=1280, bias=True)
+            (norm2): GroupNorm(32, 1280, eps=1e-05, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(1280, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+            (conv_shortcut): Conv2d(2560, 1280, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (2): ResnetBlock2D(
+            (norm1): GroupNorm(32, 1920, eps=1e-05, affine=True)
+            (conv1): Conv2d(1920, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (time_emb_proj): Linear(in_features=1280, out_features=1280, bias=True)
+            (norm2): GroupNorm(32, 1280, eps=1e-05, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(1280, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+            (conv_shortcut): Conv2d(1920, 1280, kernel_size=(1, 1), stride=(1, 1))
+          )
+        )
+        (upsamplers): ModuleList(
+          (0): Upsample2D(
+            (conv): Conv2d(1280, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+          )
+        )
+      )
+      (2): CrossAttnUpBlock2D(
+        (attentions): ModuleList(
+          (0-2): 3 x Transformer2DModel(
+            (norm): GroupNorm(32, 640, eps=1e-06, affine=True)
+            (proj_in): Conv2d(640, 640, kernel_size=(1, 1), stride=(1, 1))
+            (transformer_blocks): ModuleList(
+              (0): BasicTransformerBlock(
+                (attn1): CrossAttention(
+                  (to_q): Linear(in_features=640, out_features=640, bias=False)
+                  (to_k): Linear(in_features=640, out_features=640, bias=False)
+                  (to_v): Linear(in_features=640, out_features=640, bias=False)
+                  (to_out): ModuleList(
+                    (0): Linear(in_features=640, out_features=640, bias=True)
+                    (1): Dropout(p=0.0, inplace=False)
+                  )
+                )
+                (ff): FeedForward(
+                  (net): ModuleList(
+                    (0): GEGLU(
+                      (proj): Linear(in_features=640, out_features=5120, bias=True)
+                    )
+                    (1): Dropout(p=0.0, inplace=False)
+                    (2): Linear(in_features=2560, out_features=640, bias=True)
+                  )
+                )
+                (attn2): CrossAttention(
+                  (to_q): Linear(in_features=640, out_features=640, bias=False)
+                  (to_k): Linear(in_features=768, out_features=640, bias=False)
+                  (to_v): Linear(in_features=768, out_features=640, bias=False)
+                  (to_out): ModuleList(
+                    (0): Linear(in_features=640, out_features=640, bias=True)
+                    (1): Dropout(p=0.0, inplace=False)
+                  )
+                )
+                (norm1): LayerNorm((640,), eps=1e-05, elementwise_affine=True)
+                (norm2): LayerNorm((640,), eps=1e-05, elementwise_affine=True)
+                (norm3): LayerNorm((640,), eps=1e-05, elementwise_affine=True)
+              )
+            )
+            (proj_out): Conv2d(640, 640, kernel_size=(1, 1), stride=(1, 1))
+          )
+        )
+        (resnets): ModuleList(
+          (0): ResnetBlock2D(
+            (norm1): GroupNorm(32, 1920, eps=1e-05, affine=True)
+            (conv1): Conv2d(1920, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (time_emb_proj): Linear(in_features=1280, out_features=640, bias=True)
+            (norm2): GroupNorm(32, 640, eps=1e-05, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(640, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+            (conv_shortcut): Conv2d(1920, 640, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (1): ResnetBlock2D(
+            (norm1): GroupNorm(32, 1280, eps=1e-05, affine=True)
+            (conv1): Conv2d(1280, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (time_emb_proj): Linear(in_features=1280, out_features=640, bias=True)
+            (norm2): GroupNorm(32, 640, eps=1e-05, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(640, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+            (conv_shortcut): Conv2d(1280, 640, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (2): ResnetBlock2D(
+            (norm1): GroupNorm(32, 960, eps=1e-05, affine=True)
+            (conv1): Conv2d(960, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (time_emb_proj): Linear(in_features=1280, out_features=640, bias=True)
+            (norm2): GroupNorm(32, 640, eps=1e-05, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(640, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+            (conv_shortcut): Conv2d(960, 640, kernel_size=(1, 1), stride=(1, 1))
+          )
+        )
+        (upsamplers): ModuleList(
+          (0): Upsample2D(
+            (conv): Conv2d(640, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+          )
+        )
+      )
+      (3): CrossAttnUpBlock2D(
+        (attentions): ModuleList(
+          (0-2): 3 x Transformer2DModel(
+            (norm): GroupNorm(32, 320, eps=1e-06, affine=True)
+            (proj_in): Conv2d(320, 320, kernel_size=(1, 1), stride=(1, 1))
+            (transformer_blocks): ModuleList(
+              (0): BasicTransformerBlock(
+                (attn1): CrossAttention(
+                  (to_q): Linear(in_features=320, out_features=320, bias=False)
+                  (to_k): Linear(in_features=320, out_features=320, bias=False)
+                  (to_v): Linear(in_features=320, out_features=320, bias=False)
+                  (to_out): ModuleList(
+                    (0): Linear(in_features=320, out_features=320, bias=True)
+                    (1): Dropout(p=0.0, inplace=False)
+                  )
+                )
+                (ff): FeedForward(
+                  (net): ModuleList(
+                    (0): GEGLU(
+                      (proj): Linear(in_features=320, out_features=2560, bias=True)
+                    )
+                    (1): Dropout(p=0.0, inplace=False)
+                    (2): Linear(in_features=1280, out_features=320, bias=True)
+                  )
+                )
+                (attn2): CrossAttention(
+                  (to_q): Linear(in_features=320, out_features=320, bias=False)
+                  (to_k): Linear(in_features=768, out_features=320, bias=False)
+                  (to_v): Linear(in_features=768, out_features=320, bias=False)
+                  (to_out): ModuleList(
+                    (0): Linear(in_features=320, out_features=320, bias=True)
+                    (1): Dropout(p=0.0, inplace=False)
+                  )
+                )
+                (norm1): LayerNorm((320,), eps=1e-05, elementwise_affine=True)
+                (norm2): LayerNorm((320,), eps=1e-05, elementwise_affine=True)
+                (norm3): LayerNorm((320,), eps=1e-05, elementwise_affine=True)
+              )
+            )
+            (proj_out): Conv2d(320, 320, kernel_size=(1, 1), stride=(1, 1))
+          )
+        )
+        (resnets): ModuleList(
+          (0): ResnetBlock2D(
+            (norm1): GroupNorm(32, 960, eps=1e-05, affine=True)
+            (conv1): Conv2d(960, 320, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (time_emb_proj): Linear(in_features=1280, out_features=320, bias=True)
+            (norm2): GroupNorm(32, 320, eps=1e-05, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(320, 320, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+            (conv_shortcut): Conv2d(960, 320, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (1-2): 2 x ResnetBlock2D(
+            (norm1): GroupNorm(32, 640, eps=1e-05, affine=True)
+            (conv1): Conv2d(640, 320, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (time_emb_proj): Linear(in_features=1280, out_features=320, bias=True)
+            (norm2): GroupNorm(32, 320, eps=1e-05, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(320, 320, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+            (conv_shortcut): Conv2d(640, 320, kernel_size=(1, 1), stride=(1, 1))
+          )
+        )
+      )
+    )
+    (mid_block): UNetMidBlock2DCrossAttn(
+      (attentions): ModuleList(
+        (0): Transformer2DModel(
+          (norm): GroupNorm(32, 1280, eps=1e-06, affine=True)
+          (proj_in): Conv2d(1280, 1280, kernel_size=(1, 1), stride=(1, 1))
+          (transformer_blocks): ModuleList(
+            (0): BasicTransformerBlock(
+              (attn1): CrossAttention(
+                (to_q): Linear(in_features=1280, out_features=1280, bias=False)
+                (to_k): Linear(in_features=1280, out_features=1280, bias=False)
+                (to_v): Linear(in_features=1280, out_features=1280, bias=False)
+                (to_out): ModuleList(
+                  (0): Linear(in_features=1280, out_features=1280, bias=True)
+                  (1): Dropout(p=0.0, inplace=False)
+                )
+              )
+              (ff): FeedForward(
+                (net): ModuleList(
+                  (0): GEGLU(
+                    (proj): Linear(in_features=1280, out_features=10240, bias=True)
+                  )
+                  (1): Dropout(p=0.0, inplace=False)
+                  (2): Linear(in_features=5120, out_features=1280, bias=True)
+                )
+              )
+              (attn2): CrossAttention(
+                (to_q): Linear(in_features=1280, out_features=1280, bias=False)
+                (to_k): Linear(in_features=768, out_features=1280, bias=False)
+                (to_v): Linear(in_features=768, out_features=1280, bias=False)
+                (to_out): ModuleList(
+                  (0): Linear(in_features=1280, out_features=1280, bias=True)
+                  (1): Dropout(p=0.0, inplace=False)
+                )
+              )
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (norm3): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+            )
+          )
+          (proj_out): Conv2d(1280, 1280, kernel_size=(1, 1), stride=(1, 1))
+        )
+      )
+      (resnets): ModuleList(
+        (0-1): 2 x ResnetBlock2D(
+          (norm1): GroupNorm(32, 1280, eps=1e-05, affine=True)
+          (conv1): Conv2d(1280, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+          (time_emb_proj): Linear(in_features=1280, out_features=1280, bias=True)
+          (norm2): GroupNorm(32, 1280, eps=1e-05, affine=True)
+          (dropout): Dropout(p=0.0, inplace=False)
+          (conv2): Conv2d(1280, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+          (nonlinearity): SiLU()
+        )
+      )
+    )
+    (conv_norm_out): GroupNorm(32, 320, eps=1e-05, affine=True)
+    (conv_act): SiLU()
+    (conv_out): Conv2d(320, 4, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  )
+  (text_encoder_lora): ModuleList(
+    (0-47): 48 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=768, bias=False)
+    )
+  )
+  (unet_lora): ModuleList(
+    (0-4): 5 x LoRALinearLayer(
+      (down): Linear(in_features=320, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=320, bias=False)
+    )
+    (5-6): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=320, bias=False)
+    )
+    (7-12): 6 x LoRALinearLayer(
+      (down): Linear(in_features=320, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=320, bias=False)
+    )
+    (13-14): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=320, bias=False)
+    )
+    (15): LoRALinearLayer(
+      (down): Linear(in_features=320, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=320, bias=False)
+    )
+    (16-20): 5 x LoRALinearLayer(
+      (down): Linear(in_features=640, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=640, bias=False)
+    )
+    (21-22): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=640, bias=False)
+    )
+    (23-28): 6 x LoRALinearLayer(
+      (down): Linear(in_features=640, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=640, bias=False)
+    )
+    (29-30): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=640, bias=False)
+    )
+    (31): LoRALinearLayer(
+      (down): Linear(in_features=640, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=640, bias=False)
+    )
+    (32-36): 5 x LoRALinearLayer(
+      (down): Linear(in_features=1280, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=1280, bias=False)
+    )
+    (37-38): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=1280, bias=False)
+    )
+    (39-44): 6 x LoRALinearLayer(
+      (down): Linear(in_features=1280, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=1280, bias=False)
+    )
+    (45-46): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=1280, bias=False)
+    )
+    (47-52): 6 x LoRALinearLayer(
+      (down): Linear(in_features=1280, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=1280, bias=False)
+    )
+    (53-54): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=1280, bias=False)
+    )
+    (55-60): 6 x LoRALinearLayer(
+      (down): Linear(in_features=1280, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=1280, bias=False)
+    )
+    (61-62): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=1280, bias=False)
+    )
+    (63-68): 6 x LoRALinearLayer(
+      (down): Linear(in_features=1280, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=1280, bias=False)
+    )
+    (69-70): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=1280, bias=False)
+    )
+    (71): LoRALinearLayer(
+      (down): Linear(in_features=1280, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=1280, bias=False)
+    )
+    (72-76): 5 x LoRALinearLayer(
+      (down): Linear(in_features=640, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=640, bias=False)
+    )
+    (77-78): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=640, bias=False)
+    )
+    (79-84): 6 x LoRALinearLayer(
+      (down): Linear(in_features=640, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=640, bias=False)
+    )
+    (85-86): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=640, bias=False)
+    )
+    (87-92): 6 x LoRALinearLayer(
+      (down): Linear(in_features=640, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=640, bias=False)
+    )
+    (93-94): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=640, bias=False)
+    )
+    (95): LoRALinearLayer(
+      (down): Linear(in_features=640, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=640, bias=False)
+    )
+    (96-100): 5 x LoRALinearLayer(
+      (down): Linear(in_features=320, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=320, bias=False)
+    )
+    (101-102): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=320, bias=False)
+    )
+    (103-108): 6 x LoRALinearLayer(
+      (down): Linear(in_features=320, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=320, bias=False)
+    )
+    (109-110): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=320, bias=False)
+    )
+    (111-116): 6 x LoRALinearLayer(
+      (down): Linear(in_features=320, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=320, bias=False)
+    )
+    (117-118): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=320, bias=False)
+    )
+    (119): LoRALinearLayer(
+      (down): Linear(in_features=320, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=320, bias=False)
+    )
+    (120-124): 5 x LoRALinearLayer(
+      (down): Linear(in_features=1280, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=1280, bias=False)
+    )
+    (125-126): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=1280, bias=False)
+    )
+    (127): LoRALinearLayer(
+      (down): Linear(in_features=1280, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=1280, bias=False)
+    )
+  )
+)
+2024-12-09 05:36:08,173 INFO: Loss [KDELoss] is created.
+2024-12-09 05:36:08,173 INFO: Scale learning rate to: 0.00e+00
+2024-12-09 05:36:08,174 INFO: Model [EDLoraModel] is created.
+2024-12-09 05:36:14,457 INFO: Use cuda prefetch dataloader
+2024-12-09 05:36:14,458 INFO: Start training from epoch: 0, iter: 0
+2024-12-09 05:36:38,590 INFO: [dog6..][epoch:  0, iter:      10, lr:(9.910e-04,9.910e-06,9.910e-05,)] [eta: 0:16:43, time (data): 2.413 (0.645)] loss: -3.9082e-01 token_reg: -4.1070e-01 Norm_mean: 3.7703e-01 
+2024-12-09 05:36:51,074 INFO: [dog6..][epoch:  0, iter:      20, lr:(9.810e-04,9.810e-06,9.810e-05,)] [eta: 0:18:22, time (data): 1.831 (0.323)] loss: -3.6670e-01 token_reg: -4.1070e-01 Norm_mean: 3.8958e-01 
+2024-12-09 05:37:03,572 INFO: [dog6..][epoch:  0, iter:      30, lr:(9.710e-04,9.710e-06,9.710e-05,)] [eta: 0:18:49, time (data): 1.637 (0.215)] loss: -2.6793e-01 token_reg: -4.1070e-01 Norm_mean: 4.0080e-01 
+2024-12-09 05:37:16,024 INFO: [dog6..][epoch:  0, iter:      40, lr:(9.610e-04,9.610e-06,9.610e-05,)] [eta: 0:18:56, time (data): 1.539 (0.162)] loss: 2.6270e-01 token_reg: -4.1070e-01 Norm_mean: 4.0998e-01 
+2024-12-09 05:37:28,437 INFO: [dog6..][epoch:  0, iter:      50, lr:(9.510e-04,9.510e-06,9.510e-05,)] [eta: 0:18:55, time (data): 1.479 (0.129)] loss: -3.6385e-01 token_reg: -4.1070e-01 Norm_mean: 4.1818e-01 
+2024-12-09 05:37:40,830 INFO: [dog6..][epoch:  0, iter:      60, lr:(9.410e-04,9.410e-06,9.410e-05,)] [eta: 0:18:49, time (data): 1.439 (0.108)] loss: 4.2601e-01 token_reg: -4.1070e-01 Norm_mean: 4.2545e-01 
+2024-12-09 05:37:53,239 INFO: [dog6..][epoch:  0, iter:      70, lr:(9.310e-04,9.310e-06,9.310e-05,)] [eta: 0:18:42, time (data): 1.411 (0.093)] loss: -3.0518e-01 token_reg: -4.1070e-01 Norm_mean: 4.3408e-01 
+2024-12-09 05:38:05,644 INFO: [dog6..][epoch:  0, iter:      80, lr:(9.210e-04,9.210e-06,9.210e-05,)] [eta: 0:18:34, time (data): 1.390 (0.081)] loss: -3.9404e-01 token_reg: -4.1069e-01 Norm_mean: 4.4200e-01 
+2024-12-09 05:38:18,066 INFO: [dog6..][epoch:  0, iter:      90, lr:(9.110e-04,9.110e-06,9.110e-05,)] [eta: 0:18:25, time (data): 1.373 (0.072)] loss: -3.8843e-01 token_reg: -4.1069e-01 Norm_mean: 4.4877e-01 
+2024-12-09 05:38:30,525 INFO: [dog6..][epoch:  0, iter:     100, lr:(9.010e-04,9.010e-06,9.010e-05,)] [eta: 0:18:15, time (data): 1.361 (0.065)] loss: -1.7683e-01 token_reg: -4.1069e-01 Norm_mean: 4.5427e-01 
+2024-12-09 05:38:42,972 INFO: [dog6..][epoch:  0, iter:     110, lr:(8.910e-04,8.910e-06,8.910e-05,)] [eta: 0:18:05, time (data): 1.350 (0.059)] loss: -2.5197e-01 token_reg: -4.1069e-01 Norm_mean: 4.6025e-01 
+2024-12-09 05:38:55,394 INFO: [dog6..][epoch:  0, iter:     120, lr:(8.810e-04,8.810e-06,8.810e-05,)] [eta: 0:17:54, time (data): 1.341 (0.054)] loss: -2.9167e-01 token_reg: -4.1069e-01 Norm_mean: 4.6576e-01 
+2024-12-09 05:39:07,806 INFO: [dog6..][epoch:  0, iter:     130, lr:(8.710e-04,8.710e-06,8.710e-05,)] [eta: 0:17:43, time (data): 1.333 (0.050)] loss: -1.3729e-01 token_reg: -4.1069e-01 Norm_mean: 4.7020e-01 
+2024-12-09 05:39:20,199 INFO: [dog6..][epoch:  0, iter:     140, lr:(8.610e-04,8.610e-06,8.610e-05,)] [eta: 0:17:32, time (data): 1.327 (0.047)] loss: -3.9740e-01 token_reg: -4.1069e-01 Norm_mean: 4.7447e-01 
+2024-12-09 05:39:32,597 INFO: [dog6..][epoch:  0, iter:     150, lr:(8.510e-04,8.510e-06,8.510e-05,)] [eta: 0:17:21, time (data): 1.321 (0.043)] loss: -3.5503e-01 token_reg: -4.1069e-01 Norm_mean: 4.7854e-01 
+2024-12-09 05:39:44,998 INFO: [dog6..][epoch:  0, iter:     160, lr:(8.410e-04,8.410e-06,8.410e-05,)] [eta: 0:17:09, time (data): 1.316 (0.041)] loss: -3.9348e-01 token_reg: -4.1069e-01 Norm_mean: 4.8167e-01 
+2024-12-09 05:39:57,411 INFO: [dog6..][epoch:  0, iter:     170, lr:(8.310e-04,8.310e-06,8.310e-05,)] [eta: 0:16:57, time (data): 1.311 (0.038)] loss: -4.0053e-01 token_reg: -4.1069e-01 Norm_mean: 4.8395e-01 
+2024-12-09 05:40:09,824 INFO: [dog6..][epoch:  0, iter:     180, lr:(8.210e-04,8.210e-06,8.210e-05,)] [eta: 0:16:46, time (data): 1.307 (0.036)] loss: -3.6264e-01 token_reg: -4.1069e-01 Norm_mean: 4.8759e-01 
+2024-12-09 05:40:22,239 INFO: [dog6..][epoch:  0, iter:     190, lr:(8.110e-04,8.110e-06,8.110e-05,)] [eta: 0:16:34, time (data): 1.304 (0.034)] loss: -3.9614e-01 token_reg: -4.1069e-01 Norm_mean: 4.9190e-01 
+2024-12-09 05:40:34,639 INFO: [dog6..][epoch:  0, iter:     200, lr:(8.010e-04,8.010e-06,8.010e-05,)] [eta: 0:16:22, time (data): 1.301 (0.033)] loss: 1.5856e-01 token_reg: -4.1069e-01 Norm_mean: 4.9522e-01 
+2024-12-09 05:40:34,641 INFO: Saving models and training states.
+2024-12-09 05:40:34,659 INFO: text_encoder moved: 5.955410680750598e-05
+2024-12-09 05:40:34,695 INFO: unet moved: 0.0007486740903459577
+2024-12-09 05:40:47,753 INFO: [dog6..][epoch:  0, iter:     210, lr:(7.910e-04,7.910e-06,7.910e-05,)] [eta: 0:16:13, time (data): 1.240 (0.001)] loss: 1.8875e-02 token_reg: -4.1069e-01 Norm_mean: 4.9810e-01 
+2024-12-09 05:41:00,161 INFO: [dog6..][epoch:  0, iter:     220, lr:(7.810e-04,7.810e-06,7.810e-05,)] [eta: 0:16:01, time (data): 1.241 (0.001)] loss: 5.6713e-01 token_reg: -4.1069e-01 Norm_mean: 5.0128e-01 
+2024-12-09 05:41:12,585 INFO: [dog6..][epoch:  0, iter:     230, lr:(7.710e-04,7.710e-06,7.710e-05,)] [eta: 0:15:49, time (data): 1.241 (0.001)] loss: -1.3779e-01 token_reg: -4.1068e-01 Norm_mean: 5.0464e-01 
+2024-12-09 05:41:25,002 INFO: [dog6..][epoch:  0, iter:     240, lr:(7.610e-04,7.610e-06,7.610e-05,)] [eta: 0:15:37, time (data): 1.241 (0.001)] loss: 4.0626e-01 token_reg: -4.1068e-01 Norm_mean: 5.0808e-01 
+2024-12-09 05:41:37,398 INFO: [dog6..][epoch:  0, iter:     250, lr:(7.510e-04,7.510e-06,7.510e-05,)] [eta: 0:15:24, time (data): 1.241 (0.001)] loss: 6.0288e-01 token_reg: -4.1068e-01 Norm_mean: 5.1144e-01 
+2024-12-09 05:41:49,812 INFO: [dog6..][epoch:  0, iter:     260, lr:(7.410e-04,7.410e-06,7.410e-05,)] [eta: 0:15:12, time (data): 1.241 (0.001)] loss: -1.2599e-01 token_reg: -4.1068e-01 Norm_mean: 5.1522e-01 
+2024-12-09 05:42:02,243 INFO: [dog6..][epoch:  0, iter:     270, lr:(7.310e-04,7.310e-06,7.310e-05,)] [eta: 0:15:00, time (data): 1.241 (0.001)] loss: 3.4922e-01 token_reg: -4.1068e-01 Norm_mean: 5.1907e-01 
+2024-12-09 05:42:14,665 INFO: [dog6..][epoch:  0, iter:     280, lr:(7.210e-04,7.210e-06,7.210e-05,)] [eta: 0:14:48, time (data): 1.241 (0.001)] loss: -3.2993e-01 token_reg: -4.1068e-01 Norm_mean: 5.2272e-01 
+2024-12-09 05:42:27,101 INFO: [dog6..][epoch:  0, iter:     290, lr:(7.110e-04,7.110e-06,7.110e-05,)] [eta: 0:14:36, time (data): 1.242 (0.001)] loss: -1.3359e-01 token_reg: -4.1068e-01 Norm_mean: 5.2591e-01 
+2024-12-09 05:42:39,518 INFO: [dog6..][epoch:  0, iter:     300, lr:(7.010e-04,7.010e-06,7.010e-05,)] [eta: 0:14:24, time (data): 1.242 (0.001)] loss: -8.3742e-02 token_reg: -4.1068e-01 Norm_mean: 5.2883e-01 
+2024-12-09 05:42:51,917 INFO: [dog6..][epoch:  0, iter:     310, lr:(6.910e-04,6.910e-06,6.910e-05,)] [eta: 0:14:11, time (data): 1.241 (0.001)] loss: -3.7001e-01 token_reg: -4.1068e-01 Norm_mean: 5.3199e-01 
+2024-12-09 05:43:04,333 INFO: [dog6..][epoch:  0, iter:     320, lr:(6.810e-04,6.810e-06,6.810e-05,)] [eta: 0:13:59, time (data): 1.241 (0.001)] loss: -2.1739e-01 token_reg: -4.1068e-01 Norm_mean: 5.3565e-01 
+2024-12-09 05:43:16,757 INFO: [dog6..][epoch:  0, iter:     330, lr:(6.710e-04,6.710e-06,6.710e-05,)] [eta: 0:13:47, time (data): 1.241 (0.001)] loss: -3.9596e-01 token_reg: -4.1068e-01 Norm_mean: 5.3861e-01 
+2024-12-09 05:43:29,164 INFO: [dog6..][epoch:  0, iter:     340, lr:(6.610e-04,6.610e-06,6.610e-05,)] [eta: 0:13:35, time (data): 1.241 (0.001)] loss: 6.1897e-01 token_reg: -4.1068e-01 Norm_mean: 5.4131e-01 
+2024-12-09 05:43:41,558 INFO: [dog6..][epoch:  0, iter:     350, lr:(6.510e-04,6.510e-06,6.510e-05,)] [eta: 0:13:22, time (data): 1.241 (0.001)] loss: -2.7529e-02 token_reg: -4.1068e-01 Norm_mean: 5.4359e-01 
+2024-12-09 05:43:53,955 INFO: [dog6..][epoch:  0, iter:     360, lr:(6.410e-04,6.410e-06,6.410e-05,)] [eta: 0:13:10, time (data): 1.241 (0.001)] loss: -2.8862e-01 token_reg: -4.1068e-01 Norm_mean: 5.4609e-01 
+2024-12-09 05:44:06,371 INFO: [dog6..][epoch:  0, iter:     370, lr:(6.310e-04,6.310e-06,6.310e-05,)] [eta: 0:12:58, time (data): 1.241 (0.001)] loss: -3.9400e-01 token_reg: -4.1068e-01 Norm_mean: 5.4813e-01 
+2024-12-09 05:44:18,778 INFO: [dog6..][epoch:  0, iter:     380, lr:(6.210e-04,6.210e-06,6.210e-05,)] [eta: 0:12:45, time (data): 1.241 (0.001)] loss: -3.8978e-01 token_reg: -4.1068e-01 Norm_mean: 5.4997e-01 
+2024-12-09 05:44:31,203 INFO: [dog6..][epoch:  0, iter:     390, lr:(6.110e-04,6.110e-06,6.110e-05,)] [eta: 0:12:33, time (data): 1.241 (0.001)] loss: 2.4519e-01 token_reg: -4.1068e-01 Norm_mean: 5.5203e-01 
+2024-12-09 05:44:43,600 INFO: [dog6..][epoch:  0, iter:     400, lr:(6.010e-04,6.010e-06,6.010e-05,)] [eta: 0:12:21, time (data): 1.241 (0.001)] loss: -3.8102e-01 token_reg: -4.1068e-01 Norm_mean: 5.5404e-01 
+2024-12-09 05:44:43,600 INFO: Saving models and training states.
+2024-12-09 05:44:43,616 INFO: text_encoder moved: 8.409875825539832e-05
+2024-12-09 05:44:43,649 INFO: unet moved: 0.0010458419505994243
+2024-12-09 05:44:56,714 INFO: [dog6..][epoch:  0, iter:     410, lr:(5.910e-04,5.910e-06,5.910e-05,)] [eta: 0:12:09, time (data): 1.240 (0.000)] loss: -3.6304e-01 token_reg: -4.1068e-01 Norm_mean: 5.5653e-01 
+2024-12-09 05:45:09,147 INFO: [dog6..][epoch:  0, iter:     420, lr:(5.810e-04,5.810e-06,5.810e-05,)] [eta: 0:11:57, time (data): 1.242 (0.001)] loss: 5.6497e-02 token_reg: -4.1067e-01 Norm_mean: 5.5899e-01 
+2024-12-09 05:45:21,546 INFO: [dog6..][epoch:  0, iter:     430, lr:(5.710e-04,5.710e-06,5.710e-05,)] [eta: 0:11:45, time (data): 1.241 (0.001)] loss: -3.8696e-01 token_reg: -4.1067e-01 Norm_mean: 5.6207e-01 
+2024-12-09 05:45:33,975 INFO: [dog6..][epoch:  0, iter:     440, lr:(5.610e-04,5.610e-06,5.610e-05,)] [eta: 0:11:32, time (data): 1.241 (0.001)] loss: -3.7655e-01 token_reg: -4.1067e-01 Norm_mean: 5.6518e-01 
+2024-12-09 05:45:46,398 INFO: [dog6..][epoch:  0, iter:     450, lr:(5.510e-04,5.510e-06,5.510e-05,)] [eta: 0:11:20, time (data): 1.242 (0.001)] loss: -3.8512e-01 token_reg: -4.1067e-01 Norm_mean: 5.6744e-01 
+2024-12-09 05:45:58,814 INFO: [dog6..][epoch:  0, iter:     460, lr:(5.410e-04,5.410e-06,5.410e-05,)] [eta: 0:11:08, time (data): 1.242 (0.001)] loss: -3.6715e-01 token_reg: -4.1067e-01 Norm_mean: 5.6986e-01 
+2024-12-09 05:46:11,232 INFO: [dog6..][epoch:  0, iter:     470, lr:(5.310e-04,5.310e-06,5.310e-05,)] [eta: 0:10:55, time (data): 1.242 (0.001)] loss: -3.0121e-01 token_reg: -4.1067e-01 Norm_mean: 5.7272e-01 
+2024-12-09 05:46:23,643 INFO: [dog6..][epoch:  0, iter:     480, lr:(5.210e-04,5.210e-06,5.210e-05,)] [eta: 0:10:43, time (data): 1.241 (0.001)] loss: -3.8213e-01 token_reg: -4.1067e-01 Norm_mean: 5.7552e-01 
+2024-12-09 05:46:36,042 INFO: [dog6..][epoch:  0, iter:     490, lr:(5.110e-04,5.110e-06,5.110e-05,)] [eta: 0:10:30, time (data): 1.241 (0.001)] loss: -2.8794e-01 token_reg: -4.1067e-01 Norm_mean: 5.7819e-01 
+2024-12-09 05:46:49,760 INFO: [dog6..][epoch:  0, iter:     500, lr:(5.010e-04,5.010e-06,5.010e-05,)] [eta: 0:10:19, time (data): 1.255 (0.014)] loss: 1.4247e-01 token_reg: -4.1067e-01 Norm_mean: 5.7996e-01 
+2024-12-09 05:47:08,583 INFO: [dog6..][epoch:  1, iter:     510, lr:(4.910e-04,4.910e-06,4.910e-05,)] [eta: 0:10:13, time (data): 1.313 (0.072)] loss: 3.1430e-01 token_reg: -4.1067e-01 Norm_mean: 5.8124e-01 
+2024-12-09 05:47:21,051 INFO: [dog6..][epoch:  1, iter:     520, lr:(4.810e-04,4.810e-06,4.810e-05,)] [eta: 0:10:00, time (data): 1.307 (0.066)] loss: 1.0737e+00 token_reg: -4.1067e-01 Norm_mean: 5.8248e-01 
+2024-12-09 05:47:33,530 INFO: [dog6..][epoch:  1, iter:     530, lr:(4.710e-04,4.710e-06,4.710e-05,)] [eta: 0:09:48, time (data): 1.302 (0.061)] loss: -9.9128e-02 token_reg: -4.1067e-01 Norm_mean: 5.8400e-01 
+2024-12-09 05:47:45,981 INFO: [dog6..][epoch:  1, iter:     540, lr:(4.610e-04,4.610e-06,4.610e-05,)] [eta: 0:09:35, time (data): 1.298 (0.056)] loss: 2.1550e-01 token_reg: -4.1067e-01 Norm_mean: 5.8579e-01 
+2024-12-09 05:47:58,394 INFO: [dog6..][epoch:  1, iter:     550, lr:(4.510e-04,4.510e-06,4.510e-05,)] [eta: 0:09:23, time (data): 1.294 (0.053)] loss: 2.9108e-01 token_reg: -4.1067e-01 Norm_mean: 5.8757e-01 
+2024-12-09 05:48:10,831 INFO: [dog6..][epoch:  1, iter:     560, lr:(4.410e-04,4.410e-06,4.410e-05,)] [eta: 0:09:10, time (data): 1.291 (0.049)] loss: 2.7038e-01 token_reg: -4.1067e-01 Norm_mean: 5.8883e-01 
+2024-12-09 05:48:23,245 INFO: [dog6..][epoch:  1, iter:     570, lr:(4.310e-04,4.310e-06,4.310e-05,)] [eta: 0:08:57, time (data): 1.288 (0.046)] loss: -3.9672e-01 token_reg: -4.1067e-01 Norm_mean: 5.9001e-01 
+2024-12-09 05:48:35,663 INFO: [dog6..][epoch:  1, iter:     580, lr:(4.210e-04,4.210e-06,4.210e-05,)] [eta: 0:08:45, time (data): 1.286 (0.044)] loss: -2.9447e-01 token_reg: -4.1067e-01 Norm_mean: 5.9123e-01 
+2024-12-09 05:48:48,085 INFO: [dog6..][epoch:  1, iter:     590, lr:(4.110e-04,4.110e-06,4.110e-05,)] [eta: 0:08:32, time (data): 1.283 (0.042)] loss: 4.3171e-02 token_reg: -4.1067e-01 Norm_mean: 5.9302e-01 
+2024-12-09 05:49:00,528 INFO: [dog6..][epoch:  1, iter:     600, lr:(4.010e-04,4.010e-06,4.010e-05,)] [eta: 0:08:19, time (data): 1.281 (0.040)] loss: 2.0003e-01 token_reg: -4.1067e-01 Norm_mean: 5.9431e-01 
+2024-12-09 05:49:00,530 INFO: Saving models and training states.
+2024-12-09 05:49:00,544 INFO: text_encoder moved: 0.00010059617231187683
+2024-12-09 05:49:00,580 INFO: unet moved: 0.001245884197032865
+2024-12-09 05:49:13,671 INFO: [dog6..][epoch:  1, iter:     610, lr:(3.910e-04,3.910e-06,3.910e-05,)] [eta: 0:08:07, time (data): 1.244 (0.001)] loss: -3.9708e-01 token_reg: -4.1067e-01 Norm_mean: 5.9548e-01 
+2024-12-09 05:49:26,089 INFO: [dog6..][epoch:  1, iter:     620, lr:(3.810e-04,3.810e-06,3.810e-05,)] [eta: 0:07:55, time (data): 1.243 (0.001)] loss: 1.6197e-01 token_reg: -4.1067e-01 Norm_mean: 5.9637e-01 
+2024-12-09 05:49:38,503 INFO: [dog6..][epoch:  1, iter:     630, lr:(3.710e-04,3.710e-06,3.710e-05,)] [eta: 0:07:42, time (data): 1.242 (0.001)] loss: -2.3414e-01 token_reg: -4.1067e-01 Norm_mean: 5.9717e-01 
+2024-12-09 05:49:50,907 INFO: [dog6..][epoch:  1, iter:     640, lr:(3.610e-04,3.610e-06,3.610e-05,)] [eta: 0:07:29, time (data): 1.242 (0.001)] loss: -5.1897e-02 token_reg: -4.1067e-01 Norm_mean: 5.9794e-01 
+2024-12-09 05:50:03,317 INFO: [dog6..][epoch:  1, iter:     650, lr:(3.510e-04,3.510e-06,3.510e-05,)] [eta: 0:07:17, time (data): 1.241 (0.001)] loss: 1.1579e+00 token_reg: -4.1067e-01 Norm_mean: 5.9867e-01 
+2024-12-09 05:50:15,711 INFO: [dog6..][epoch:  1, iter:     660, lr:(3.410e-04,3.410e-06,3.410e-05,)] [eta: 0:07:04, time (data): 1.241 (0.001)] loss: -3.2889e-01 token_reg: -4.1067e-01 Norm_mean: 5.9934e-01 
+2024-12-09 05:50:28,126 INFO: [dog6..][epoch:  1, iter:     670, lr:(3.310e-04,3.310e-06,3.310e-05,)] [eta: 0:06:52, time (data): 1.241 (0.001)] loss: -4.0069e-01 token_reg: -4.1067e-01 Norm_mean: 5.9983e-01 
+2024-12-09 05:50:40,523 INFO: [dog6..][epoch:  1, iter:     680, lr:(3.210e-04,3.210e-06,3.210e-05,)] [eta: 0:06:39, time (data): 1.241 (0.001)] loss: 4.1276e-01 token_reg: -4.1067e-01 Norm_mean: 6.0038e-01 
+2024-12-09 05:50:52,929 INFO: [dog6..][epoch:  1, iter:     690, lr:(3.110e-04,3.110e-06,3.110e-05,)] [eta: 0:06:27, time (data): 1.241 (0.001)] loss: -2.8509e-01 token_reg: -4.1067e-01 Norm_mean: 6.0110e-01 
+2024-12-09 05:51:05,347 INFO: [dog6..][epoch:  1, iter:     700, lr:(3.010e-04,3.010e-06,3.010e-05,)] [eta: 0:06:14, time (data): 1.241 (0.001)] loss: -3.2273e-01 token_reg: -4.1067e-01 Norm_mean: 6.0182e-01 
+2024-12-09 05:51:17,812 INFO: [dog6..][epoch:  1, iter:     710, lr:(2.910e-04,2.910e-06,2.910e-05,)] [eta: 0:06:01, time (data): 1.241 (0.001)] loss: -1.5399e-01 token_reg: -4.1067e-01 Norm_mean: 6.0227e-01 
+2024-12-09 05:51:30,210 INFO: [dog6..][epoch:  1, iter:     720, lr:(2.810e-04,2.810e-06,2.810e-05,)] [eta: 0:05:49, time (data): 1.241 (0.001)] loss: -1.0031e-01 token_reg: -4.1067e-01 Norm_mean: 6.0268e-01 
+2024-12-09 05:51:42,636 INFO: [dog6..][epoch:  1, iter:     730, lr:(2.710e-04,2.710e-06,2.710e-05,)] [eta: 0:05:36, time (data): 1.241 (0.001)] loss: -3.9363e-01 token_reg: -4.1067e-01 Norm_mean: 6.0314e-01 
+2024-12-09 05:51:55,056 INFO: [dog6..][epoch:  1, iter:     740, lr:(2.610e-04,2.610e-06,2.610e-05,)] [eta: 0:05:24, time (data): 1.241 (0.001)] loss: -3.6359e-01 token_reg: -4.1067e-01 Norm_mean: 6.0364e-01 
+2024-12-09 05:52:07,455 INFO: [dog6..][epoch:  1, iter:     750, lr:(2.510e-04,2.510e-06,2.510e-05,)] [eta: 0:05:11, time (data): 1.241 (0.001)] loss: -3.4498e-01 token_reg: -4.1067e-01 Norm_mean: 6.0403e-01 
+2024-12-09 05:52:19,852 INFO: [dog6..][epoch:  1, iter:     760, lr:(2.410e-04,2.410e-06,2.410e-05,)] [eta: 0:04:59, time (data): 1.241 (0.001)] loss: 1.1783e+00 token_reg: -4.1067e-01 Norm_mean: 6.0437e-01 
+2024-12-09 05:52:32,249 INFO: [dog6..][epoch:  1, iter:     770, lr:(2.310e-04,2.310e-06,2.310e-05,)] [eta: 0:04:46, time (data): 1.241 (0.001)] loss: -3.6696e-01 token_reg: -4.1067e-01 Norm_mean: 6.0469e-01 
+2024-12-09 05:52:44,643 INFO: [dog6..][epoch:  1, iter:     780, lr:(2.210e-04,2.210e-06,2.210e-05,)] [eta: 0:04:34, time (data): 1.241 (0.001)] loss: -3.8040e-01 token_reg: -4.1067e-01 Norm_mean: 6.0493e-01 
+2024-12-09 05:52:57,062 INFO: [dog6..][epoch:  1, iter:     790, lr:(2.110e-04,2.110e-06,2.110e-05,)] [eta: 0:04:21, time (data): 1.241 (0.001)] loss: -3.3124e-01 token_reg: -4.1067e-01 Norm_mean: 6.0514e-01 
+2024-12-09 05:53:09,473 INFO: [dog6..][epoch:  1, iter:     800, lr:(2.010e-04,2.010e-06,2.010e-05,)] [eta: 0:04:08, time (data): 1.241 (0.001)] loss: -2.2867e-01 token_reg: -4.1067e-01 Norm_mean: 6.0549e-01 
+2024-12-09 05:53:09,475 INFO: Saving models and training states.
+2024-12-09 05:53:09,498 INFO: text_encoder moved: 0.00010727785138442414
+2024-12-09 05:53:09,533 INFO: unet moved: 0.0013251295931695495
+2024-12-09 05:53:22,588 INFO: [dog6..][epoch:  1, iter:     810, lr:(1.910e-04,1.910e-06,1.910e-05,)] [eta: 0:03:56, time (data): 1.242 (0.000)] loss: -3.3150e-02 token_reg: -4.1067e-01 Norm_mean: 6.0572e-01 
+2024-12-09 05:53:34,995 INFO: [dog6..][epoch:  1, iter:     820, lr:(1.810e-04,1.810e-06,1.810e-05,)] [eta: 0:03:44, time (data): 1.241 (0.000)] loss: -4.0041e-01 token_reg: -4.1067e-01 Norm_mean: 6.0599e-01 
+2024-12-09 05:53:47,423 INFO: [dog6..][epoch:  1, iter:     830, lr:(1.710e-04,1.710e-06,1.710e-05,)] [eta: 0:03:31, time (data): 1.242 (0.000)] loss: -7.1200e-02 token_reg: -4.1067e-01 Norm_mean: 6.0617e-01 
+2024-12-09 05:53:59,841 INFO: [dog6..][epoch:  1, iter:     840, lr:(1.610e-04,1.610e-06,1.610e-05,)] [eta: 0:03:18, time (data): 1.242 (0.000)] loss: -3.4489e-01 token_reg: -4.1067e-01 Norm_mean: 6.0629e-01 
+2024-12-09 05:54:12,239 INFO: [dog6..][epoch:  1, iter:     850, lr:(1.510e-04,1.510e-06,1.510e-05,)] [eta: 0:03:06, time (data): 1.241 (0.000)] loss: 1.5280e+00 token_reg: -4.1067e-01 Norm_mean: 6.0647e-01 
+2024-12-09 05:54:24,651 INFO: [dog6..][epoch:  1, iter:     860, lr:(1.410e-04,1.410e-06,1.410e-05,)] [eta: 0:02:53, time (data): 1.241 (0.000)] loss: -3.4725e-01 token_reg: -4.1067e-01 Norm_mean: 6.0660e-01 
+2024-12-09 05:54:37,047 INFO: [dog6..][epoch:  1, iter:     870, lr:(1.310e-04,1.310e-06,1.310e-05,)] [eta: 0:02:41, time (data): 1.241 (0.000)] loss: -2.8695e-01 token_reg: -4.1067e-01 Norm_mean: 6.0670e-01 
+2024-12-09 05:54:49,443 INFO: [dog6..][epoch:  1, iter:     880, lr:(1.210e-04,1.210e-06,1.210e-05,)] [eta: 0:02:28, time (data): 1.241 (0.000)] loss: -1.9135e-01 token_reg: -4.1067e-01 Norm_mean: 6.0679e-01 
+2024-12-09 05:55:01,839 INFO: [dog6..][epoch:  1, iter:     890, lr:(1.110e-04,1.110e-06,1.110e-05,)] [eta: 0:02:16, time (data): 1.241 (0.000)] loss: 8.5754e-01 token_reg: -4.1067e-01 Norm_mean: 6.0688e-01 
+2024-12-09 05:55:14,247 INFO: [dog6..][epoch:  1, iter:     900, lr:(1.010e-04,1.010e-06,1.010e-05,)] [eta: 0:02:03, time (data): 1.241 (0.000)] loss: 7.3974e-01 token_reg: -4.1067e-01 Norm_mean: 6.0696e-01 
+2024-12-09 05:55:26,657 INFO: [dog6..][epoch:  1, iter:     910, lr:(9.100e-05,9.100e-07,9.100e-06,)] [eta: 0:01:51, time (data): 1.241 (0.000)] loss: -1.2848e-01 token_reg: -4.1067e-01 Norm_mean: 6.0699e-01 
+2024-12-09 05:55:39,068 INFO: [dog6..][epoch:  1, iter:     920, lr:(8.100e-05,8.100e-07,8.100e-06,)] [eta: 0:01:38, time (data): 1.241 (0.000)] loss: -3.0651e-01 token_reg: -4.1067e-01 Norm_mean: 6.0700e-01 
+2024-12-09 05:55:51,463 INFO: [dog6..][epoch:  1, iter:     930, lr:(7.100e-05,7.100e-07,7.100e-06,)] [eta: 0:01:26, time (data): 1.241 (0.000)] loss: 3.9749e-01 token_reg: -4.1067e-01 Norm_mean: 6.0700e-01 
+2024-12-09 05:56:03,862 INFO: [dog6..][epoch:  1, iter:     940, lr:(6.100e-05,6.100e-07,6.100e-06,)] [eta: 0:01:13, time (data): 1.240 (0.000)] loss: -1.9507e-01 token_reg: -4.1067e-01 Norm_mean: 6.0701e-01 
+2024-12-09 05:56:16,257 INFO: [dog6..][epoch:  1, iter:     950, lr:(5.100e-05,5.100e-07,5.100e-06,)] [eta: 0:01:01, time (data): 1.240 (0.000)] loss: -2.6239e-01 token_reg: -4.1067e-01 Norm_mean: 6.0701e-01 
+2024-12-09 05:56:28,652 INFO: [dog6..][epoch:  1, iter:     960, lr:(4.100e-05,4.100e-07,4.100e-06,)] [eta: 0:00:48, time (data): 1.240 (0.000)] loss: -4.0207e-01 token_reg: -4.1067e-01 Norm_mean: 6.0701e-01 
+2024-12-09 05:56:41,068 INFO: [dog6..][epoch:  1, iter:     970, lr:(3.100e-05,3.100e-07,3.100e-06,)] [eta: 0:00:36, time (data): 1.240 (0.000)] loss: -1.6657e-02 token_reg: -4.1067e-01 Norm_mean: 6.0700e-01 
+2024-12-09 05:56:53,484 INFO: [dog6..][epoch:  1, iter:     980, lr:(2.100e-05,2.100e-07,2.100e-06,)] [eta: 0:00:23, time (data): 1.240 (0.000)] loss: 1.4890e+00 token_reg: -4.1067e-01 Norm_mean: 6.0699e-01 
+2024-12-09 05:57:05,900 INFO: [dog6..][epoch:  1, iter:     990, lr:(1.100e-05,1.100e-07,1.100e-06,)] [eta: 0:00:11, time (data): 1.241 (0.000)] loss: -2.6770e-01 token_reg: -4.1067e-01 Norm_mean: 6.0699e-01 
+2024-12-09 05:57:19,594 INFO: [dog6..][epoch:  1, iter:   1,000, lr:(1.000e-06,1.000e-08,1.000e-07,)] [eta: -1 day, 23:59:59, time (data): 1.247 (0.007)] loss: -2.4623e-01 token_reg: -4.1067e-01 Norm_mean: 6.0699e-01 
+2024-12-09 05:57:19,595 INFO: Saving models and training states.
+2024-12-09 05:57:19,610 INFO: text_encoder moved: 0.00010958533039229224
+2024-12-09 05:57:19,655 INFO: unet moved: 0.0013524987139135192
+2024-12-09 05:58:05,626 INFO: End of training. Time consumed: 0:21:51
+2024-12-09 05:58:05,626 INFO: Save the latest model.
+2024-12-09 05:58:05,643 INFO: text_encoder moved: 0.00010958533039229224
+2024-12-09 05:58:05,700 INFO: unet moved: 0.0013524987139135192
