@@ -347,7 +347,7 @@ if __name__ == '__main__':
         hash_code = hashlib.sha256(''.join(configs).encode('utf-8')).hexdigest()[:8]
 
         save_prompt = save_prompt.replace(' ', '_')
-        save_name = f'{save_prompt}---{args.suffix}---{hash_code}--{i}.png'
+        save_name = f"{i}.png" #f'{save_prompt}---{args.suffix}---{hash_code}--{i}.png'
         save_dir = args.save_dir
         save_path = os.path.join(save_dir, save_name)
         save_config_path = os.path.join(save_dir, save_name.replace('.png', '.txt'))
