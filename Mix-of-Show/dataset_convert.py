@@ -20,21 +20,21 @@ semantics = {
 
 all_region_prompts = {
 	"0": [
-		("A <cat2> on the right.", '[0,0,512,256]'), 
-		("A <dog6> on the left.", '[0,256,512,512]')
+		("A <cat2_1> <cat2_2> on the right.", '[0,0,512,256]'), 
+		("A <dog6_1> <dog6_2> on the left.", '[0,256,512,512]')
 		],
 	"1": [
-		("A <flower_1>.", "[30,200,320,256]"), 
-		("A <vase>", "[168, 144, 512, 384]")
+		("A <flower_1_1> <flower_1_2>.", "[30,200,320,256]"), 
+		("A <vase_1> <vase_2>", "[168, 144, 512, 384]")
 		],
 	"2": [
-		("A <dog> near a forest.", "[119,30,385,151]"), 
-		("A <pet_cat1> near a forest.", "[111,197,384,314]"),
-		("A <dog6> near a forest.","[276,139,384,480]")
+		("A <dog_1> <dog_2> near a forest.", "[119,30,385,151]"), 
+		("A <pet_cat1_1> <pet_cat1_2> near a forest.", "[111,197,384,314]"),
+		("A <dog6_1> <dog6_2> near a forest.","[276,139,384,480]")
 		],
 	"3": [
-		("A <cat2> in a <watercolor> style.","[60,90,512,452]"), 
-		("A <wearable_glasses> in a <watercolor> style.","[111,142,215,386]")
+		("A <cat2_1> <cat2_2> in a <watercolor_1> <watercolor_2> style.","[60,90,512,452]"), 
+		("A <wearable_glasses_1> <wearable_glasses_2> in a <watercolor_1> <watercolor_2> style.","[111,142,215,386]")
 		]
 }
 
