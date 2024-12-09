@@ -18,6 +18,26 @@ semantics = {
 	"vase": "vase"
 }
 
+all_region_prompts = {
+	"0": [
+		("A <cat2> on the right.", '[0,0,512,256]'), 
+		("A <dog6> on the left.", '[0,256,512,512]')
+		],
+	"1": [
+		("A <flower_1>.", "[30,200,320,256]"), 
+		("A <vase>", "[168, 144, 512, 384]")
+		],
+	"2": [
+		("A <dog> near a forest.", "[119,30,385,151]"), 
+		("A <pet_cat1> near a forest.", "[111,197,384,314]"),
+		("A <dog6> near a forest.","[276,139,384,480]")
+		],
+	"3": [
+		("A <cat2> in a <watercolor> style.","[60,90,512,452]"), 
+		("A <wearable_glasses> in a <watercolor> style.","[111,142,215,386]")
+		]
+}
+
 new_concepts_tokens = {}
 
 def check_path(_path):
@@ -111,19 +131,44 @@ def convert(args):
 			prompt = v["prompt"]
 			for token in new_concepts_tokens:
 				prompt = prompt.replace("<"+token+">", " ".join(new_concepts_tokens[token]))
+
+			region_prompts = ""
+			prompt_rewrite = ""
+			for j, (region_prompt,bbox) in enumerate(all_region_prompts[k]):
+				if j>0:
+					prompt_rewrite += "|"
+				region_prompts += "region{}_prompt='[{}]'\n".format(j+1, region_prompt)
+				region_prompts += "region{}_neg_prompt=\"[${{context_neg_prompt}}]\"\n".format(j+1)
+				region_prompts += "region{}='{}'\n\n".format(j+1, bbox)
+				prompt_rewrite += "${{region{}_prompt-*-${{region{}_neg_prompt}}-*-${{region{}}}".format(j+1,j+1,j+1)
+
 			s = """
 combined_model_root="experiments/composed_edlora/stable-diffusion-v1-4"
-expdir="{}"
+expdir="{0}"
 
-context_prompt="{}"
+context_prompt="{1}"
+context_neg_prompt="{2}"
+
+{3}
+
+prompt_rewrite = "{4}"
+
 python inference/mix_of_show_sample.py \\
   --pretrained_model="experiments/pretrained_models/stable-diffusion-v1-4" \\
   --combined_model="${{combined_model_root}}/${{expdir}}/combined_model_.pth" \\
   --save_dir="results/multi-concept/${{expdir}}" \\
   --pipeline_type="sd_pplus" \\
   --prompt="${{context_prompt}}" \\
+  --negative_prompt="${{context_neg_prompt}}" \\
+  --prompt_rewrite="${{prompt_rewrite}}" \\
   --suffix="" \\
-  --n_samples=20""".format("+".join(token[1:-1] for token in token_names), prompt)
+  --n_samples=20""".format(
+  				"+".join(token[1:-1] for token in token_names), 
+  				prompt,
+  				args.neg_prompt,
+  				region_prompts,
+  				prompt_rewrite
+  			)
 			inf_bash_file.write(s)
 
 
@@ -138,6 +183,8 @@ if __name__=="__main__":
 	parser.add_argument("--template_yaml", required=True)
 	parser.add_argument("--prompts_path", required=True)
 	parser.add_argument("--merge_json_path_prefix", required=True)
+
+	parser.add_argument("--neg_prompt", default="")
 
 	parser.add_argument("--embedding_enable_tuning", default="true")
 	parser.add_argument("--text_encoder_enable_tuning", default="true")
