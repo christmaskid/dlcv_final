@@ -20,8 +20,8 @@ semantics = {
 
 all_region_prompts = {
 	"0": [
-		("A <cat2_1> <cat2_2> on the right.", '[168,280,424,508]'), 
-		("A <dog6_1> <dog6_2> on the left.", '[164,33,432,245]')
+		("A <cat2_1> <cat2_2> on the right.", '[84,263,446,512]'), 
+		("A <dog6_1> <dog6_2> on the left.", '[113,15,410,245]')
 		],
 	"1": [
 		("A <flower_1_1> <flower_1_2>.", "[77,152,383,287]"), 
