@@ -196,8 +196,6 @@ def encode_region_prompt_pplus(self,
 
     if prompt_embeds is None:
         context_prompt, region_list = prompt[0][0], prompt[0][1]
-        print("Prompt:", prompt)
-        print(context_prompt, region_list)
         context_prompt = bind_concept_prompt([context_prompt], new_concept_cfg)
         context_prompt_input_ids = self.tokenizer(
             context_prompt,
@@ -233,7 +231,6 @@ def encode_region_prompt_pplus(self,
         prompt_embeds = torch.cat([negative_prompt_embeds, prompt_embeds])
 
         for idx, region in enumerate(region_list):
-            print(idx, "region:", region)
             region_prompt, region_neg_prompt, pos = region
             region_prompt = bind_concept_prompt([region_prompt], new_concept_cfg)
             region_prompt_input_ids = self.tokenizer(

@@ -323,7 +323,7 @@ if __name__ == '__main__':
             args.seed = random.randint(1, 9999)
         image = inference_image(
             pipe,
-            input_prompt=input_prompt,
+            input_prompt=copy.deepcopy(input_prompt),
             input_neg_prompt=[args.negative_prompt] * len(input_prompt),
             generator=torch.Generator(device).manual_seed(args.seed),
             sketch_adaptor_weight=args.sketch_adaptor_weight,
