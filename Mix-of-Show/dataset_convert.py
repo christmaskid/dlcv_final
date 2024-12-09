@@ -156,7 +156,7 @@ context_neg_prompt="{2}"
 
 {3}
 
-prompt_rewrite = "{4}"
+prompt_rewrite="{4}"
 
 python inference/mix_of_show_sample.py \\
   --pretrained_model="experiments/pretrained_models/stable-diffusion-v1-4" \\
