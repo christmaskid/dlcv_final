@@ -903,7 +903,7 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
         print("attention_controller", len(attention_controller))
 
         def print_item_or_dict(a, depth):
-            if isinstance(a):
+            if isinstance(a, dict):
                 for k in a.keys():
                     print(">"*depth, k)
                     print_item_or_dict(a[k], depth+1)
