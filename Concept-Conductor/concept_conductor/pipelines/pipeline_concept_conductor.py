@@ -456,8 +456,6 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                 feature_masks.append(feature_mask)  # [1, 64, 64]        
         else:
             feature_masks = None          
-
-        print("feature_masks", feature_masks, flush=True)
             
         # 6. Prepare extra step kwargs. TODO: Logic should ideally just be moved out of the pipeline
         extra_step_kwargs = self.prepare_extra_step_kwargs(generator, eta)
