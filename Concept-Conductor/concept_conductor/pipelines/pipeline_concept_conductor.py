@@ -904,7 +904,7 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
         for key in attention_controller.storage.keys():
             print(key)
             for kkey in attention_controller.storage[key].keys():
-                print(kkey, attention_controller.storage[key][kkey].keys())
+                print(key, kkey, attention_controller.storage[key][kkey])
         
         loss_list = []
         for processor_name in processors_guidance:
