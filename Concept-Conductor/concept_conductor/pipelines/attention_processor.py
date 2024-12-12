@@ -448,7 +448,8 @@ class AttentionController(object):
         
     # Convert predefined mask maps to masks with different resolutions 
     def init_feature_masks(self, feature_masks=None, points=None, num_clusters=6, bs=1):   
-        
+        print("init_feature_masks", flush=True)
+        print("feature_masks", feature_masks, flush=True)
         
         if feature_masks is not None:
             feature_masks_tensor = torch.cat(feature_masks, dim=0).unsqueeze(dim=0)
