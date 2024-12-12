@@ -899,20 +899,6 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
 
     # Calculate the self-attention loss between the reference branch and generated branches for layout alignment.
     def _compute_layout_loss(self, attention_controller, processors_guidance, params_guidance,  custom_attn_guidance_factor=1.0, use_loss_mask=False):
-        print("processors_guidance", processors_guidance)
-        print("attention_controller", len(attention_controller))
-
-        def print_item_or_dict(a, depth):
-            if isinstance(a, dict):
-                for k in a.keys():
-                    print(">"*depth, k)
-                    print_item_or_dict(a[k], depth+1)
-            elif hasattr(a, "shape"):
-                print(">"*depth, a.shape)
-            else:
-                print(">"*depth, a)
-
-        print_item_or_dict(attention_controller.storage, 0)
         
         loss_list = []
         for processor_name in processors_guidance:
@@ -931,11 +917,7 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                 model_losses = [] 
 
                 for model_idx in range(len(attention_controller)-1):
-                    print(model_idx, processor_name, param_name)
                     attn = attention_controller.extract(model_idx, processor_name, param_name)
-
-                    print("attn:", attn)
-                    print("ref_attn:", ref_attn)
                     
                     model_loss = (F.mse_loss(attn, ref_attn, reduction='none') * foreground_mask).sum(dim=0).mean()
                     model_losses.append(model_loss)
