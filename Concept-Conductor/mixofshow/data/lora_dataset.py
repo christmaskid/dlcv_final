@@ -1,24 +1,23 @@
+# This code is based on an Apache 2.0 licensed project: Mix-of-Show
+# Original code: https://github.com/TencentARC/Mix-of-Show/blob/main/mixofshow/data/lora_dataset.py
+
 import json
-import numpy as np
 import os
 import random
 import re
-import torch
 from pathlib import Path
+
 from PIL import Image
 from torch.utils.data import Dataset
 
 from mixofshow.data.pil_transform import PairCompose, build_transform
-from mixofshow.utils.registry import DATASET_REGISTRY
 
 
-@DATASET_REGISTRY.register()
 class LoraDataset(Dataset):
     """
     A dataset to prepare the instance and class images with the prompts for fine-tuning the model.
     It pre-processes the images and the tokenizes prompts.
     """
-
     def __init__(self, opt):
         self.opt = opt
         self.instance_images_path = []
@@ -28,10 +27,12 @@ class LoraDataset(Dataset):
 
         replace_mapping = opt.get('replace_mapping', {})
         use_caption = opt.get('use_caption', False)
+        use_mask = opt.get('use_mask', False)
 
         for concept in concept_list:
             instance_prompt = concept['instance_prompt']
             caption_dir = concept.get('caption_dir')
+            mask_dir = concept.get('mask_dir')
 
             instance_prompt = self.process_text(instance_prompt, replace_mapping)
 
@@ -40,21 +41,30 @@ class LoraDataset(Dataset):
                 if x.is_file() and x.name != '.DS_Store':
                     basename = os.path.splitext(os.path.basename(x))[0]
                     caption_path = os.path.join(caption_dir, f'{basename}.txt') if caption_dir is not None else None
+
                     if use_caption and caption_path is not None and os.path.exists(caption_path):
                         with open(caption_path, 'r') as fr:
                             line = fr.readlines()[0]
                             instance_prompt_image = self.process_text(line, replace_mapping)
                     else:
                         instance_prompt_image = instance_prompt
-                    inst_img_path.append((x, instance_prompt_image))
+
+                    if use_mask and mask_dir is not None:
+                        mask_path = os.path.join(mask_dir, f'{basename}.png')
+                    else:
+                        mask_path = None
+
+                    inst_img_path.append((x, instance_prompt_image, mask_path))
 
             self.instance_images_path.extend(inst_img_path)
 
         random.shuffle(self.instance_images_path)
         self.num_instance_images = len(self.instance_images_path)
 
-        self.instance_transform = PairCompose(
-            [build_transform(transform_opt) for transform_opt in opt['instance_transform']])
+        self.instance_transform = PairCompose([
+            build_transform(transform_opt)
+            for transform_opt in opt['instance_transform']
+        ])
 
     def process_text(self, instance_prompt, replace_mapping):
         for k, v in replace_mapping.items():
@@ -64,23 +74,32 @@ class LoraDataset(Dataset):
         return instance_prompt
 
     def __len__(self):
-        return self.num_instance_images
+        return self.num_instance_images * self.opt['dataset_enlarge_ratio']
 
     def __getitem__(self, index):
         example = {}
-        instance_image, instance_prompt = self.instance_images_path[index % self.num_instance_images]
+        instance_image, instance_prompt, instance_mask = self.instance_images_path[index % self.num_instance_images]
         instance_image = Image.open(instance_image).convert('RGB')
 
         extra_args = {'prompts': instance_prompt}
+        if instance_mask is not None:
+            instance_mask = Image.open(instance_mask).convert('L')
+            extra_args.update({'mask': instance_mask})
 
         instance_image, extra_args = self.instance_transform(instance_image, **extra_args)
         example['images'] = instance_image
+
         if 'mask' in extra_args:
             example['masks'] = extra_args['mask']
+            example['masks'] = example['masks'].unsqueeze(0)
         else:
-            size_h, size_w = example['images'].shape[1:]
-            mask = np.ones((size_h // 8, size_w // 8))
-            example['masks'] = torch.from_numpy(mask).unsqueeze(0)
+            pass
+
+        if 'img_mask' in extra_args:
+            example['img_masks'] = extra_args['img_mask']
+            example['img_masks'] = example['img_masks'].unsqueeze(0)
+        else:
+            raise NotImplementedError
+
         example['prompts'] = extra_args['prompts']
-        example['masks'] = example['masks'].unsqueeze(0)
         return example

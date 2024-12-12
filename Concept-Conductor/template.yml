@@ -49,7 +49,7 @@ models:
       lora_cfg:
         rank: <lora_rank> #4
         alpha: <lora_alpha> #1.0
-        where: CrossAttention
+        where: Attention
       lr: !!float <unet_lr> #1e-4
   new_concept_token: <new_concept_token>
   noise_offset: 0.01

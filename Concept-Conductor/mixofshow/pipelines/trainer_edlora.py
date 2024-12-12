@@ -101,7 +101,7 @@ class EDLoRATrainer(nn.Module):
             text_encoder_cfg = finetune_cfg['text_encoder']
 
             where = text_encoder_cfg['lora_cfg'].pop('where')
-            assert where in ['CLIPEncoderLayer', 'CLIPAttention']
+            assert where in ['CLIPEncoderLayer', 'CLIPAttention', 'CLIPSdpaAttention']
 
             self.text_encoder_lora = nn.ModuleList()
             params_list = []
