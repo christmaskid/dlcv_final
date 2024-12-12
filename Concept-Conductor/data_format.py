@@ -80,42 +80,43 @@ def convert(args):
 		out_json_path = os.path.join(args.out_jsons_path, token_name+".json")
 		json.dump(output_json_file, open(out_json_path, "w"))
 
-		template_yaml_file = open(args.template_yaml, "r")
-		token_yaml_file = open(token_name+".yml", "w")
+		for prefix, template_fn in [("", args.template_yaml), ("test_",args.test_template_yaml)]:
+			template_yaml_file = open(template_fn, "r")
+			token_yaml_file = open(prefix+token_name+".yml", "w")
 
-		yaml_content = ''.join(template_yaml_file.readlines())
+			yaml_content = ''.join(template_yaml_file.readlines())
 
-		new_concepts = ["<{}_1>".format(token_name), "<{}_2>".format(token_name)]
-		new_concepts_tokens[token_name] = new_concepts
+			new_concepts = ["<{}_1>".format(token_name), "<{}_2>".format(token_name)]
+			new_concepts_tokens[token_name] = new_concepts
 
-		yaml_content = yaml_content.replace("<name>", token_name)
-		yaml_content = yaml_content.replace("<replace_mapping>", " ".join(new_concepts))
-		yaml_content = yaml_content.replace("<new_concept_token>", "+".join(new_concepts))
-		yaml_content = yaml_content.replace("<concept_list>", out_json_path)
-		yaml_content = yaml_content.replace("<prompts_path>", args.prompts_path)
-		yaml_content = yaml_content.replace("<pretrained_path>", args.pretrained_path)
+			yaml_content = yaml_content.replace("<name>", token_name)
+			yaml_content = yaml_content.replace("<replace_mapping>", " ".join(new_concepts))
+			yaml_content = yaml_content.replace("<new_concept_token>", "+".join(new_concepts))
+			yaml_content = yaml_content.replace("<concept_list>", out_json_path)
+			yaml_content = yaml_content.replace("<prompts_path>", args.prompts_path)
+			yaml_content = yaml_content.replace("<pretrained_path>", args.pretrained_path)
 
-		yaml_content = yaml_content.replace("<semantic>", semantics[token_name])
+			yaml_content = yaml_content.replace("<semantic>", semantics[token_name])
 
-		yaml_content = yaml_content.replace("<embedding_enable_tuning>", args.embedding_enable_tuning)
-		yaml_content = yaml_content.replace("<text_encoder_enable_tuning>", args.text_encoder_enable_tuning)
-		yaml_content = yaml_content.replace("<unet_enable_tuning>", args.unet_enable_tuning)
-		yaml_content = yaml_content.replace("<embedding_lr>", str(args.embedding_lr))
-		yaml_content = yaml_content.replace("<text_encoder_lr>", str(args.text_encoder_lr))
-		yaml_content = yaml_content.replace("<unet_lr>", str(args.unet_lr))
-		yaml_content = yaml_content.replace("<n_iterations>", str(args.n_iterations))
-		yaml_content = yaml_content.replace("<lora_rank>", str(args.lora_rank))
-		yaml_content = yaml_content.replace("<lora_alpha>", str(args.lora_alpha))
-		yaml_content = yaml_content.replace("<latent_size>", str(args.latent_size))
+			yaml_content = yaml_content.replace("<embedding_enable_tuning>", args.embedding_enable_tuning)
+			yaml_content = yaml_content.replace("<text_encoder_enable_tuning>", args.text_encoder_enable_tuning)
+			yaml_content = yaml_content.replace("<unet_enable_tuning>", args.unet_enable_tuning)
+			yaml_content = yaml_content.replace("<embedding_lr>", str(args.embedding_lr))
+			yaml_content = yaml_content.replace("<text_encoder_lr>", str(args.text_encoder_lr))
+			yaml_content = yaml_content.replace("<unet_lr>", str(args.unet_lr))
+			yaml_content = yaml_content.replace("<n_iterations>", str(args.n_iterations))
+			yaml_content = yaml_content.replace("<lora_rank>", str(args.lora_rank))
+			yaml_content = yaml_content.replace("<lora_alpha>", str(args.lora_alpha))
+			yaml_content = yaml_content.replace("<latent_size>", str(args.latent_size))
 
-		yaml_content = yaml_content.replace("<num_inference_steps>", str(args.num_inference_steps))
-		yaml_content = yaml_content.replace("<guidance_scale>", str(args.guidance_scale))
+			yaml_content = yaml_content.replace("<num_inference_steps>", str(args.num_inference_steps))
+			yaml_content = yaml_content.replace("<guidance_scale>", str(args.guidance_scale))
 
-		yaml_content = yaml_content.replace("<save_checkpoint_freq>", str(args.save_checkpoint_freq))
-		
-		token_yaml_file.write(yaml_content)
-		token_yaml_file.close()
-		template_yaml_file.close()
+			yaml_content = yaml_content.replace("<save_checkpoint_freq>", str(args.save_checkpoint_freq))
+			
+			token_yaml_file.write(yaml_content)
+			token_yaml_file.close()
+			template_yaml_file.close()
 
 
 if __name__=="__main__":
@@ -125,6 +126,7 @@ if __name__=="__main__":
 	parser.add_argument("--out_captions_path", required=True)
 	parser.add_argument("--out_jsons_path", required=True)
 	parser.add_argument("--template_yaml", required=True)
+	parser.add_argument("--test_template_yaml", required=True)
 	parser.add_argument("--prompts_path", required=True)
 	parser.add_argument("--merge_json_path_prefix", required=True)
 	parser.add_argument("--pretrained_path", required=True)

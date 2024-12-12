@@ -34,6 +34,8 @@ def sample(args):
     variant = args.variant if args.variant else None
     pipeline =  ConceptConductorPipeline.from_pretrained(args.sd_ckpt, variant=variant, revision="fp16", torch_dtype=torch.float16).to(device)
     pipeline.unet = EarlyBreakUnet.from_pretrained(args.sd_ckpt, variant=variant, revision="fp16", torch_dtype=torch.float16, subfolder='unet').to(device)
+    print(pipeline.unet)
+
 
     pipeline.safety_checker = dummy
     if args.verbose:
