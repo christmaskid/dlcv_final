@@ -907,6 +907,8 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                 for k in a.keys():
                     print(">"*depth, k)
                     print_item_or_dict(a[k], depth+1)
+            elif hasattr(a, "shape"):
+                print(">"*depth, a.shape)
             else:
                 print(">"*depth, a)
 
