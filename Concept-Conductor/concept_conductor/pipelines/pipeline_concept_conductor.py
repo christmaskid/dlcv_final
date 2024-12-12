@@ -901,10 +901,16 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
     def _compute_layout_loss(self, attention_controller, processors_guidance, params_guidance,  custom_attn_guidance_factor=1.0, use_loss_mask=False):
         print("processors_guidance", processors_guidance)
         print("attention_controller", len(attention_controller))
-        for key in attention_controller.storage.keys():
-            print(key)
-            for kkey in attention_controller.storage[key].keys():
-                print(key, kkey, attention_controller.storage[key][kkey])
+
+        def print_item_or_dict(a, depth):
+            if isinstance(a):
+                for k in a.keys():
+                    print(">"*depth, k)
+                    print_item_or_dict(a[k], depth+1)
+            else:
+                print(">"*depth, a)
+
+        print_item_or_dict(attention_controller.storage, 0)
         
         loss_list = []
         for processor_name in processors_guidance:
