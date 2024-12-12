@@ -61,9 +61,9 @@ network_g:
         where: CrossAttention
       lr: !!float <unet_lr> #1e-4
   new_concept_token: <new_concept_token>
-  noise_offset: 0.01
   initializer_token: <rand-0.013>+<semantic>
-  sd_version: v1
+  noise_offset: 0.01
+  sd_version: v2
   test_sampler_type: ddim
 
 # path
