@@ -481,10 +481,12 @@ class AttentionController(object):
 
             feature_masks_tensor = torch.stack(feature_masks, dim=0).unsqueeze(dim=0) # [1, channels, h, w]
             
-            
+        print("feature_masks_tensor", feature_masks_tensor.shape, flush=True)
+
         self.store_masks('ref', feature_masks_tensor)
         
         for rid in range(feature_masks_tensor.shape[1]):
+            print("model_idx", rid+1)
             custom_feature_mask = feature_masks_tensor[:,rid,:,:].unsqueeze(dim=1)
             self.store_masks(rid+1, custom_feature_mask.repeat(bs, 1, 1, 1))
             self.store_masks(rid+1, custom_feature_mask.repeat(bs, 1, 1, 1), prefix="custom_")

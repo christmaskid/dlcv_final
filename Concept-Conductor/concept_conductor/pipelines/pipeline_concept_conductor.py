@@ -918,6 +918,7 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                 model_losses = [] 
 
                 for model_idx in range(len(attention_controller)-1):
+                    print(model_idx, processor_name, param_name)
                     attn = attention_controller.extract(model_idx, processor_name, param_name)
 
                     print("attn:", attn)
