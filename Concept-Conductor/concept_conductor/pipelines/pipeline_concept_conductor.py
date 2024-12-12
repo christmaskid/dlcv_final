@@ -918,6 +918,9 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
 
                 for model_idx in range(len(attention_controller)-1):
                     attn = attention_controller.extract(model_idx, processor_name, param_name)
+
+                    print("attn:", attn)
+                    print("ref_attn:", ref_attn)
                     
                     model_loss = (F.mse_loss(attn, ref_attn, reduction='none') * foreground_mask).sum(dim=0).mean()
                     model_losses.append(model_loss)
