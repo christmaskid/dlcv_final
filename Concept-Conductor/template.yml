@@ -31,7 +31,7 @@ datasets:
     batch_size_per_gpu: 4
 
 models:
-  pretrained_path: experiments/pretrained_models/stable-diffusion-2-1
+  pretrained_path: <pretrained_path>
   enable_edlora: true  # true means ED-LoRA, false means vallina LoRA
   finetune_cfg:
     text_embedding:

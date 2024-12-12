@@ -93,6 +93,7 @@ def convert(args):
 		yaml_content = yaml_content.replace("<new_concept_token>", "+".join(new_concepts))
 		yaml_content = yaml_content.replace("<concept_list>", out_json_path)
 		yaml_content = yaml_content.replace("<prompts_path>", args.prompts_path)
+		yaml_content = yaml_content.replace("<pretrained_path>", args.pretrained_path)
 
 		yaml_content = yaml_content.replace("<semantic>", semantics[token_name])
 
@@ -126,6 +127,7 @@ if __name__=="__main__":
 	parser.add_argument("--template_yaml", required=True)
 	parser.add_argument("--prompts_path", required=True)
 	parser.add_argument("--merge_json_path_prefix", required=True)
+	parser.add_argument("--pretrained_path", required=True)
 
 	parser.add_argument("--neg_prompt", default="")
 
