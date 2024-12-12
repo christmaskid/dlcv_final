@@ -1,0 +1,1226 @@
+2024-12-09 11:06:14,688 INFO: 
+Version Information: 
+OpenStory
+	PyTorch: 2.3.1+cu121
+	TorchVision: 0.18.1+cu121
+2024-12-09 11:06:14,688 INFO: 
+  name: watercolor
+  model_type: EDLoraModel
+  world_size: 1
+  num_gpu: 1
+  manual_seed: 0
+  datasets:[
+    train:[
+      name: LoraDataset
+      type: LoraDataset
+      concept_list: /content/Data/jsons/watercolor.json
+      use_caption: True
+      instance_transform: [OrderedDict([('type', 'Resize'), ('size', 512)]), OrderedDict([('type', 'HumanResizeCropFinal'), ('size', 512), ('crop_p', 0.5)]), OrderedDict([('type', 'ToTensor')]), OrderedDict([('type', 'Normalize'), ('mean', [0.5]), ('std', [0.5])]), OrderedDict([('type', 'ShuffleCaption'), ('keep_token_num', 1)]), OrderedDict([('type', 'EnhanceText'), ('enhance_type', 'human')])]
+      replace_mapping:[
+        <TOK>: <watercolor_1> <watercolor_2>
+      ]
+      dataset_enlarge_ratio: 100
+      use_shuffle: True
+      num_worker_per_gpu: 2
+      batch_size_per_gpu: 1
+      pin_memory: True
+      prefetch_mode: cuda
+      phase: train
+    ]
+    val_vis:[
+      name: PromptDataset
+      type: PromptDataset
+      prompts: /content/dlcv_final/Mix-of-Show/datasets/validation_prompts/val.txt
+      num_samples_per_prompt: 1
+      latent_size: [4, 64, 64]
+      replace_mapping:[
+        <TOK>: <watercolor_1> <watercolor_2>
+      ]
+      use_shuffle: False
+      num_worker_per_gpu: 2
+      batch_size_per_gpu: 1
+      phase: val
+    ]
+  ]
+  network_g:[
+    type: EDLoRA
+    pretrained_path: experiments/pretrained_models/stable-diffusion-v1-4
+    finetune_cfg:[
+      text_embedding:[
+        enable_tuning: True
+        lr: 0.001
+      ]
+      text_encoder:[
+        enable_tuning: True
+        lora_cfg:[
+          rank: 4
+          alpha: 1
+          where: CLIPSdpaAttention
+        ]
+        lr: 1e-05
+      ]
+      unet:[
+        enable_tuning: True
+        lora_cfg:[
+          rank: 4
+          alpha: 1
+          where: CrossAttention
+        ]
+        lr: 0.0001
+      ]
+    ]
+    new_concept_token: <watercolor_1>+<watercolor_2>
+    noise_offset: 0.01
+    initializer_token: <rand-0.013>+watercolor
+    sd_version: v1
+    test_sampler_type: ddim
+  ]
+  path:[
+    pretrain_network_g: None
+    experiments_root: /content/dlcv_final/Mix-of-Show/experiments/watercolor
+    models: /content/dlcv_final/Mix-of-Show/experiments/watercolor/models
+    training_states: /content/dlcv_final/Mix-of-Show/experiments/watercolor/training_states
+    log: /content/dlcv_final/Mix-of-Show/experiments/watercolor
+    visualization: /content/dlcv_final/Mix-of-Show/experiments/watercolor/visualization
+  ]
+  train:[
+    optim_g:[
+      type: AdamW
+      lr: 0.0
+      scale_lr: False
+      weight_decay: 0.01
+      betas: [0.9, 0.999]
+    ]
+    kde_opt:[
+      type: KDELoss
+      loss_weight: 0.002
+      bandwidth: 0.5
+    ]
+    drop_start_iter: -1
+    unet_kv_drop_rate: 0.0
+    scheduler:[
+      type: LinearLR
+      num_epochs: 1000
+    ]
+    total_iter: 1000
+    warmup_iter: -1
+  ]
+  val:[
+    val_freq: 1000.0
+    save_img: True
+    compose_visualize: True
+    pbar: True
+    suffix: None
+    sample:[
+      num_inference_steps: 50
+      guidance_scale: 7.5
+    ]
+    metrics: None
+  ]
+  logger:[
+    print_freq: 10
+    save_checkpoint_freq: 200.0
+    use_tb_logger: False
+    wandb:[
+      project: None
+      resume_id: None
+    ]
+  ]
+  dist_params:[
+    backend: nccl
+    port: 29500
+  ]
+  dist: True
+  rank: 0
+  auto_resume: False
+  is_train: True
+  root_path: /content/dlcv_final/Mix-of-Show
+
+2024-12-09 11:06:14,689 INFO: Transform [Resize] is created.
+2024-12-09 11:06:14,689 INFO: Transform [HumanResizeCropFinal] is created.
+2024-12-09 11:06:14,689 INFO: Transform [ToTensor] is created.
+2024-12-09 11:06:14,689 INFO: Transform [Normalize] is created.
+2024-12-09 11:06:14,689 INFO: Transform [ShuffleCaption] is created.
+2024-12-09 11:06:14,689 INFO: Transform [EnhanceText] is created.
+2024-12-09 11:06:14,689 INFO: Dataset [LoraDataset] - LoraDataset is built.
+2024-12-09 11:06:14,690 INFO: Training statistics:
+	Number of train images: 3
+	Dataset enlarge ratio: 100
+	Batch size per gpu: 1
+	World size (gpu number): 1
+	Require iter number per epoch: 300
+	Total epochs: 4; iters: 1000.
+2024-12-09 11:06:14,690 INFO: Dataset [PromptDataset] - PromptDataset is built.
+2024-12-09 11:06:14,690 INFO: Number of val images/folders in PromptDataset: 1
+2024-12-09 11:06:15,959 INFO: 49408 is random initialized by: <rand-0.013>
+2024-12-09 11:06:15,960 INFO: 49409 is random initialized by: <rand-0.013>
+2024-12-09 11:06:15,960 INFO: 49410 is random initialized by: <rand-0.013>
+2024-12-09 11:06:15,960 INFO: 49411 is random initialized by: <rand-0.013>
+2024-12-09 11:06:15,960 INFO: 49412 is random initialized by: <rand-0.013>
+2024-12-09 11:06:15,960 INFO: 49413 is random initialized by: <rand-0.013>
+2024-12-09 11:06:15,960 INFO: 49414 is random initialized by: <rand-0.013>
+2024-12-09 11:06:15,960 INFO: 49415 is random initialized by: <rand-0.013>
+2024-12-09 11:06:15,960 INFO: 49416 is random initialized by: <rand-0.013>
+2024-12-09 11:06:15,961 INFO: 49417 is random initialized by: <rand-0.013>
+2024-12-09 11:06:15,961 INFO: 49418 is random initialized by: <rand-0.013>
+2024-12-09 11:06:15,961 INFO: 49419 is random initialized by: <rand-0.013>
+2024-12-09 11:06:15,961 INFO: 49420 is random initialized by: <rand-0.013>
+2024-12-09 11:06:15,961 INFO: 49421 is random initialized by: <rand-0.013>
+2024-12-09 11:06:15,961 INFO: 49422 is random initialized by: <rand-0.013>
+2024-12-09 11:06:15,961 INFO: 49423 is random initialized by: <rand-0.013>
+2024-12-09 11:06:16,617 INFO: 49424 is random initialized by: watercolor, 14211
+2024-12-09 11:06:16,617 INFO: 49425 is random initialized by: watercolor, 14211
+2024-12-09 11:06:16,618 INFO: 49426 is random initialized by: watercolor, 14211
+2024-12-09 11:06:16,618 INFO: 49427 is random initialized by: watercolor, 14211
+2024-12-09 11:06:16,618 INFO: 49428 is random initialized by: watercolor, 14211
+2024-12-09 11:06:16,618 INFO: 49429 is random initialized by: watercolor, 14211
+2024-12-09 11:06:16,619 INFO: 49430 is random initialized by: watercolor, 14211
+2024-12-09 11:06:16,619 INFO: 49431 is random initialized by: watercolor, 14211
+2024-12-09 11:06:16,619 INFO: 49432 is random initialized by: watercolor, 14211
+2024-12-09 11:06:16,619 INFO: 49433 is random initialized by: watercolor, 14211
+2024-12-09 11:06:16,620 INFO: 49434 is random initialized by: watercolor, 14211
+2024-12-09 11:06:16,620 INFO: 49435 is random initialized by: watercolor, 14211
+2024-12-09 11:06:16,620 INFO: 49436 is random initialized by: watercolor, 14211
+2024-12-09 11:06:16,620 INFO: 49437 is random initialized by: watercolor, 14211
+2024-12-09 11:06:16,620 INFO: 49438 is random initialized by: watercolor, 14211
+2024-12-09 11:06:16,621 INFO: 49439 is random initialized by: watercolor, 14211
+2024-12-09 11:06:16,624 INFO: optimizing embedding using lr: 0.001
+2024-12-09 11:06:16,639 INFO: optimizing text_encoder (48 LoRAs), using lr: 1e-05
+2024-12-09 11:06:16,677 INFO: optimizing unet (128 LoRAs), using lr: 0.0001
+2024-12-09 11:06:16,677 INFO: Network [EDLoRA] is created.
+2024-12-09 11:06:18,460 INFO: Network: DistributedDataParallel - EDLoRA, with parameters: 1,067,351,979
+2024-12-09 11:06:18,461 INFO: EDLoRA(
+  (vae): AutoencoderKL(
+    (encoder): Encoder(
+      (conv_in): Conv2d(3, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (down_blocks): ModuleList(
+        (0): DownEncoderBlock2D(
+          (resnets): ModuleList(
+            (0-1): 2 x ResnetBlock2D(
+              (norm1): GroupNorm(32, 128, eps=1e-06, affine=True)
+              (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (norm2): GroupNorm(32, 128, eps=1e-06, affine=True)
+              (dropout): Dropout(p=0.0, inplace=False)
+              (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (nonlinearity): SiLU()
+            )
+          )
+          (downsamplers): ModuleList(
+            (0): Downsample2D(
+              (conv): Conv2d(128, 128, kernel_size=(3, 3), stride=(2, 2))
+            )
+          )
+        )
+        (1): DownEncoderBlock2D(
+          (resnets): ModuleList(
+            (0): ResnetBlock2D(
+              (norm1): GroupNorm(32, 128, eps=1e-06, affine=True)
+              (conv1): Conv2d(128, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (norm2): GroupNorm(32, 256, eps=1e-06, affine=True)
+              (dropout): Dropout(p=0.0, inplace=False)
+              (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (nonlinearity): SiLU()
+              (conv_shortcut): Conv2d(128, 256, kernel_size=(1, 1), stride=(1, 1))
+            )
+            (1): ResnetBlock2D(
+              (norm1): GroupNorm(32, 256, eps=1e-06, affine=True)
+              (conv1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (norm2): GroupNorm(32, 256, eps=1e-06, affine=True)
+              (dropout): Dropout(p=0.0, inplace=False)
+              (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (nonlinearity): SiLU()
+            )
+          )
+          (downsamplers): ModuleList(
+            (0): Downsample2D(
+              (conv): Conv2d(256, 256, kernel_size=(3, 3), stride=(2, 2))
+            )
+          )
+        )
+        (2): DownEncoderBlock2D(
+          (resnets): ModuleList(
+            (0): ResnetBlock2D(
+              (norm1): GroupNorm(32, 256, eps=1e-06, affine=True)
+              (conv1): Conv2d(256, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (norm2): GroupNorm(32, 512, eps=1e-06, affine=True)
+              (dropout): Dropout(p=0.0, inplace=False)
+              (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (nonlinearity): SiLU()
+              (conv_shortcut): Conv2d(256, 512, kernel_size=(1, 1), stride=(1, 1))
+            )
+            (1): ResnetBlock2D(
+              (norm1): GroupNorm(32, 512, eps=1e-06, affine=True)
+              (conv1): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (norm2): GroupNorm(32, 512, eps=1e-06, affine=True)
+              (dropout): Dropout(p=0.0, inplace=False)
+              (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (nonlinearity): SiLU()
+            )
+          )
+          (downsamplers): ModuleList(
+            (0): Downsample2D(
+              (conv): Conv2d(512, 512, kernel_size=(3, 3), stride=(2, 2))
+            )
+          )
+        )
+        (3): DownEncoderBlock2D(
+          (resnets): ModuleList(
+            (0-1): 2 x ResnetBlock2D(
+              (norm1): GroupNorm(32, 512, eps=1e-06, affine=True)
+              (conv1): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (norm2): GroupNorm(32, 512, eps=1e-06, affine=True)
+              (dropout): Dropout(p=0.0, inplace=False)
+              (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (nonlinearity): SiLU()
+            )
+          )
+        )
+      )
+      (mid_block): UNetMidBlock2D(
+        (attentions): ModuleList(
+          (0): AttentionBlock(
+            (group_norm): GroupNorm(32, 512, eps=1e-06, affine=True)
+            (query): Linear(in_features=512, out_features=512, bias=True)
+            (key): Linear(in_features=512, out_features=512, bias=True)
+            (value): Linear(in_features=512, out_features=512, bias=True)
+            (proj_attn): Linear(in_features=512, out_features=512, bias=True)
+          )
+        )
+        (resnets): ModuleList(
+          (0-1): 2 x ResnetBlock2D(
+            (norm1): GroupNorm(32, 512, eps=1e-06, affine=True)
+            (conv1): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (norm2): GroupNorm(32, 512, eps=1e-06, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+          )
+        )
+      )
+      (conv_norm_out): GroupNorm(32, 512, eps=1e-06, affine=True)
+      (conv_act): SiLU()
+      (conv_out): Conv2d(512, 8, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    )
+    (decoder): Decoder(
+      (conv_in): Conv2d(4, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (up_blocks): ModuleList(
+        (0-1): 2 x UpDecoderBlock2D(
+          (resnets): ModuleList(
+            (0-2): 3 x ResnetBlock2D(
+              (norm1): GroupNorm(32, 512, eps=1e-06, affine=True)
+              (conv1): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (norm2): GroupNorm(32, 512, eps=1e-06, affine=True)
+              (dropout): Dropout(p=0.0, inplace=False)
+              (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (nonlinearity): SiLU()
+            )
+          )
+          (upsamplers): ModuleList(
+            (0): Upsample2D(
+              (conv): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            )
+          )
+        )
+        (2): UpDecoderBlock2D(
+          (resnets): ModuleList(
+            (0): ResnetBlock2D(
+              (norm1): GroupNorm(32, 512, eps=1e-06, affine=True)
+              (conv1): Conv2d(512, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (norm2): GroupNorm(32, 256, eps=1e-06, affine=True)
+              (dropout): Dropout(p=0.0, inplace=False)
+              (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (nonlinearity): SiLU()
+              (conv_shortcut): Conv2d(512, 256, kernel_size=(1, 1), stride=(1, 1))
+            )
+            (1-2): 2 x ResnetBlock2D(
+              (norm1): GroupNorm(32, 256, eps=1e-06, affine=True)
+              (conv1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (norm2): GroupNorm(32, 256, eps=1e-06, affine=True)
+              (dropout): Dropout(p=0.0, inplace=False)
+              (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (nonlinearity): SiLU()
+            )
+          )
+          (upsamplers): ModuleList(
+            (0): Upsample2D(
+              (conv): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            )
+          )
+        )
+        (3): UpDecoderBlock2D(
+          (resnets): ModuleList(
+            (0): ResnetBlock2D(
+              (norm1): GroupNorm(32, 256, eps=1e-06, affine=True)
+              (conv1): Conv2d(256, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (norm2): GroupNorm(32, 128, eps=1e-06, affine=True)
+              (dropout): Dropout(p=0.0, inplace=False)
+              (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (nonlinearity): SiLU()
+              (conv_shortcut): Conv2d(256, 128, kernel_size=(1, 1), stride=(1, 1))
+            )
+            (1-2): 2 x ResnetBlock2D(
+              (norm1): GroupNorm(32, 128, eps=1e-06, affine=True)
+              (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (norm2): GroupNorm(32, 128, eps=1e-06, affine=True)
+              (dropout): Dropout(p=0.0, inplace=False)
+              (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              (nonlinearity): SiLU()
+            )
+          )
+        )
+      )
+      (mid_block): UNetMidBlock2D(
+        (attentions): ModuleList(
+          (0): AttentionBlock(
+            (group_norm): GroupNorm(32, 512, eps=1e-06, affine=True)
+            (query): Linear(in_features=512, out_features=512, bias=True)
+            (key): Linear(in_features=512, out_features=512, bias=True)
+            (value): Linear(in_features=512, out_features=512, bias=True)
+            (proj_attn): Linear(in_features=512, out_features=512, bias=True)
+          )
+        )
+        (resnets): ModuleList(
+          (0-1): 2 x ResnetBlock2D(
+            (norm1): GroupNorm(32, 512, eps=1e-06, affine=True)
+            (conv1): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (norm2): GroupNorm(32, 512, eps=1e-06, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+          )
+        )
+      )
+      (conv_norm_out): GroupNorm(32, 128, eps=1e-06, affine=True)
+      (conv_act): SiLU()
+      (conv_out): Conv2d(128, 3, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    )
+    (quant_conv): Conv2d(8, 8, kernel_size=(1, 1), stride=(1, 1))
+    (post_quant_conv): Conv2d(4, 4, kernel_size=(1, 1), stride=(1, 1))
+  )
+  (text_encoder): CLIPTextModel(
+    (text_model): CLIPTextTransformer(
+      (embeddings): CLIPTextEmbeddings(
+        (token_embedding): Embedding(49440, 768)
+        (position_embedding): Embedding(77, 768)
+      )
+      (encoder): CLIPEncoder(
+        (layers): ModuleList(
+          (0-11): 12 x CLIPEncoderLayer(
+            (self_attn): CLIPSdpaAttention(
+              (k_proj): Linear(in_features=768, out_features=768, bias=True)
+              (v_proj): Linear(in_features=768, out_features=768, bias=True)
+              (q_proj): Linear(in_features=768, out_features=768, bias=True)
+              (out_proj): Linear(in_features=768, out_features=768, bias=True)
+            )
+            (layer_norm1): LayerNorm((768,), eps=1e-05, elementwise_affine=True)
+            (mlp): CLIPMLP(
+              (activation_fn): QuickGELUActivation()
+              (fc1): Linear(in_features=768, out_features=3072, bias=True)
+              (fc2): Linear(in_features=3072, out_features=768, bias=True)
+            )
+            (layer_norm2): LayerNorm((768,), eps=1e-05, elementwise_affine=True)
+          )
+        )
+      )
+      (final_layer_norm): LayerNorm((768,), eps=1e-05, elementwise_affine=True)
+    )
+  )
+  (unet): UNet2DConditionModel(
+    (conv_in): Conv2d(4, 320, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (time_proj): Timesteps()
+    (time_embedding): TimestepEmbedding(
+      (linear_1): Linear(in_features=320, out_features=1280, bias=True)
+      (act): SiLU()
+      (linear_2): Linear(in_features=1280, out_features=1280, bias=True)
+    )
+    (down_blocks): ModuleList(
+      (0): CrossAttnDownBlock2D(
+        (attentions): ModuleList(
+          (0-1): 2 x Transformer2DModel(
+            (norm): GroupNorm(32, 320, eps=1e-06, affine=True)
+            (proj_in): Conv2d(320, 320, kernel_size=(1, 1), stride=(1, 1))
+            (transformer_blocks): ModuleList(
+              (0): BasicTransformerBlock(
+                (attn1): CrossAttention(
+                  (to_q): Linear(in_features=320, out_features=320, bias=False)
+                  (to_k): Linear(in_features=320, out_features=320, bias=False)
+                  (to_v): Linear(in_features=320, out_features=320, bias=False)
+                  (to_out): ModuleList(
+                    (0): Linear(in_features=320, out_features=320, bias=True)
+                    (1): Dropout(p=0.0, inplace=False)
+                  )
+                )
+                (ff): FeedForward(
+                  (net): ModuleList(
+                    (0): GEGLU(
+                      (proj): Linear(in_features=320, out_features=2560, bias=True)
+                    )
+                    (1): Dropout(p=0.0, inplace=False)
+                    (2): Linear(in_features=1280, out_features=320, bias=True)
+                  )
+                )
+                (attn2): CrossAttention(
+                  (to_q): Linear(in_features=320, out_features=320, bias=False)
+                  (to_k): Linear(in_features=768, out_features=320, bias=False)
+                  (to_v): Linear(in_features=768, out_features=320, bias=False)
+                  (to_out): ModuleList(
+                    (0): Linear(in_features=320, out_features=320, bias=True)
+                    (1): Dropout(p=0.0, inplace=False)
+                  )
+                )
+                (norm1): LayerNorm((320,), eps=1e-05, elementwise_affine=True)
+                (norm2): LayerNorm((320,), eps=1e-05, elementwise_affine=True)
+                (norm3): LayerNorm((320,), eps=1e-05, elementwise_affine=True)
+              )
+            )
+            (proj_out): Conv2d(320, 320, kernel_size=(1, 1), stride=(1, 1))
+          )
+        )
+        (resnets): ModuleList(
+          (0-1): 2 x ResnetBlock2D(
+            (norm1): GroupNorm(32, 320, eps=1e-05, affine=True)
+            (conv1): Conv2d(320, 320, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (time_emb_proj): Linear(in_features=1280, out_features=320, bias=True)
+            (norm2): GroupNorm(32, 320, eps=1e-05, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(320, 320, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+          )
+        )
+        (downsamplers): ModuleList(
+          (0): Downsample2D(
+            (conv): Conv2d(320, 320, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+          )
+        )
+      )
+      (1): CrossAttnDownBlock2D(
+        (attentions): ModuleList(
+          (0-1): 2 x Transformer2DModel(
+            (norm): GroupNorm(32, 640, eps=1e-06, affine=True)
+            (proj_in): Conv2d(640, 640, kernel_size=(1, 1), stride=(1, 1))
+            (transformer_blocks): ModuleList(
+              (0): BasicTransformerBlock(
+                (attn1): CrossAttention(
+                  (to_q): Linear(in_features=640, out_features=640, bias=False)
+                  (to_k): Linear(in_features=640, out_features=640, bias=False)
+                  (to_v): Linear(in_features=640, out_features=640, bias=False)
+                  (to_out): ModuleList(
+                    (0): Linear(in_features=640, out_features=640, bias=True)
+                    (1): Dropout(p=0.0, inplace=False)
+                  )
+                )
+                (ff): FeedForward(
+                  (net): ModuleList(
+                    (0): GEGLU(
+                      (proj): Linear(in_features=640, out_features=5120, bias=True)
+                    )
+                    (1): Dropout(p=0.0, inplace=False)
+                    (2): Linear(in_features=2560, out_features=640, bias=True)
+                  )
+                )
+                (attn2): CrossAttention(
+                  (to_q): Linear(in_features=640, out_features=640, bias=False)
+                  (to_k): Linear(in_features=768, out_features=640, bias=False)
+                  (to_v): Linear(in_features=768, out_features=640, bias=False)
+                  (to_out): ModuleList(
+                    (0): Linear(in_features=640, out_features=640, bias=True)
+                    (1): Dropout(p=0.0, inplace=False)
+                  )
+                )
+                (norm1): LayerNorm((640,), eps=1e-05, elementwise_affine=True)
+                (norm2): LayerNorm((640,), eps=1e-05, elementwise_affine=True)
+                (norm3): LayerNorm((640,), eps=1e-05, elementwise_affine=True)
+              )
+            )
+            (proj_out): Conv2d(640, 640, kernel_size=(1, 1), stride=(1, 1))
+          )
+        )
+        (resnets): ModuleList(
+          (0): ResnetBlock2D(
+            (norm1): GroupNorm(32, 320, eps=1e-05, affine=True)
+            (conv1): Conv2d(320, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (time_emb_proj): Linear(in_features=1280, out_features=640, bias=True)
+            (norm2): GroupNorm(32, 640, eps=1e-05, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(640, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+            (conv_shortcut): Conv2d(320, 640, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (1): ResnetBlock2D(
+            (norm1): GroupNorm(32, 640, eps=1e-05, affine=True)
+            (conv1): Conv2d(640, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (time_emb_proj): Linear(in_features=1280, out_features=640, bias=True)
+            (norm2): GroupNorm(32, 640, eps=1e-05, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(640, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+          )
+        )
+        (downsamplers): ModuleList(
+          (0): Downsample2D(
+            (conv): Conv2d(640, 640, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+          )
+        )
+      )
+      (2): CrossAttnDownBlock2D(
+        (attentions): ModuleList(
+          (0-1): 2 x Transformer2DModel(
+            (norm): GroupNorm(32, 1280, eps=1e-06, affine=True)
+            (proj_in): Conv2d(1280, 1280, kernel_size=(1, 1), stride=(1, 1))
+            (transformer_blocks): ModuleList(
+              (0): BasicTransformerBlock(
+                (attn1): CrossAttention(
+                  (to_q): Linear(in_features=1280, out_features=1280, bias=False)
+                  (to_k): Linear(in_features=1280, out_features=1280, bias=False)
+                  (to_v): Linear(in_features=1280, out_features=1280, bias=False)
+                  (to_out): ModuleList(
+                    (0): Linear(in_features=1280, out_features=1280, bias=True)
+                    (1): Dropout(p=0.0, inplace=False)
+                  )
+                )
+                (ff): FeedForward(
+                  (net): ModuleList(
+                    (0): GEGLU(
+                      (proj): Linear(in_features=1280, out_features=10240, bias=True)
+                    )
+                    (1): Dropout(p=0.0, inplace=False)
+                    (2): Linear(in_features=5120, out_features=1280, bias=True)
+                  )
+                )
+                (attn2): CrossAttention(
+                  (to_q): Linear(in_features=1280, out_features=1280, bias=False)
+                  (to_k): Linear(in_features=768, out_features=1280, bias=False)
+                  (to_v): Linear(in_features=768, out_features=1280, bias=False)
+                  (to_out): ModuleList(
+                    (0): Linear(in_features=1280, out_features=1280, bias=True)
+                    (1): Dropout(p=0.0, inplace=False)
+                  )
+                )
+                (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+                (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+                (norm3): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              )
+            )
+            (proj_out): Conv2d(1280, 1280, kernel_size=(1, 1), stride=(1, 1))
+          )
+        )
+        (resnets): ModuleList(
+          (0): ResnetBlock2D(
+            (norm1): GroupNorm(32, 640, eps=1e-05, affine=True)
+            (conv1): Conv2d(640, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (time_emb_proj): Linear(in_features=1280, out_features=1280, bias=True)
+            (norm2): GroupNorm(32, 1280, eps=1e-05, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(1280, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+            (conv_shortcut): Conv2d(640, 1280, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (1): ResnetBlock2D(
+            (norm1): GroupNorm(32, 1280, eps=1e-05, affine=True)
+            (conv1): Conv2d(1280, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (time_emb_proj): Linear(in_features=1280, out_features=1280, bias=True)
+            (norm2): GroupNorm(32, 1280, eps=1e-05, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(1280, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+          )
+        )
+        (downsamplers): ModuleList(
+          (0): Downsample2D(
+            (conv): Conv2d(1280, 1280, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+          )
+        )
+      )
+      (3): DownBlock2D(
+        (resnets): ModuleList(
+          (0-1): 2 x ResnetBlock2D(
+            (norm1): GroupNorm(32, 1280, eps=1e-05, affine=True)
+            (conv1): Conv2d(1280, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (time_emb_proj): Linear(in_features=1280, out_features=1280, bias=True)
+            (norm2): GroupNorm(32, 1280, eps=1e-05, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(1280, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+          )
+        )
+      )
+    )
+    (up_blocks): ModuleList(
+      (0): UpBlock2D(
+        (resnets): ModuleList(
+          (0-2): 3 x ResnetBlock2D(
+            (norm1): GroupNorm(32, 2560, eps=1e-05, affine=True)
+            (conv1): Conv2d(2560, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (time_emb_proj): Linear(in_features=1280, out_features=1280, bias=True)
+            (norm2): GroupNorm(32, 1280, eps=1e-05, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(1280, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+            (conv_shortcut): Conv2d(2560, 1280, kernel_size=(1, 1), stride=(1, 1))
+          )
+        )
+        (upsamplers): ModuleList(
+          (0): Upsample2D(
+            (conv): Conv2d(1280, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+          )
+        )
+      )
+      (1): CrossAttnUpBlock2D(
+        (attentions): ModuleList(
+          (0-2): 3 x Transformer2DModel(
+            (norm): GroupNorm(32, 1280, eps=1e-06, affine=True)
+            (proj_in): Conv2d(1280, 1280, kernel_size=(1, 1), stride=(1, 1))
+            (transformer_blocks): ModuleList(
+              (0): BasicTransformerBlock(
+                (attn1): CrossAttention(
+                  (to_q): Linear(in_features=1280, out_features=1280, bias=False)
+                  (to_k): Linear(in_features=1280, out_features=1280, bias=False)
+                  (to_v): Linear(in_features=1280, out_features=1280, bias=False)
+                  (to_out): ModuleList(
+                    (0): Linear(in_features=1280, out_features=1280, bias=True)
+                    (1): Dropout(p=0.0, inplace=False)
+                  )
+                )
+                (ff): FeedForward(
+                  (net): ModuleList(
+                    (0): GEGLU(
+                      (proj): Linear(in_features=1280, out_features=10240, bias=True)
+                    )
+                    (1): Dropout(p=0.0, inplace=False)
+                    (2): Linear(in_features=5120, out_features=1280, bias=True)
+                  )
+                )
+                (attn2): CrossAttention(
+                  (to_q): Linear(in_features=1280, out_features=1280, bias=False)
+                  (to_k): Linear(in_features=768, out_features=1280, bias=False)
+                  (to_v): Linear(in_features=768, out_features=1280, bias=False)
+                  (to_out): ModuleList(
+                    (0): Linear(in_features=1280, out_features=1280, bias=True)
+                    (1): Dropout(p=0.0, inplace=False)
+                  )
+                )
+                (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+                (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+                (norm3): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              )
+            )
+            (proj_out): Conv2d(1280, 1280, kernel_size=(1, 1), stride=(1, 1))
+          )
+        )
+        (resnets): ModuleList(
+          (0-1): 2 x ResnetBlock2D(
+            (norm1): GroupNorm(32, 2560, eps=1e-05, affine=True)
+            (conv1): Conv2d(2560, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (time_emb_proj): Linear(in_features=1280, out_features=1280, bias=True)
+            (norm2): GroupNorm(32, 1280, eps=1e-05, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(1280, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+            (conv_shortcut): Conv2d(2560, 1280, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (2): ResnetBlock2D(
+            (norm1): GroupNorm(32, 1920, eps=1e-05, affine=True)
+            (conv1): Conv2d(1920, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (time_emb_proj): Linear(in_features=1280, out_features=1280, bias=True)
+            (norm2): GroupNorm(32, 1280, eps=1e-05, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(1280, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+            (conv_shortcut): Conv2d(1920, 1280, kernel_size=(1, 1), stride=(1, 1))
+          )
+        )
+        (upsamplers): ModuleList(
+          (0): Upsample2D(
+            (conv): Conv2d(1280, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+          )
+        )
+      )
+      (2): CrossAttnUpBlock2D(
+        (attentions): ModuleList(
+          (0-2): 3 x Transformer2DModel(
+            (norm): GroupNorm(32, 640, eps=1e-06, affine=True)
+            (proj_in): Conv2d(640, 640, kernel_size=(1, 1), stride=(1, 1))
+            (transformer_blocks): ModuleList(
+              (0): BasicTransformerBlock(
+                (attn1): CrossAttention(
+                  (to_q): Linear(in_features=640, out_features=640, bias=False)
+                  (to_k): Linear(in_features=640, out_features=640, bias=False)
+                  (to_v): Linear(in_features=640, out_features=640, bias=False)
+                  (to_out): ModuleList(
+                    (0): Linear(in_features=640, out_features=640, bias=True)
+                    (1): Dropout(p=0.0, inplace=False)
+                  )
+                )
+                (ff): FeedForward(
+                  (net): ModuleList(
+                    (0): GEGLU(
+                      (proj): Linear(in_features=640, out_features=5120, bias=True)
+                    )
+                    (1): Dropout(p=0.0, inplace=False)
+                    (2): Linear(in_features=2560, out_features=640, bias=True)
+                  )
+                )
+                (attn2): CrossAttention(
+                  (to_q): Linear(in_features=640, out_features=640, bias=False)
+                  (to_k): Linear(in_features=768, out_features=640, bias=False)
+                  (to_v): Linear(in_features=768, out_features=640, bias=False)
+                  (to_out): ModuleList(
+                    (0): Linear(in_features=640, out_features=640, bias=True)
+                    (1): Dropout(p=0.0, inplace=False)
+                  )
+                )
+                (norm1): LayerNorm((640,), eps=1e-05, elementwise_affine=True)
+                (norm2): LayerNorm((640,), eps=1e-05, elementwise_affine=True)
+                (norm3): LayerNorm((640,), eps=1e-05, elementwise_affine=True)
+              )
+            )
+            (proj_out): Conv2d(640, 640, kernel_size=(1, 1), stride=(1, 1))
+          )
+        )
+        (resnets): ModuleList(
+          (0): ResnetBlock2D(
+            (norm1): GroupNorm(32, 1920, eps=1e-05, affine=True)
+            (conv1): Conv2d(1920, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (time_emb_proj): Linear(in_features=1280, out_features=640, bias=True)
+            (norm2): GroupNorm(32, 640, eps=1e-05, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(640, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+            (conv_shortcut): Conv2d(1920, 640, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (1): ResnetBlock2D(
+            (norm1): GroupNorm(32, 1280, eps=1e-05, affine=True)
+            (conv1): Conv2d(1280, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (time_emb_proj): Linear(in_features=1280, out_features=640, bias=True)
+            (norm2): GroupNorm(32, 640, eps=1e-05, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(640, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+            (conv_shortcut): Conv2d(1280, 640, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (2): ResnetBlock2D(
+            (norm1): GroupNorm(32, 960, eps=1e-05, affine=True)
+            (conv1): Conv2d(960, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (time_emb_proj): Linear(in_features=1280, out_features=640, bias=True)
+            (norm2): GroupNorm(32, 640, eps=1e-05, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(640, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+            (conv_shortcut): Conv2d(960, 640, kernel_size=(1, 1), stride=(1, 1))
+          )
+        )
+        (upsamplers): ModuleList(
+          (0): Upsample2D(
+            (conv): Conv2d(640, 640, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+          )
+        )
+      )
+      (3): CrossAttnUpBlock2D(
+        (attentions): ModuleList(
+          (0-2): 3 x Transformer2DModel(
+            (norm): GroupNorm(32, 320, eps=1e-06, affine=True)
+            (proj_in): Conv2d(320, 320, kernel_size=(1, 1), stride=(1, 1))
+            (transformer_blocks): ModuleList(
+              (0): BasicTransformerBlock(
+                (attn1): CrossAttention(
+                  (to_q): Linear(in_features=320, out_features=320, bias=False)
+                  (to_k): Linear(in_features=320, out_features=320, bias=False)
+                  (to_v): Linear(in_features=320, out_features=320, bias=False)
+                  (to_out): ModuleList(
+                    (0): Linear(in_features=320, out_features=320, bias=True)
+                    (1): Dropout(p=0.0, inplace=False)
+                  )
+                )
+                (ff): FeedForward(
+                  (net): ModuleList(
+                    (0): GEGLU(
+                      (proj): Linear(in_features=320, out_features=2560, bias=True)
+                    )
+                    (1): Dropout(p=0.0, inplace=False)
+                    (2): Linear(in_features=1280, out_features=320, bias=True)
+                  )
+                )
+                (attn2): CrossAttention(
+                  (to_q): Linear(in_features=320, out_features=320, bias=False)
+                  (to_k): Linear(in_features=768, out_features=320, bias=False)
+                  (to_v): Linear(in_features=768, out_features=320, bias=False)
+                  (to_out): ModuleList(
+                    (0): Linear(in_features=320, out_features=320, bias=True)
+                    (1): Dropout(p=0.0, inplace=False)
+                  )
+                )
+                (norm1): LayerNorm((320,), eps=1e-05, elementwise_affine=True)
+                (norm2): LayerNorm((320,), eps=1e-05, elementwise_affine=True)
+                (norm3): LayerNorm((320,), eps=1e-05, elementwise_affine=True)
+              )
+            )
+            (proj_out): Conv2d(320, 320, kernel_size=(1, 1), stride=(1, 1))
+          )
+        )
+        (resnets): ModuleList(
+          (0): ResnetBlock2D(
+            (norm1): GroupNorm(32, 960, eps=1e-05, affine=True)
+            (conv1): Conv2d(960, 320, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (time_emb_proj): Linear(in_features=1280, out_features=320, bias=True)
+            (norm2): GroupNorm(32, 320, eps=1e-05, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(320, 320, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+            (conv_shortcut): Conv2d(960, 320, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (1-2): 2 x ResnetBlock2D(
+            (norm1): GroupNorm(32, 640, eps=1e-05, affine=True)
+            (conv1): Conv2d(640, 320, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (time_emb_proj): Linear(in_features=1280, out_features=320, bias=True)
+            (norm2): GroupNorm(32, 320, eps=1e-05, affine=True)
+            (dropout): Dropout(p=0.0, inplace=False)
+            (conv2): Conv2d(320, 320, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            (nonlinearity): SiLU()
+            (conv_shortcut): Conv2d(640, 320, kernel_size=(1, 1), stride=(1, 1))
+          )
+        )
+      )
+    )
+    (mid_block): UNetMidBlock2DCrossAttn(
+      (attentions): ModuleList(
+        (0): Transformer2DModel(
+          (norm): GroupNorm(32, 1280, eps=1e-06, affine=True)
+          (proj_in): Conv2d(1280, 1280, kernel_size=(1, 1), stride=(1, 1))
+          (transformer_blocks): ModuleList(
+            (0): BasicTransformerBlock(
+              (attn1): CrossAttention(
+                (to_q): Linear(in_features=1280, out_features=1280, bias=False)
+                (to_k): Linear(in_features=1280, out_features=1280, bias=False)
+                (to_v): Linear(in_features=1280, out_features=1280, bias=False)
+                (to_out): ModuleList(
+                  (0): Linear(in_features=1280, out_features=1280, bias=True)
+                  (1): Dropout(p=0.0, inplace=False)
+                )
+              )
+              (ff): FeedForward(
+                (net): ModuleList(
+                  (0): GEGLU(
+                    (proj): Linear(in_features=1280, out_features=10240, bias=True)
+                  )
+                  (1): Dropout(p=0.0, inplace=False)
+                  (2): Linear(in_features=5120, out_features=1280, bias=True)
+                )
+              )
+              (attn2): CrossAttention(
+                (to_q): Linear(in_features=1280, out_features=1280, bias=False)
+                (to_k): Linear(in_features=768, out_features=1280, bias=False)
+                (to_v): Linear(in_features=768, out_features=1280, bias=False)
+                (to_out): ModuleList(
+                  (0): Linear(in_features=1280, out_features=1280, bias=True)
+                  (1): Dropout(p=0.0, inplace=False)
+                )
+              )
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (norm3): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+            )
+          )
+          (proj_out): Conv2d(1280, 1280, kernel_size=(1, 1), stride=(1, 1))
+        )
+      )
+      (resnets): ModuleList(
+        (0-1): 2 x ResnetBlock2D(
+          (norm1): GroupNorm(32, 1280, eps=1e-05, affine=True)
+          (conv1): Conv2d(1280, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+          (time_emb_proj): Linear(in_features=1280, out_features=1280, bias=True)
+          (norm2): GroupNorm(32, 1280, eps=1e-05, affine=True)
+          (dropout): Dropout(p=0.0, inplace=False)
+          (conv2): Conv2d(1280, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+          (nonlinearity): SiLU()
+        )
+      )
+    )
+    (conv_norm_out): GroupNorm(32, 320, eps=1e-05, affine=True)
+    (conv_act): SiLU()
+    (conv_out): Conv2d(320, 4, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  )
+  (text_encoder_lora): ModuleList(
+    (0-47): 48 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=768, bias=False)
+    )
+  )
+  (unet_lora): ModuleList(
+    (0-4): 5 x LoRALinearLayer(
+      (down): Linear(in_features=320, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=320, bias=False)
+    )
+    (5-6): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=320, bias=False)
+    )
+    (7-12): 6 x LoRALinearLayer(
+      (down): Linear(in_features=320, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=320, bias=False)
+    )
+    (13-14): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=320, bias=False)
+    )
+    (15): LoRALinearLayer(
+      (down): Linear(in_features=320, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=320, bias=False)
+    )
+    (16-20): 5 x LoRALinearLayer(
+      (down): Linear(in_features=640, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=640, bias=False)
+    )
+    (21-22): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=640, bias=False)
+    )
+    (23-28): 6 x LoRALinearLayer(
+      (down): Linear(in_features=640, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=640, bias=False)
+    )
+    (29-30): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=640, bias=False)
+    )
+    (31): LoRALinearLayer(
+      (down): Linear(in_features=640, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=640, bias=False)
+    )
+    (32-36): 5 x LoRALinearLayer(
+      (down): Linear(in_features=1280, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=1280, bias=False)
+    )
+    (37-38): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=1280, bias=False)
+    )
+    (39-44): 6 x LoRALinearLayer(
+      (down): Linear(in_features=1280, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=1280, bias=False)
+    )
+    (45-46): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=1280, bias=False)
+    )
+    (47-52): 6 x LoRALinearLayer(
+      (down): Linear(in_features=1280, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=1280, bias=False)
+    )
+    (53-54): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=1280, bias=False)
+    )
+    (55-60): 6 x LoRALinearLayer(
+      (down): Linear(in_features=1280, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=1280, bias=False)
+    )
+    (61-62): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=1280, bias=False)
+    )
+    (63-68): 6 x LoRALinearLayer(
+      (down): Linear(in_features=1280, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=1280, bias=False)
+    )
+    (69-70): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=1280, bias=False)
+    )
+    (71): LoRALinearLayer(
+      (down): Linear(in_features=1280, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=1280, bias=False)
+    )
+    (72-76): 5 x LoRALinearLayer(
+      (down): Linear(in_features=640, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=640, bias=False)
+    )
+    (77-78): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=640, bias=False)
+    )
+    (79-84): 6 x LoRALinearLayer(
+      (down): Linear(in_features=640, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=640, bias=False)
+    )
+    (85-86): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=640, bias=False)
+    )
+    (87-92): 6 x LoRALinearLayer(
+      (down): Linear(in_features=640, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=640, bias=False)
+    )
+    (93-94): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=640, bias=False)
+    )
+    (95): LoRALinearLayer(
+      (down): Linear(in_features=640, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=640, bias=False)
+    )
+    (96-100): 5 x LoRALinearLayer(
+      (down): Linear(in_features=320, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=320, bias=False)
+    )
+    (101-102): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=320, bias=False)
+    )
+    (103-108): 6 x LoRALinearLayer(
+      (down): Linear(in_features=320, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=320, bias=False)
+    )
+    (109-110): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=320, bias=False)
+    )
+    (111-116): 6 x LoRALinearLayer(
+      (down): Linear(in_features=320, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=320, bias=False)
+    )
+    (117-118): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=320, bias=False)
+    )
+    (119): LoRALinearLayer(
+      (down): Linear(in_features=320, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=320, bias=False)
+    )
+    (120-124): 5 x LoRALinearLayer(
+      (down): Linear(in_features=1280, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=1280, bias=False)
+    )
+    (125-126): 2 x LoRALinearLayer(
+      (down): Linear(in_features=768, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=1280, bias=False)
+    )
+    (127): LoRALinearLayer(
+      (down): Linear(in_features=1280, out_features=4, bias=False)
+      (up): Linear(in_features=4, out_features=1280, bias=False)
+    )
+  )
+)
+2024-12-09 11:06:18,555 INFO: Loss [KDELoss] is created.
+2024-12-09 11:06:18,556 INFO: Scale learning rate to: 0.00e+00
+2024-12-09 11:06:18,557 INFO: Model [EDLoraModel] is created.
+2024-12-09 11:06:25,037 INFO: Use cuda prefetch dataloader
+2024-12-09 11:06:25,038 INFO: Start training from epoch: 0, iter: 0
+2024-12-09 11:06:49,342 INFO: [water..][epoch:  0, iter:      10, lr:(9.910e-04,9.910e-06,9.910e-05,)] [eta: 0:16:43, time (data): 2.430 (0.656)] loss: -3.8871e-01 token_reg: -4.1070e-01 Norm_mean: 3.9228e-01 
+2024-12-09 11:07:01,822 INFO: [water..][epoch:  0, iter:      20, lr:(9.810e-04,9.810e-06,9.810e-05,)] [eta: 0:18:21, time (data): 1.839 (0.328)] loss: -3.4699e-01 token_reg: -4.1070e-01 Norm_mean: 4.0395e-01 
+2024-12-09 11:07:14,301 INFO: [water..][epoch:  0, iter:      30, lr:(9.710e-04,9.710e-06,9.710e-05,)] [eta: 0:18:48, time (data): 1.642 (0.219)] loss: -1.6888e-01 token_reg: -4.1070e-01 Norm_mean: 4.1508e-01 
+2024-12-09 11:07:26,709 INFO: [water..][epoch:  0, iter:      40, lr:(9.610e-04,9.610e-06,9.610e-05,)] [eta: 0:18:54, time (data): 1.542 (0.165)] loss: 9.8617e-01 token_reg: -4.1070e-01 Norm_mean: 4.2415e-01 
+2024-12-09 11:07:39,135 INFO: [water..][epoch:  0, iter:      50, lr:(9.510e-04,9.510e-06,9.510e-05,)] [eta: 0:18:54, time (data): 1.482 (0.132)] loss: -3.1053e-01 token_reg: -4.1070e-01 Norm_mean: 4.3317e-01 
+2024-12-09 11:07:51,513 INFO: [water..][epoch:  0, iter:      60, lr:(9.410e-04,9.410e-06,9.410e-05,)] [eta: 0:18:48, time (data): 1.441 (0.110)] loss: 9.1065e-01 token_reg: -4.1070e-01 Norm_mean: 4.4040e-01 
+2024-12-09 11:08:03,897 INFO: [water..][epoch:  0, iter:      70, lr:(9.310e-04,9.310e-06,9.310e-05,)] [eta: 0:18:41, time (data): 1.412 (0.094)] loss: -2.3363e-01 token_reg: -4.1069e-01 Norm_mean: 4.4705e-01 
+2024-12-09 11:08:16,292 INFO: [water..][epoch:  0, iter:      80, lr:(9.210e-04,9.210e-06,9.210e-05,)] [eta: 0:18:33, time (data): 1.391 (0.083)] loss: -3.9235e-01 token_reg: -4.1069e-01 Norm_mean: 4.5415e-01 
+2024-12-09 11:08:28,695 INFO: [water..][epoch:  0, iter:      90, lr:(9.110e-04,9.110e-06,9.110e-05,)] [eta: 0:18:23, time (data): 1.374 (0.073)] loss: -3.8505e-01 token_reg: -4.1069e-01 Norm_mean: 4.6015e-01 
+2024-12-09 11:08:41,089 INFO: [water..][epoch:  0, iter:     100, lr:(9.010e-04,9.010e-06,9.010e-05,)] [eta: 0:18:13, time (data): 1.360 (0.066)] loss: 2.7582e-01 token_reg: -4.1069e-01 Norm_mean: 4.6673e-01 
+2024-12-09 11:08:53,484 INFO: [water..][epoch:  0, iter:     110, lr:(8.910e-04,8.910e-06,8.910e-05,)] [eta: 0:18:03, time (data): 1.349 (0.060)] loss: -1.5632e-01 token_reg: -4.1069e-01 Norm_mean: 4.7481e-01 
+2024-12-09 11:09:05,888 INFO: [water..][epoch:  0, iter:     120, lr:(8.810e-04,8.810e-06,8.810e-05,)] [eta: 0:17:52, time (data): 1.340 (0.055)] loss: -7.2901e-02 token_reg: -4.1069e-01 Norm_mean: 4.8130e-01 
+2024-12-09 11:09:18,276 INFO: [water..][epoch:  0, iter:     130, lr:(8.710e-04,8.710e-06,8.710e-05,)] [eta: 0:17:41, time (data): 1.332 (0.051)] loss: 3.4633e-01 token_reg: -4.1069e-01 Norm_mean: 4.8799e-01 
+2024-12-09 11:09:30,669 INFO: [water..][epoch:  0, iter:     140, lr:(8.610e-04,8.610e-06,8.610e-05,)] [eta: 0:17:30, time (data): 1.326 (0.047)] loss: -3.9128e-01 token_reg: -4.1069e-01 Norm_mean: 4.9495e-01 
+2024-12-09 11:09:43,065 INFO: [water..][epoch:  0, iter:     150, lr:(8.510e-04,8.510e-06,8.510e-05,)] [eta: 0:17:19, time (data): 1.320 (0.044)] loss: -2.3629e-01 token_reg: -4.1069e-01 Norm_mean: 5.0297e-01 
+2024-12-09 11:09:55,460 INFO: [water..][epoch:  0, iter:     160, lr:(8.410e-04,8.410e-06,8.410e-05,)] [eta: 0:17:08, time (data): 1.315 (0.042)] loss: -3.8270e-01 token_reg: -4.1068e-01 Norm_mean: 5.1046e-01 
+2024-12-09 11:10:07,855 INFO: [water..][epoch:  0, iter:     170, lr:(8.310e-04,8.310e-06,8.310e-05,)] [eta: 0:16:56, time (data): 1.311 (0.039)] loss: -3.9629e-01 token_reg: -4.1068e-01 Norm_mean: 5.1516e-01 
+2024-12-09 11:10:20,255 INFO: [water..][epoch:  0, iter:     180, lr:(8.210e-04,8.210e-06,8.210e-05,)] [eta: 0:16:44, time (data): 1.307 (0.037)] loss: -3.4008e-01 token_reg: -4.1068e-01 Norm_mean: 5.1884e-01 
+2024-12-09 11:10:32,650 INFO: [water..][epoch:  0, iter:     190, lr:(8.110e-04,8.110e-06,8.110e-05,)] [eta: 0:16:33, time (data): 1.303 (0.035)] loss: -3.9185e-01 token_reg: -4.1068e-01 Norm_mean: 5.2287e-01 
+2024-12-09 11:10:45,046 INFO: [water..][epoch:  0, iter:     200, lr:(8.010e-04,8.010e-06,8.010e-05,)] [eta: 0:16:21, time (data): 1.300 (0.033)] loss: 1.0105e+00 token_reg: -4.1068e-01 Norm_mean: 5.2681e-01 
+2024-12-09 11:10:45,047 INFO: Saving models and training states.
+2024-12-09 11:10:45,066 INFO: text_encoder moved: 5.774676886479332e-05
+2024-12-09 11:10:45,102 INFO: unet moved: 0.0006451652004670905
+2024-12-09 11:10:58,140 INFO: [water..][epoch:  0, iter:     210, lr:(7.910e-04,7.910e-06,7.910e-05,)] [eta: 0:16:12, time (data): 1.238 (0.000)] loss: 7.5134e-01 token_reg: -4.1068e-01 Norm_mean: 5.3068e-01 
+2024-12-09 11:11:10,529 INFO: [water..][epoch:  0, iter:     220, lr:(7.810e-04,7.810e-06,7.810e-05,)] [eta: 0:15:59, time (data): 1.239 (0.000)] loss: 1.4115e+00 token_reg: -4.1068e-01 Norm_mean: 5.3487e-01 
+2024-12-09 11:11:22,927 INFO: [water..][epoch:  0, iter:     230, lr:(7.710e-04,7.710e-06,7.710e-05,)] [eta: 0:15:47, time (data): 1.239 (0.000)] loss: 2.1832e-01 token_reg: -4.1068e-01 Norm_mean: 5.3839e-01 
+2024-12-09 11:11:35,332 INFO: [water..][epoch:  0, iter:     240, lr:(7.610e-04,7.610e-06,7.610e-05,)] [eta: 0:15:35, time (data): 1.239 (0.000)] loss: 1.2313e+00 token_reg: -4.1068e-01 Norm_mean: 5.4135e-01 
+2024-12-09 11:11:47,729 INFO: [water..][epoch:  0, iter:     250, lr:(7.510e-04,7.510e-06,7.510e-05,)] [eta: 0:15:23, time (data): 1.239 (0.001)] loss: 1.6021e+00 token_reg: -4.1068e-01 Norm_mean: 5.4515e-01 
+2024-12-09 11:12:00,124 INFO: [water..][epoch:  0, iter:     260, lr:(7.410e-04,7.410e-06,7.410e-05,)] [eta: 0:15:11, time (data): 1.239 (0.001)] loss: 4.1450e-01 token_reg: -4.1068e-01 Norm_mean: 5.4896e-01 
+2024-12-09 11:12:12,520 INFO: [water..][epoch:  0, iter:     270, lr:(7.310e-04,7.310e-06,7.310e-05,)] [eta: 0:14:59, time (data): 1.239 (0.001)] loss: 1.1509e+00 token_reg: -4.1068e-01 Norm_mean: 5.5318e-01 
+2024-12-09 11:12:24,916 INFO: [water..][epoch:  0, iter:     280, lr:(7.210e-04,7.210e-06,7.210e-05,)] [eta: 0:14:47, time (data): 1.239 (0.001)] loss: -1.4712e-01 token_reg: -4.1068e-01 Norm_mean: 5.5918e-01 
+2024-12-09 11:12:37,313 INFO: [water..][epoch:  0, iter:     290, lr:(7.110e-04,7.110e-06,7.110e-05,)] [eta: 0:14:34, time (data): 1.239 (0.001)] loss: 2.4825e-01 token_reg: -4.1067e-01 Norm_mean: 5.6432e-01 
+2024-12-09 11:12:51,065 INFO: [water..][epoch:  0, iter:     300, lr:(7.010e-04,7.010e-06,7.010e-05,)] [eta: 0:14:25, time (data): 1.253 (0.014)] loss: 1.0392e-01 token_reg: -4.1067e-01 Norm_mean: 5.6736e-01 
+2024-12-09 11:13:09,900 INFO: [water..][epoch:  1, iter:     310, lr:(6.910e-04,6.910e-06,6.910e-05,)] [eta: 0:14:27, time (data): 1.311 (0.072)] loss: -3.3765e-01 token_reg: -4.1067e-01 Norm_mean: 5.6958e-01 
+2024-12-09 11:13:22,316 INFO: [water..][epoch:  1, iter:     320, lr:(6.810e-04,6.810e-06,6.810e-05,)] [eta: 0:14:14, time (data): 1.305 (0.066)] loss: 1.1436e-01 token_reg: -4.1067e-01 Norm_mean: 5.7174e-01 
+2024-12-09 11:13:34,754 INFO: [water..][epoch:  1, iter:     330, lr:(6.710e-04,6.710e-06,6.710e-05,)] [eta: 0:14:01, time (data): 1.300 (0.061)] loss: -3.8816e-01 token_reg: -4.1067e-01 Norm_mean: 5.7429e-01 
+2024-12-09 11:13:47,170 INFO: [water..][epoch:  1, iter:     340, lr:(6.610e-04,6.610e-06,6.610e-05,)] [eta: 0:13:49, time (data): 1.296 (0.057)] loss: 1.6121e+00 token_reg: -4.1067e-01 Norm_mean: 5.7630e-01 
+2024-12-09 11:13:59,562 INFO: [water..][epoch:  1, iter:     350, lr:(6.510e-04,6.510e-06,6.510e-05,)] [eta: 0:13:36, time (data): 1.292 (0.053)] loss: 6.5360e-01 token_reg: -4.1067e-01 Norm_mean: 5.7833e-01 
+2024-12-09 11:14:11,961 INFO: [water..][epoch:  1, iter:     360, lr:(6.410e-04,6.410e-06,6.410e-05,)] [eta: 0:13:23, time (data): 1.289 (0.050)] loss: -1.9321e-01 token_reg: -4.1067e-01 Norm_mean: 5.8108e-01 
+2024-12-09 11:14:24,354 INFO: [water..][epoch:  1, iter:     370, lr:(6.310e-04,6.310e-06,6.310e-05,)] [eta: 0:13:10, time (data): 1.286 (0.047)] loss: -3.8041e-01 token_reg: -4.1067e-01 Norm_mean: 5.8360e-01 
+2024-12-09 11:14:36,754 INFO: [water..][epoch:  1, iter:     380, lr:(6.210e-04,6.210e-06,6.210e-05,)] [eta: 0:12:57, time (data): 1.283 (0.044)] loss: -3.7872e-01 token_reg: -4.1067e-01 Norm_mean: 5.8585e-01 
+2024-12-09 11:14:49,187 INFO: [water..][epoch:  1, iter:     390, lr:(6.110e-04,6.110e-06,6.110e-05,)] [eta: 0:12:44, time (data): 1.281 (0.042)] loss: 1.0307e+00 token_reg: -4.1067e-01 Norm_mean: 5.8795e-01 
+2024-12-09 11:15:01,586 INFO: [water..][epoch:  1, iter:     400, lr:(6.010e-04,6.010e-06,6.010e-05,)] [eta: 0:12:31, time (data): 1.279 (0.040)] loss: -3.7056e-01 token_reg: -4.1067e-01 Norm_mean: 5.9010e-01 
+2024-12-09 11:15:01,587 INFO: Saving models and training states.
+2024-12-09 11:15:01,605 INFO: text_encoder moved: 7.87391368248791e-05
+2024-12-09 11:15:01,640 INFO: unet moved: 0.0009235601410182426
+2024-12-09 11:15:14,700 INFO: [water..][epoch:  1, iter:     410, lr:(5.910e-04,5.910e-06,5.910e-05,)] [eta: 0:12:20, time (data): 1.240 (0.001)] loss: -3.2859e-01 token_reg: -4.1067e-01 Norm_mean: 5.9220e-01 
+2024-12-09 11:15:27,099 INFO: [water..][epoch:  1, iter:     420, lr:(5.810e-04,5.810e-06,5.810e-05,)] [eta: 0:12:07, time (data): 1.240 (0.000)] loss: 7.3308e-01 token_reg: -4.1067e-01 Norm_mean: 5.9396e-01 
+2024-12-09 11:15:39,493 INFO: [water..][epoch:  1, iter:     430, lr:(5.710e-04,5.710e-06,5.710e-05,)] [eta: 0:11:54, time (data): 1.240 (0.001)] loss: -3.8343e-01 token_reg: -4.1067e-01 Norm_mean: 5.9596e-01 
+2024-12-09 11:15:51,889 INFO: [water..][epoch:  1, iter:     440, lr:(5.610e-04,5.610e-06,5.610e-05,)] [eta: 0:11:41, time (data): 1.240 (0.000)] loss: -3.4197e-01 token_reg: -4.1067e-01 Norm_mean: 5.9803e-01 
+2024-12-09 11:16:04,286 INFO: [water..][epoch:  1, iter:     450, lr:(5.510e-04,5.510e-06,5.510e-05,)] [eta: 0:11:29, time (data): 1.240 (0.000)] loss: -3.7613e-01 token_reg: -4.1067e-01 Norm_mean: 6.0014e-01 
+2024-12-09 11:16:16,701 INFO: [water..][epoch:  1, iter:     460, lr:(5.410e-04,5.410e-06,5.410e-05,)] [eta: 0:11:16, time (data): 1.240 (0.001)] loss: -3.4225e-01 token_reg: -4.1067e-01 Norm_mean: 6.0234e-01 
+2024-12-09 11:16:29,096 INFO: [water..][epoch:  1, iter:     470, lr:(5.310e-04,5.310e-06,5.310e-05,)] [eta: 0:11:03, time (data): 1.240 (0.001)] loss: -2.5166e-02 token_reg: -4.1067e-01 Norm_mean: 6.0457e-01 
+2024-12-09 11:16:41,491 INFO: [water..][epoch:  1, iter:     480, lr:(5.210e-04,5.210e-06,5.210e-05,)] [eta: 0:10:50, time (data): 1.240 (0.001)] loss: -3.4101e-01 token_reg: -4.1067e-01 Norm_mean: 6.0679e-01 
+2024-12-09 11:16:53,890 INFO: [water..][epoch:  1, iter:     490, lr:(5.110e-04,5.110e-06,5.110e-05,)] [eta: 0:10:38, time (data): 1.240 (0.001)] loss: -1.9281e-01 token_reg: -4.1067e-01 Norm_mean: 6.0876e-01 
+2024-12-09 11:17:06,284 INFO: [water..][epoch:  1, iter:     500, lr:(5.010e-04,5.010e-06,5.010e-05,)] [eta: 0:10:25, time (data): 1.240 (0.001)] loss: 5.9888e-01 token_reg: -4.1067e-01 Norm_mean: 6.1062e-01 
+2024-12-09 11:17:18,682 INFO: [water..][epoch:  1, iter:     510, lr:(4.910e-04,4.910e-06,4.910e-05,)] [eta: 0:10:12, time (data): 1.240 (0.001)] loss: 7.5953e-01 token_reg: -4.1067e-01 Norm_mean: 6.1193e-01 
+2024-12-09 11:17:31,078 INFO: [water..][epoch:  1, iter:     520, lr:(4.810e-04,4.810e-06,4.810e-05,)] [eta: 0:10:00, time (data): 1.240 (0.001)] loss: 2.0991e+00 token_reg: -4.1066e-01 Norm_mean: 6.1319e-01 
+2024-12-09 11:17:43,474 INFO: [water..][epoch:  1, iter:     530, lr:(4.710e-04,4.710e-06,4.710e-05,)] [eta: 0:09:47, time (data): 1.240 (0.001)] loss: 4.2304e-01 token_reg: -4.1066e-01 Norm_mean: 6.1452e-01 
+2024-12-09 11:17:55,909 INFO: [water..][epoch:  1, iter:     540, lr:(4.610e-04,4.610e-06,4.610e-05,)] [eta: 0:09:34, time (data): 1.240 (0.001)] loss: 1.0251e+00 token_reg: -4.1066e-01 Norm_mean: 6.1579e-01 
+2024-12-09 11:18:08,304 INFO: [water..][epoch:  1, iter:     550, lr:(4.510e-04,4.510e-06,4.510e-05,)] [eta: 0:09:22, time (data): 1.240 (0.001)] loss: 1.0764e+00 token_reg: -4.1066e-01 Norm_mean: 6.1720e-01 
+2024-12-09 11:18:20,702 INFO: [water..][epoch:  1, iter:     560, lr:(4.410e-04,4.410e-06,4.410e-05,)] [eta: 0:09:09, time (data): 1.240 (0.001)] loss: 6.6418e-01 token_reg: -4.1066e-01 Norm_mean: 6.1866e-01 
+2024-12-09 11:18:33,095 INFO: [water..][epoch:  1, iter:     570, lr:(4.310e-04,4.310e-06,4.310e-05,)] [eta: 0:08:57, time (data): 1.240 (0.001)] loss: -3.9032e-01 token_reg: -4.1066e-01 Norm_mean: 6.1996e-01 
+2024-12-09 11:18:45,495 INFO: [water..][epoch:  1, iter:     580, lr:(4.210e-04,4.210e-06,4.210e-05,)] [eta: 0:08:44, time (data): 1.240 (0.001)] loss: -2.3534e-01 token_reg: -4.1066e-01 Norm_mean: 6.2085e-01 
+2024-12-09 11:18:57,890 INFO: [water..][epoch:  1, iter:     590, lr:(4.110e-04,4.110e-06,4.110e-05,)] [eta: 0:08:31, time (data): 1.240 (0.001)] loss: 3.6202e-01 token_reg: -4.1066e-01 Norm_mean: 6.2149e-01 
+2024-12-09 11:19:11,677 INFO: [water..][epoch:  1, iter:     600, lr:(4.010e-04,4.010e-06,4.010e-05,)] [eta: 0:08:20, time (data): 1.247 (0.008)] loss: 8.4775e-01 token_reg: -4.1066e-01 Norm_mean: 6.2210e-01 
+2024-12-09 11:19:11,679 INFO: Saving models and training states.
+2024-12-09 11:19:11,699 INFO: text_encoder moved: 8.909348313560865e-05
+2024-12-09 11:19:11,737 INFO: unet moved: 0.0010928005935966212
+2024-12-09 11:19:31,237 INFO: [water..][epoch:  2, iter:     610, lr:(3.910e-04,3.910e-06,3.910e-05,)] [eta: 0:08:12, time (data): 1.236 (0.001)] loss: -3.9028e-01 token_reg: -4.1066e-01 Norm_mean: 6.2287e-01 
+2024-12-09 11:19:43,637 INFO: [water..][epoch:  2, iter:     620, lr:(3.810e-04,3.810e-06,3.810e-05,)] [eta: 0:07:59, time (data): 1.238 (0.001)] loss: 1.0552e+00 token_reg: -4.1066e-01 Norm_mean: 6.2351e-01 
+2024-12-09 11:19:56,156 INFO: [water..][epoch:  2, iter:     630, lr:(3.710e-04,3.710e-06,3.710e-05,)] [eta: 0:07:46, time (data): 1.243 (0.001)] loss: -9.0799e-02 token_reg: -4.1066e-01 Norm_mean: 6.2433e-01 
+2024-12-09 11:20:08,566 INFO: [water..][epoch:  2, iter:     640, lr:(3.610e-04,3.610e-06,3.610e-05,)] [eta: 0:07:33, time (data): 1.243 (0.001)] loss: 5.7819e-01 token_reg: -4.1066e-01 Norm_mean: 6.2527e-01 
+2024-12-09 11:20:20,973 INFO: [water..][epoch:  2, iter:     650, lr:(3.510e-04,3.510e-06,3.510e-05,)] [eta: 0:07:21, time (data): 1.242 (0.001)] loss: 2.2406e+00 token_reg: -4.1066e-01 Norm_mean: 6.2652e-01 
+2024-12-09 11:20:33,366 INFO: [water..][epoch:  2, iter:     660, lr:(3.410e-04,3.410e-06,3.410e-05,)] [eta: 0:07:08, time (data): 1.242 (0.001)] loss: -1.6316e-01 token_reg: -4.1066e-01 Norm_mean: 6.2771e-01 
+2024-12-09 11:20:45,754 INFO: [water..][epoch:  2, iter:     670, lr:(3.310e-04,3.310e-06,3.310e-05,)] [eta: 0:06:55, time (data): 1.241 (0.001)] loss: -4.0001e-01 token_reg: -4.1066e-01 Norm_mean: 6.2845e-01 
+2024-12-09 11:20:58,151 INFO: [water..][epoch:  2, iter:     680, lr:(3.210e-04,3.210e-06,3.210e-05,)] [eta: 0:06:42, time (data): 1.241 (0.001)] loss: 1.3364e+00 token_reg: -4.1066e-01 Norm_mean: 6.2897e-01 
+2024-12-09 11:21:10,549 INFO: [water..][epoch:  2, iter:     690, lr:(3.110e-04,3.110e-06,3.110e-05,)] [eta: 0:06:30, time (data): 1.241 (0.001)] loss: -1.8631e-02 token_reg: -4.1066e-01 Norm_mean: 6.2966e-01 
+2024-12-09 11:21:22,963 INFO: [water..][epoch:  2, iter:     700, lr:(3.010e-04,3.010e-06,3.010e-05,)] [eta: 0:06:17, time (data): 1.241 (0.001)] loss: -1.3220e-01 token_reg: -4.1066e-01 Norm_mean: 6.3027e-01 
+2024-12-09 11:21:35,380 INFO: [water..][epoch:  2, iter:     710, lr:(2.910e-04,2.910e-06,2.910e-05,)] [eta: 0:06:04, time (data): 1.241 (0.001)] loss: 1.2344e-02 token_reg: -4.1066e-01 Norm_mean: 6.3069e-01 
+2024-12-09 11:21:47,776 INFO: [water..][epoch:  2, iter:     720, lr:(2.810e-04,2.810e-06,2.810e-05,)] [eta: 0:05:51, time (data): 1.241 (0.001)] loss: 1.3614e-01 token_reg: -4.1066e-01 Norm_mean: 6.3114e-01 
+2024-12-09 11:22:00,172 INFO: [water..][epoch:  2, iter:     730, lr:(2.710e-04,2.710e-06,2.710e-05,)] [eta: 0:05:39, time (data): 1.241 (0.001)] loss: -3.7701e-01 token_reg: -4.1066e-01 Norm_mean: 6.3182e-01 
+2024-12-09 11:22:12,580 INFO: [water..][epoch:  2, iter:     740, lr:(2.610e-04,2.610e-06,2.610e-05,)] [eta: 0:05:26, time (data): 1.241 (0.001)] loss: -3.4522e-01 token_reg: -4.1066e-01 Norm_mean: 6.3237e-01 
+2024-12-09 11:22:24,997 INFO: [water..][epoch:  2, iter:     750, lr:(2.510e-04,2.510e-06,2.510e-05,)] [eta: 0:05:13, time (data): 1.241 (0.001)] loss: -3.1166e-01 token_reg: -4.1066e-01 Norm_mean: 6.3264e-01 
+2024-12-09 11:22:37,401 INFO: [water..][epoch:  2, iter:     760, lr:(2.410e-04,2.410e-06,2.410e-05,)] [eta: 0:05:01, time (data): 1.241 (0.001)] loss: 2.1243e+00 token_reg: -4.1066e-01 Norm_mean: 6.3283e-01 
+2024-12-09 11:22:49,795 INFO: [water..][epoch:  2, iter:     770, lr:(2.310e-04,2.310e-06,2.310e-05,)] [eta: 0:04:48, time (data): 1.241 (0.001)] loss: -2.8462e-01 token_reg: -4.1066e-01 Norm_mean: 6.3310e-01 
+2024-12-09 11:23:02,193 INFO: [water..][epoch:  2, iter:     780, lr:(2.210e-04,2.210e-06,2.210e-05,)] [eta: 0:04:35, time (data): 1.241 (0.001)] loss: -3.7410e-01 token_reg: -4.1066e-01 Norm_mean: 6.3338e-01 
+2024-12-09 11:23:14,586 INFO: [water..][epoch:  2, iter:     790, lr:(2.110e-04,2.110e-06,2.110e-05,)] [eta: 0:04:23, time (data): 1.241 (0.001)] loss: -3.0367e-01 token_reg: -4.1066e-01 Norm_mean: 6.3365e-01 
+2024-12-09 11:23:26,984 INFO: [water..][epoch:  2, iter:     800, lr:(2.010e-04,2.010e-06,2.010e-05,)] [eta: 0:04:10, time (data): 1.240 (0.001)] loss: 6.0710e-02 token_reg: -4.1066e-01 Norm_mean: 6.3387e-01 
+2024-12-09 11:23:26,985 INFO: Saving models and training states.
+2024-12-09 11:23:27,003 INFO: text_encoder moved: 9.444786352711769e-05
+2024-12-09 11:23:27,052 INFO: unet moved: 0.0011701802504830994
+2024-12-09 11:23:40,112 INFO: [water..][epoch:  2, iter:     810, lr:(1.910e-04,1.910e-06,1.910e-05,)] [eta: 0:03:58, time (data): 1.239 (0.001)] loss: 3.0234e-01 token_reg: -4.1066e-01 Norm_mean: 6.3406e-01 
+2024-12-09 11:23:52,506 INFO: [water..][epoch:  2, iter:     820, lr:(1.810e-04,1.810e-06,1.810e-05,)] [eta: 0:03:45, time (data): 1.239 (0.001)] loss: -3.8784e-01 token_reg: -4.1066e-01 Norm_mean: 6.3429e-01 
+2024-12-09 11:24:04,911 INFO: [water..][epoch:  2, iter:     830, lr:(1.710e-04,1.710e-06,1.710e-05,)] [eta: 0:03:32, time (data): 1.240 (0.001)] loss: 5.0040e-01 token_reg: -4.1066e-01 Norm_mean: 6.3443e-01 
+2024-12-09 11:24:17,307 INFO: [water..][epoch:  2, iter:     840, lr:(1.610e-04,1.610e-06,1.610e-05,)] [eta: 0:03:20, time (data): 1.240 (0.001)] loss: -2.5193e-01 token_reg: -4.1066e-01 Norm_mean: 6.3448e-01 
+2024-12-09 11:24:29,702 INFO: [water..][epoch:  2, iter:     850, lr:(1.510e-04,1.510e-06,1.510e-05,)] [eta: 0:03:07, time (data): 1.239 (0.001)] loss: 2.4680e+00 token_reg: -4.1066e-01 Norm_mean: 6.3456e-01 
+2024-12-09 11:24:42,122 INFO: [water..][epoch:  2, iter:     860, lr:(1.410e-04,1.410e-06,1.410e-05,)] [eta: 0:02:54, time (data): 1.240 (0.001)] loss: -2.2084e-01 token_reg: -4.1066e-01 Norm_mean: 6.3467e-01 
+2024-12-09 11:24:54,535 INFO: [water..][epoch:  2, iter:     870, lr:(1.310e-04,1.310e-06,1.310e-05,)] [eta: 0:02:42, time (data): 1.240 (0.001)] loss: -1.9827e-01 token_reg: -4.1066e-01 Norm_mean: 6.3479e-01 
+2024-12-09 11:25:06,932 INFO: [water..][epoch:  2, iter:     880, lr:(1.210e-04,1.210e-06,1.210e-05,)] [eta: 0:02:29, time (data): 1.240 (0.001)] loss: 1.7851e-01 token_reg: -4.1066e-01 Norm_mean: 6.3487e-01 
+2024-12-09 11:25:19,347 INFO: [water..][epoch:  2, iter:     890, lr:(1.110e-04,1.110e-06,1.110e-05,)] [eta: 0:02:17, time (data): 1.240 (0.001)] loss: 1.5175e+00 token_reg: -4.1066e-01 Norm_mean: 6.3495e-01 
+2024-12-09 11:25:33,103 INFO: [water..][epoch:  2, iter:     900, lr:(1.010e-04,1.010e-06,1.010e-05,)] [eta: 0:02:04, time (data): 1.254 (0.015)] loss: 1.7628e+00 token_reg: -4.1066e-01 Norm_mean: 6.3500e-01 
+2024-12-09 11:25:52,025 INFO: [water..][epoch:  3, iter:     910, lr:(9.100e-05,9.100e-07,9.100e-06,)] [eta: 0:01:52, time (data): 1.314 (0.075)] loss: 5.5845e-02 token_reg: -4.1066e-01 Norm_mean: 6.3502e-01 
+2024-12-09 11:26:04,443 INFO: [water..][epoch:  3, iter:     920, lr:(8.100e-05,8.100e-07,8.100e-06,)] [eta: 0:01:40, time (data): 1.308 (0.069)] loss: -2.3738e-01 token_reg: -4.1066e-01 Norm_mean: 6.3504e-01 
+2024-12-09 11:26:16,871 INFO: [water..][epoch:  3, iter:     930, lr:(7.100e-05,7.100e-07,7.100e-06,)] [eta: 0:01:27, time (data): 1.303 (0.063)] loss: 1.1794e+00 token_reg: -4.1066e-01 Norm_mean: 6.3505e-01 
+2024-12-09 11:26:29,263 INFO: [water..][epoch:  3, iter:     940, lr:(6.100e-05,6.100e-07,6.100e-06,)] [eta: 0:01:14, time (data): 1.298 (0.059)] loss: 1.6054e-01 token_reg: -4.1066e-01 Norm_mean: 6.3505e-01 
+2024-12-09 11:26:41,638 INFO: [water..][epoch:  3, iter:     950, lr:(5.100e-05,5.100e-07,5.100e-06,)] [eta: 0:01:02, time (data): 1.294 (0.055)] loss: -6.0940e-02 token_reg: -4.1066e-01 Norm_mean: 6.3504e-01 
+2024-12-09 11:26:54,008 INFO: [water..][epoch:  3, iter:     960, lr:(4.100e-05,4.100e-07,4.100e-06,)] [eta: 0:00:49, time (data): 1.290 (0.051)] loss: -4.0264e-01 token_reg: -4.1066e-01 Norm_mean: 6.3503e-01 
+2024-12-09 11:27:06,418 INFO: [water..][epoch:  3, iter:     970, lr:(3.100e-05,3.100e-07,3.100e-06,)] [eta: 0:00:36, time (data): 1.287 (0.048)] loss: 5.6861e-01 token_reg: -4.1066e-01 Norm_mean: 6.3503e-01 
+2024-12-09 11:27:18,825 INFO: [water..][epoch:  3, iter:     980, lr:(2.100e-05,2.100e-07,2.100e-06,)] [eta: 0:00:24, time (data): 1.285 (0.046)] loss: 1.9804e+00 token_reg: -4.1066e-01 Norm_mean: 6.3502e-01 
+2024-12-09 11:27:31,226 INFO: [water..][epoch:  3, iter:     990, lr:(1.100e-05,1.100e-07,1.100e-06,)] [eta: 0:00:11, time (data): 1.282 (0.043)] loss: -1.1143e-03 token_reg: -4.1066e-01 Norm_mean: 6.3502e-01 
+2024-12-09 11:27:43,642 INFO: [water..][epoch:  3, iter:   1,000, lr:(1.000e-06,1.000e-08,1.000e-07,)] [eta: -1 day, 23:59:59, time (data): 1.280 (0.041)] loss: 7.5526e-02 token_reg: -4.1066e-01 Norm_mean: 6.3502e-01 
+2024-12-09 11:27:43,643 INFO: Saving models and training states.
+2024-12-09 11:27:43,661 INFO: text_encoder moved: 9.607318800893457e-05
+2024-12-09 11:27:43,712 INFO: unet moved: 0.0011951097812925582
+2024-12-09 11:28:29,686 INFO: End of training. Time consumed: 0:22:04
+2024-12-09 11:28:29,687 INFO: Save the latest model.
+2024-12-09 11:28:29,704 INFO: text_encoder moved: 9.607318800893457e-05
+2024-12-09 11:28:29,755 INFO: unet moved: 0.0011951097812925582
