@@ -3,6 +3,18 @@ import cv2
 import numpy as np
 from PIL import Image
 from segment_anything import sam_model_registry, SamPredictor
+import matplotlib.pyplot as plt
+from PIL import Image
+import matplotlib.patches as patches
+
+prompt_points = []
+
+def on_click(event):
+    x, y = event.xdata, event.ydata
+    if x is not None and y is not None:
+        ax.plot(x, y, marker='o', color='r')
+        prompt_points.append((x, y))
+        plt.draw()
 
 def create_mask_with_sam(
     image_path: str,
@@ -68,10 +80,23 @@ def create_mask_with_sam(
     print(f"Mask saved to {output_mask_path}")
 
 if __name__ == "__main__":
+    _image_path="./prompt3/A cat wearing wearable glasses in a watercolor style_0.jpg"
+    image = Image.open(_image_path).convert("RGB")
+    # Create a figure and axis
+    fig, ax = plt.subplots(1)
+    ax.imshow(image)
+    # Connect the click event
+    fig.canvas.mpl_connect("button_press_event", on_click)
+    plt.title("Click and drag to draw bboxes, then close window")
+    # Show the image
+    plt.show()
+
     create_mask_with_sam(
-        image_path="concept_image/cat2/00.jpg",
-        checkpoint_path="sam_vit_h.pth",
-        prompt_points=np.array([[1000, 1000], [1100, 1100]]),
-        prompt_labels=np.array([1, 1]),
-        output_mask_path="cat2_00.png"
+        image_path=_image_path,
+        checkpoint_path="./sam_vit_h_4b8939.pth",
+        prompt_points=prompt_points,
+        prompt_labels=np.array([1, 0]),
+        output_mask_path="./prompt3/A cat wearing wearable glasses in a watercolor style_0_mask1.png"
     )
+
+# wget -q 'https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth'
