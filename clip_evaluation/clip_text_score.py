@@ -16,10 +16,6 @@ def calculate_clip_text_scores_folder(folder_path: str, text: str) -> List[Tuple
         if f.lower().endswith(image_extensions)
     ]
 
-    # Check if the number of images is equal to 100
-    if len(image_paths) != 25:
-        raise ValueError(f"The number of images in the folder must be exactly 25. Found {len(image_paths)} images.")
-
     # Process images in batches to avoid memory issues
     batch_size = 32
     all_scores = []

@@ -71,11 +71,6 @@ def calculate_clip_image_scores_folder(folder_path: str, reference_folder: str) 
     input_images = load_images_from_folder(folder_path)
     reference_images = load_images_from_folder(reference_folder)
 
-        # Check if the number of images is equal to 100
-    if len(input_images) != 25:
-        raise ValueError(f"The number of images in the folder must be exactly 25. Found {len(input_images)} images.")
-
-
     avg_scores = calculate_clip_scores(input_images, reference_images)
 
     return avg_scores

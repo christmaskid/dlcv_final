@@ -1,3 +1,6 @@
+import os
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
 import json
 import argparse
 import os
@@ -21,33 +24,39 @@ if __name__ == '__main__':
     with open(json_path, 'r') as f:
         data = json.load(f)
 
-    pass_count = 0
-    count = 0
-    print("\n===============================================start evaluation================================================\n")
+    image_scores_list = []
+    text_scores_list = []
 
     # Iterate through the data and print the prompt_4_clip_eval
     for key, value in data.items():
-        input_folder_path = os.path.join(input_dir, key)
         output_folder_path = os.path.join(output_dir, key)
 
-        src = value['src_image']
+        img_score_sum = []
+        txt_score_sum = []
 
-        for idx, clip_eval in enumerate(value['prompt_4_clip_eval']):
-            prompt_output_folder_path = os.path.join(output_folder_path, str(idx))
-            print(f"Image source: \"{src}\", text prompt: {clip_eval}")
+        clip_eval = value["prompt_4_clip_eval"]
+        print("\n=================={}=====================".format(clip_eval))
 
-            image_scores = calculate_clip_image_scores_folder(prompt_output_folder_path, input_folder_path)
-            text_scores = calculate_clip_text_scores_folder(prompt_output_folder_path, clip_eval)
-            
-            # total_score = image_scores + 2.5 * text_scores
-            total_score = [i + 2.5 * j for i, j in zip(image_scores, text_scores)]
-            sorted_indices = sorted(range(len(total_score)), key=lambda k: total_score[k])[-5:]
-            image_score = sum(image_scores[i] for i in sorted_indices) / len(sorted_indices)
-            text_scores = sum(text_scores[i] for i in sorted_indices) / len(sorted_indices)
+        text_scores = calculate_clip_text_scores_folder(output_folder_path, clip_eval)
+        text_scores = sum(text_scores) / len(text_scores)
+        text_scores_list.append(text_scores)
+
+        for idx, src in enumerate(value["src_image"]):
+            print("--------------------{}--------------------".format(src))
+            input_folder_path = os.path.join(input_dir, src)
+            image_scores = calculate_clip_image_scores_folder(output_folder_path, input_folder_path)
+            image_scores = sum(image_scores) / len(image_scores)
+            print(f"CLIP Image Score: {image_scores:.2f}")
+            img_score_sum.append(image_scores)
 
 
-            print(f"CLIP Image Score: {image_score:.2f}")
-            print(f"CLIP Text Score: {text_scores:.2f}")
-            
+        print("===================Avg.====================")
+        img_score_avg = sum(img_score_sum) / len(img_score_sum) 
+        print(f"CLIP Image Score: {img_score_avg:.2f}")
+        print(f"CLIP Text Score: {text_scores:.2f}")
+        image_scores_list.append(img_score_avg)
+
+    print(f"\nTotal avg score: CLIP-I: {sum(image_scores_list) / len(image_scores_list):.2f}, CLIP-T: {sum(text_scores_list) / len(text_scores_list):.2f}")
+    
 
     
