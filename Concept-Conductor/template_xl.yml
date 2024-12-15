@@ -1,31 +1,31 @@
-name: <name>
+name: SDXL_EDLoRA_<name>
 manual_seed: 0
-mixed_precision: fp16
+mixed_precision: bf16
 gradient_accumulation_steps: 1
 
 # dataset and data loader settings
 datasets:
   train:
     name: LoraDataset
-    concept_list:  <concept_list>
+    concept_list: <concept_list>
     use_caption: true
     use_mask: true
     instance_transform:
-      - { type: HumanResizeCropFinalV3, size: 512, crop_p: 0.5 }    
+      - { type: HumanResizeCropFinalV3, size: 1024, crop_p: 0.5 }    
       - { type: ToTensor }
       - { type: Normalize, mean: [ 0.5 ], std: [ 0.5 ] }
       - { type: ShuffleCaption, keep_token_num: 1 }
       - { type: EnhanceText, enhance_type: object }
     replace_mapping:
       <TOK>: <replace_mapping>
-    batch_size_per_gpu: 2
-    dataset_enlarge_ratio: 500
+    batch_size_per_gpu: 1
+    dataset_enlarge_ratio: 2000
 
   val_vis:
     name: PromptDataset
     prompts: <prompts_path>
-    num_samples_per_prompt: 1
-    latent_size: <latent_size> #[ 4,64,64 ]
+    num_samples_per_prompt: 8
+    latent_size: [ 4,128,128 ]
     replace_mapping:
       <TOK>: <replace_mapping>
     batch_size_per_gpu: 4
@@ -35,25 +35,35 @@ models:
   enable_edlora: true  # true means ED-LoRA, false means vallina LoRA
   finetune_cfg:
     text_embedding:
-      enable_tuning: <embedding_enable_tuning> #true
-      lr: !!float <embedding_lr> #1e-3
+      enable_tuning: true
+      lr: !!float 1e-3
+    text_embedding_2:
+      enable_tuning: true
+      lr: !!float 5e-4
     text_encoder:
-      enable_tuning: <text_encoder_enable_tuning> #true
+      enable_tuning: true
       lora_cfg:
-        rank: <lora_rank> #4
-        alpha: <lora_alpha> #1.0
+        rank: 4
+        alpha: 1.0
         where: CLIPAttention
-      lr: !!float <text_encoder_lr> #1e-5
-    unet:
-      enable_tuning: <unet_enable_tuning> #true
+      lr: !!float 1e-5
+    text_encoder_2:
+      enable_tuning: true
       lora_cfg:
-        rank: <lora_rank> #4
-        alpha: <lora_alpha> #1.0
+        rank: 32
+        alpha: 1.0
+        where: CLIPAttention
+      lr: !!float 2e-6      
+    unet:
+      enable_tuning: true
+      lora_cfg:
+        rank: 32
+        alpha: 1.0
         where: Attention
-      lr: !!float <unet_lr> #1e-4
+      lr: !!float 5e-5
   new_concept_token: <new_concept_token>
-  noise_offset: 0.01
   initializer_token: <rand-0.013>+<semantic>
+  noise_offset: 0.01
   attn_reg_weight: 0.01
   reg_full_identity: false
   use_mask_loss: true
@@ -83,8 +93,8 @@ val:
   compose_visualize: true
   alpha_list: [0, 0.7, 1.0] # 0 means only visualize embedding (without lora weight)
   sample:
-    num_inference_steps: <num_inference_steps> #50
-    guidance_scale: <guidance_scale> #7.5
+    num_inference_steps: 50
+    guidance_scale: 7.5
 
 # logging settings
 logger:
