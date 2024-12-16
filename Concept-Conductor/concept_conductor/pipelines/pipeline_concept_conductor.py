@@ -604,10 +604,10 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                     added_cond_kwargs=added_cond_kwargs,
                     return_dict=False
                 )[0]
-                        
+
 
         # Initialize masks.
-        attention_controller.init_feature_masks(feature_masks=feature_masks, points=mask_center_points, num_clusters=6, bs=batch_size)
+        attention_controller.init_feature_masks(feature_masks=feature_masks, points=mask_center_points, num_clusters=len(custom_prompts)+1, bs=batch_size)
         attention_controller.step = 0
         
         # 7. Denoising loop
