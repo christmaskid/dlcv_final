@@ -55,7 +55,7 @@ def sample(args):
         word_list.append(word.strip('`'))
         if '`' in word:
             ref_token_ids.append(word_idx)
-    print("ref token:", word_list)
+    print("ref token:", ref_token_ids)
     ref_prompt = ' '.join(word_list)
             
     all_token_ids = []
@@ -85,6 +85,7 @@ def sample(args):
     
     mask_center_points = []
     if args.init_mask_from_points and args.mask_center_points:
+        print(args.mask_center_points, flush=True)
         for x, y in args.mask_center_points:
             new_x = x  * args.width // ref_image.width
             new_y = y  * args.height // ref_image.height 
