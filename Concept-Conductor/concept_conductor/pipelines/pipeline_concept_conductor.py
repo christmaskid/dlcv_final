@@ -805,10 +805,10 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                     
                     # Mask refinement.
                     if  (step >= mask_refinement_start) and (step <= mask_refinement_end) and (step % mask_update_interval == 0):
-                        # print('\nrefinemnt\n')
+                        print('\nrefinement\n')
                         attention_controller.refine_feature_masks()      
-                    # else:
-                    #     print(f'\nstep:{step} start:{args.mask_refinement_start} end:{args.mask_refinement_end} interval:{args.mask_update_interval}\n')                          
+                    else:
+                        print(f'\nstep:{step} start:{args.mask_refinement_start} end:{args.mask_refinement_end} interval:{args.mask_update_interval}\n')                          
 
                 attention_controller.empty()
                 del latent_model_input
