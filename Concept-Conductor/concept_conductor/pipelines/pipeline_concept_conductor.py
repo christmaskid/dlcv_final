@@ -809,11 +809,7 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                 attention_controller.empty()
                 del latent_model_input
                 gc.collect()
-                torch.cuda.empty_cache()     
-
-
-                print("noise_pred", noise_pred)
-                
+                torch.cuda.empty_cache()                     
                              
 
                 # perform guidance
