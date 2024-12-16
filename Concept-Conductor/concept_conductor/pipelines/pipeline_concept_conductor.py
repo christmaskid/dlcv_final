@@ -603,7 +603,8 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                     cross_attention_kwargs=self.cross_attention_kwargs,
                     added_cond_kwargs=added_cond_kwargs,
                     return_dict=False
-                )[0]        
+                )[0]
+                        
 
         # Initialize masks.
         attention_controller.init_feature_masks(feature_masks=feature_masks, points=mask_center_points, num_clusters=6, bs=batch_size)

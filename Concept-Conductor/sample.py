@@ -55,6 +55,7 @@ def sample(args):
         word_list.append(word.strip('`'))
         if '`' in word:
             ref_token_ids.append(word_idx)
+    print("ref token:", word_list)
     ref_prompt = ' '.join(word_list)
             
     all_token_ids = []
@@ -66,6 +67,7 @@ def sample(args):
             word_list.append(word.strip('`'))
             if '`' in word:
                 token_ids.append(word_idx)
+        print("all token:", token_ids, flush=True)
         prompt = ' '.join(word_list)
         prompts.append(prompt)
         all_token_ids.append(token_ids)
