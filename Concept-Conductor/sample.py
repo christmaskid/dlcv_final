@@ -86,7 +86,11 @@ def sample(args):
     mask_center_points = []
     if args.init_mask_from_points and args.mask_center_points:
         print(args.mask_center_points, flush=True)
-        for x, y in args.mask_center_points:
+        # for x, y in args.mask_center_points:
+        for point in args.mask_center_points:
+            if isinstance(point, str):
+                point = eval(point)
+            x, y = point
             new_x = x  * args.width // ref_image.width
             new_y = y  * args.height // ref_image.height 
             mask_center_points.append((new_x, new_y))
