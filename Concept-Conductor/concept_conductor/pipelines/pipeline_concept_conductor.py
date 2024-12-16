@@ -788,11 +788,7 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                         cross_attention_kwargs=self.cross_attention_kwargs,
                         added_cond_kwargs=added_cond_kwargs,
                         return_dict=False,
-                    )#[0]   
-
-                    print("noise_pred", noise_pred)
-                    noise_pred = noise_pred[0]
-                    print("noise_pred", noise_pred)
+                    )[0]   
                     
                     if visualization and ((step % 10 == 0) or (step < 3)):
                         attention_controller.view_cross_attn(processors_view_ca, cross_attn_outdir)  
