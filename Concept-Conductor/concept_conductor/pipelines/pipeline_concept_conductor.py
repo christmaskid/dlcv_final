@@ -788,8 +788,10 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                         cross_attention_kwargs=self.cross_attention_kwargs,
                         added_cond_kwargs=added_cond_kwargs,
                         return_dict=False,
-                    )[0]   
+                    )#[0]   
 
+                    print("noise_pred", noise_pred)
+                    noise_pred = noise_pred[0]
                     print("noise_pred", noise_pred)
                     
                     if visualization and ((step % 10 == 0) or (step < 3)):
