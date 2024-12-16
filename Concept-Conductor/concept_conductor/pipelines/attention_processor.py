@@ -15,7 +15,7 @@
 # This code is based on an Apache 2.0 licensed project: diffusers
 # Original code: https://github.com/huggingface/diffusers/blob/main/src/diffusers/models/attention_processor.py
 
-
+import random
 import torch
 from diffusers.models.attention_processor import Attention
 from diffusers.utils import deprecate
@@ -467,6 +467,15 @@ class AttentionController(object):
             batch_masks = self.get_masks_from_attn(mean_attn, num_clusters_list=[num_clusters])
         
             feature_masks = []
+
+            ## If no points given???
+            if points is None:
+                points = []
+                for b in range(bs):
+                    x = random.randint(0, self.h_min * 64 - 1)
+                    y = random.randint(0, self.w_min * 64 - 1)
+                    points.append([x, y])
+
             for point in points:
                 x, y = point
                 resized_point = (x * factor // 64, y * factor // 64)
