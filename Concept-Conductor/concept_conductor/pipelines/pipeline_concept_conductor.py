@@ -789,6 +789,8 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                         added_cond_kwargs=added_cond_kwargs,
                         return_dict=False,
                     )[0]   
+
+                    print("noise_pred", noise_pred)
                     
                     if visualization and ((step % 10 == 0) or (step < 3)):
                         attention_controller.view_cross_attn(processors_view_ca, cross_attn_outdir)  
@@ -810,6 +812,9 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                 del latent_model_input
                 gc.collect()
                 torch.cuda.empty_cache()     
+
+
+                print("noise_pred", noise_pred)
                 
                              
 
