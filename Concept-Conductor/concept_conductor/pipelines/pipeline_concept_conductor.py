@@ -607,7 +607,8 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
 
 
         # Initialize masks.
-        attention_controller.init_feature_masks(feature_masks=feature_masks, points=mask_center_points, num_clusters=len(custom_prompts)+1, bs=batch_size)
+        num_clusters=len(custom_prompts)+3
+        attention_controller.init_feature_masks(feature_masks=feature_masks, points=mask_center_points, num_clusters=num_clusters, bs=batch_size)
         attention_controller.step = 0
         
         # 7. Denoising loop
@@ -791,8 +792,8 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                     )[0]   
                     
                     if visualization and ((step % 10 == 0) or (step < 3)):
-                        attention_controller.view_cross_attn(processors_view_ca, cross_attn_outdir)  
-                        attention_controller.view_self_attn(processors_view_sa, self_attn_outdir) 
+                        attention_controller.view_cross_attn(processors_view_ca, cross_attn_outdir, num_clusters=num_clusters)  
+                        attention_controller.view_self_attn(processors_view_sa, self_attn_outdir, num_clusters=num_clusters) 
                         
                     if visualization and ((step % 5 == 0) or (step < 3)):    
                         attention_controller.view_feature_mask(feature_mask_outdir)

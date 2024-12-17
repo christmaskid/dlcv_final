@@ -414,7 +414,7 @@ class AttentionController(object):
                     rect_mask[y_min:y_max+1, x_min:x_max+1] = 1.  # [w, h]
                     chosen_masks.append(rect_mask)
                     # chosen_masks.append(ref_mask)
-                # print('seed: ', seed, 'max_overlap: ', max_overlap.item())  
+                print('seed: ', seed, 'max_overlap: ', max_overlap.item())  
         elif point is not None:
             for seed_masks in batch_masks:
                 x, y = point
