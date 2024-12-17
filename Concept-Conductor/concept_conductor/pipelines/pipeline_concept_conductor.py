@@ -792,7 +792,7 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                     )[0]   
                     
                     if visualization and ((step % 10 == 0) or (step < 3)):
-                        attention_controller.view_cross_attn(processors_view_ca, cross_attn_outdir, num_clusters=num_clusters)  
+                        attention_controller.view_cross_attn(processors_view_ca, cross_attn_outdir)  
                         attention_controller.view_self_attn(processors_view_sa, self_attn_outdir, num_clusters=num_clusters) 
                         
                     if visualization and ((step % 5 == 0) or (step < 3)):    
