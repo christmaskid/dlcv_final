@@ -607,7 +607,7 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
 
 
         # Initialize masks.
-        num_clusters = 6 #len(custom_prompts) * 2
+        num_clusters = len(custom_prompts) * 2
         attention_controller.init_feature_masks(feature_masks=feature_masks, points=mask_center_points, num_clusters=num_clusters, bs=batch_size)
         attention_controller.step = 0
         
