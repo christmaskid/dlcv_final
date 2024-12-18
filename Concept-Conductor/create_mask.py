@@ -80,7 +80,7 @@ def create_mask_with_sam(
     print(f"Mask saved to {output_mask_path}")
 
 if __name__ == "__main__":
-    _image_path="./prompt3/A cat wearing wearable glasses in a watercolor style_0.jpg"
+    _image_path="./prompt3/A cat wearing wearable glasses in a watercolor style_14.jpg"
     image = Image.open(_image_path).convert("RGB")
     # Create a figure and axis
     fig, ax = plt.subplots(1)
@@ -96,7 +96,7 @@ if __name__ == "__main__":
         checkpoint_path="./sam_vit_h_4b8939.pth",
         prompt_points=prompt_points,
         prompt_labels=np.array([1, 0]),
-        output_mask_path="./prompt3/A cat wearing wearable glasses in a watercolor style_0_mask1.png"
+        output_mask_path="./prompt3/A cat wearing wearable glasses in a watercolor style_14_mask1.png"
     )
 
 # wget -q 'https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth'

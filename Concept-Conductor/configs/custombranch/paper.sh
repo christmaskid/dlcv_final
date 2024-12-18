@@ -1,0 +1,12 @@
+REF_PROMPT="A dog and a cat in the street."
+BASE_PROMPT="A dog and a cat on the beach."
+CUSTOM_PROMPTS_1="A <chow_dog_1> <chow_dog_2> on the beach."
+CUSTOM_PROMPTS_2="A <siberian_cat_1> <siberian_cat_2> on the beach."
+REF_IMAGE_PATH="examples/a dog and a cat in the street.png"
+REF_MASK_PATHS_1="examples/a dog and a cat in the street_mask1.png"
+REF_MASK_PATHS_2="examples/a dog and a cat in the street_mask2.png"
+EDLORA_PATHS_1="experiments/ED-LoRAs/real/chow_dog.pth"
+EDLORA_PATHS_2="experiments/ED-LoRAs/real/siberian_cat.pth"
+START_SEED=0
+BATCH_SIZE=4
+N_BATCHES=1

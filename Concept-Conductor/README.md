@@ -130,7 +130,7 @@ python sample.py --config_file "path/to/your/config.yaml"
 python sample_sdxl.py \
 --ref_prompt "A cat on a stool and a dog on the floor." \
 --base_prompt "A cat on a stool and a dog on the floor." \
---custom_prompts "A <siberian_cat_1> <siberian_cat_2> on a stool and a <siberian_cat_1> <siberian_cat_2> on the floor." "A <chow_dog_1> <chow_dog_2> on a stool and a <chow_dog_1> <chow_dog_2> on the floor."\
+--custom_prompts "A <siberian_cat_1> <siberian_cat_2> on a stool and a <siberian_cat_1> <siberian_cat_2> on the floor." "A <chow_dog_1> <chow_dog_2> on a stool and a <chow_dog_1> <chow_dog_2> on the floor." \
 --ref_image_path "examples/a cat on a stool and a dog on the floor.png" \
 --ref_mask_paths "examples/a cat on a stool and a dog on the floor_mask1.png" "examples/a cat on a stool and a dog on the floor_mask2.png" \
 --edlora_paths "experiments/SDXL_ED-LoRAs/real/siberian_cat.pth" "experiments/SDXL_ED-LoRAs/real/chow_dog.pth" \
