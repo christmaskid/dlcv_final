@@ -791,11 +791,11 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                         return_dict=False,
                     )[0]   
                     
-                    if visualization and ((step % 10 == 0) or (step < 3)):
+                    if visualization and ((step % 20 == 0) or (step < 3)):
                         attention_controller.view_cross_attn(processors_view_ca, cross_attn_outdir)  
                         attention_controller.view_self_attn(processors_view_sa, self_attn_outdir, num_clusters=num_clusters) 
                         
-                    if visualization and ((step % 5 == 0) or (step < 3)):    
+                    if visualization and ((step % 20 == 0) or (step < 3)):    
                         attention_controller.view_feature_mask(feature_mask_outdir)
                         attention_controller.view_feature_mask(feature_mask_outdir.strip('/')+'_custom', prefix="custom_")
                         attention_controller.view_feature_mask(feature_mask_outdir.strip('/')+'_base', prefix="base_")
