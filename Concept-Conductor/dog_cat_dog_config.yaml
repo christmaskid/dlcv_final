@@ -31,7 +31,7 @@ outputs:
 
 
 base_model:
-  sd_ckpt: "experiments/pretrained_models/stable-diffusion-v1-5" #"experiments/pretrained_models/chilloutmix"
+  sd_ckpt: "experiments/pretrained_models/chilloutmix" # "experiments/pretrained_models/stable-diffusion-v1-5" #
   variant: ""
 
 sd_t2i:
