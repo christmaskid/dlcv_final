@@ -28,18 +28,23 @@ def create_and_save_mask(bboxes, save_fn):
 	print("Save to {}".format(save_fn))
 
 
-while len(bboxes) < n_concept:
-	center = [random.randint(img_height//6, img_height*5//6-1), 
-			  random.randint(img_width//6, img_width*5//6-1)]
-	h = random.randint(img_height//5, img_height//2-1)
-	w = random.randint(img_width//5, img_width//2-1)
-	bbox = [center[0]-h//2, center[1]-w//2, center[0]+h//2, center[1]+w//2]
+if sys.argc >= 2 and isinstance(eval(sys.argv[2]), list):
+	bboxes = eval(sys.argv[2])
 
-	flag = False
-	for other in bboxes:
-		flag = collide(bbox, other)
-		if flag: break
-	if not flag: bboxes.append(bbox)
+else:
+	while len(bboxes) < n_concept:
+		center = [random.randint(img_height//6, img_height*5//6-1), 
+				  random.randint(img_width//6, img_width*5//6-1)]
+		h = random.randint(img_height//5, img_height//2-1)
+		w = random.randint(img_width//5, img_width//2-1)
+		bbox = [center[0]-h//2, center[1]-w//2, center[0]+h//2, center[1]+w//2]
+		print(bbox)
+
+		flag = False
+		for other in bboxes:
+			flag = collide(bbox, other)
+			if flag: break
+		if not flag: bboxes.append(bbox)
 
 for i, bbox in enumerate(bboxes):
 	mask = create_and_save_mask([bbox], "examples/{}_{}.png".format(task_name, i+1))
