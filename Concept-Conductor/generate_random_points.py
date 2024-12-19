@@ -49,8 +49,8 @@ create_and_save_mask(bboxes, "examples/{}_mask.png".format(task_name))
 cmd = """
 python sample.py \
 --config_file dog_cat_dog_config.yaml \
---ref_image_path "examples/{}_mask.png" \
---ref_mask_paths "examples/{}_{}.png" "examples/{}_{}.png" "examples/{}_{}.png" \
+--ref_image_path examples/{}_mask.png \
+--ref_mask_paths examples/{}_{}.png examples/{}_{}.png examples/{}_{}.png \
 --outroot outputs/{}
 """.format(task_name, task_name, 1, task_name, 2, task_name, 3, task_name)
 print(cmd)
