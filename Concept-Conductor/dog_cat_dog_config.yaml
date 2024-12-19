@@ -6,11 +6,11 @@ inputs:
     - "A <dog_1> <dog_2>, a <dog_1> <dog_2> and a <dog_1> <dog_2> near a forest."
     - "A <pet_cat1_1> <pet_cat1_2>, a <pet_cat1_1> <pet_cat1_2> and a <pet_cat1_1> <pet_cat1_2> near a forest."
     - "A <dog6_1> <dog6_2>, a <dog6_1> <dog6_2> and a <dog6_1> <dog6_2> near a forest."
-  ref_image_path: "examples/mask_cat.png"
-  ref_mask_paths:
-    - "examples/dog-cat-dog_rect_0.png"
-    - "examples/dog-cat-dog_rect_1.png" 
-    - "examples/dog-cat-dog_rect_2.png" 
+  # ref_image_path: "examples/mask_cat.png"
+  # ref_mask_paths:
+  #   - "examples/dog-cat-dog_rect_0.png"
+  #   - "examples/dog-cat-dog_rect_1.png" 
+  #   - "examples/dog-cat-dog_rect_2.png" 
   init_mask_from_points: False
   init_image_path: ~
   init_mask_path: ~       
@@ -22,7 +22,7 @@ inputs:
   lora_alpha: 0.8
 
 outputs:
-  outroot: "outputs/dog_pet_cat1_dog6_rect"
+  # outroot: "outputs/dog_pet_cat1_dog6_rect"
   image_outdir: "inference_results"
   latents_outdir: "inverted_latents"
   self_attn_outdir: "self_attn"
