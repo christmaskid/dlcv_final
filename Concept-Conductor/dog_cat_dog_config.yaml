@@ -19,7 +19,7 @@ inputs:
     - "experiments/pet_cat1/models/edlora_model-latest.pth"
     - "experiments/dog6/models/edlora_model-latest.pth"
   load_edlora: True
-  lora_alpha: 0.4
+  lora_alpha: 0.8
 
 outputs:
   # outroot: "outputs/dog_pet_cat1_dog6_rect"
@@ -66,7 +66,7 @@ attention_operations:
   mask_update_interval: 5
   mask_overlap_threshold: 0.7 #0.99
   num_kmeans_init: 200 # 改
-  rect_mask: True # 長方形
+  rect_mask: False #True # 長方形
 
   use_loss_mask: True
   visualization: True
