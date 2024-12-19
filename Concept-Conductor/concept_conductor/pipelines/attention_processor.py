@@ -15,7 +15,7 @@
 # This code is based on an Apache 2.0 licensed project: diffusers
 # Original code: https://github.com/huggingface/diffusers/blob/main/src/diffusers/models/attention_processor.py
 
-import random
+
 import torch
 from diffusers.models.attention_processor import Attention
 from diffusers.utils import deprecate
@@ -394,16 +394,6 @@ class AttentionController(object):
         
         if ref_masks is not None:
             for seed, (seed_masks, ref_mask) in enumerate(zip(batch_masks, ref_masks)):
-
-                ## Gather all covered small patches                
-                # final_mask = torch.zeros_like(ref_mask)
-                # for idx, mask in enumerate(seed_masks):
-                #     m1 = mask * ref_mask
-                #     overlap = m1.sum() / mask.sum()
-                #     if overlap > self.mask_overlap_threshold:
-                #         final_mask[mask>0] = 1.
-                # chosen_masks.append(final_mask)
-
                 max_idx = 0
                 max_overlap = 0            
                 for idx, mask in enumerate(seed_masks):
@@ -423,8 +413,8 @@ class AttentionController(object):
                     y_max, x_max = torch.max(non_zero_coords, dim=0).values
                     rect_mask[y_min:y_max+1, x_min:x_max+1] = 1.  # [w, h]
                     chosen_masks.append(rect_mask)
-                    chosen_masks.append(ref_mask)
-                print('seed: ', seed, 'max_overlap: ', max_overlap.item())  
+                    # chosen_masks.append(ref_mask)
+                # print('seed: ', seed, 'max_overlap: ', max_overlap.item())  
         elif point is not None:
             for seed_masks in batch_masks:
                 x, y = point
@@ -477,15 +467,6 @@ class AttentionController(object):
             batch_masks = self.get_masks_from_attn(mean_attn, num_clusters_list=[num_clusters])
         
             feature_masks = []
-
-            ## If no points given???
-            if points is None:
-                points = []
-                for b in range(bs):
-                    x = random.randint(0, self.h_min * 64 - 1)
-                    y = random.randint(0, self.w_min * 64 - 1)
-                    points.append([x, y])
-
             for point in points:
                 x, y = point
                 resized_point = (x * factor // 64, y * factor // 64)

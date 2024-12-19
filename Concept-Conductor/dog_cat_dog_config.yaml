@@ -45,10 +45,10 @@ sd_t2i:
   verbose: False
 
 attention_operations:
-  attn_guidance_end: 80
+  attn_guidance_end: 60 # 變長
   attn_guidance_interval: 1
-  attn_guidance_weight: 15
-  custom_attn_guidance_factor: 1.5
+  attn_guidance_weight: 7.0
+  custom_attn_guidance_factor: 1.2
 
   processor_filter_guidance: '.*up_blocks\.1\.attentions\.0.*attn1.*'
   params_guidance: ["query", "key"]
@@ -62,14 +62,12 @@ attention_operations:
   params_view_ca: ["attention_probs"]    
 
   mask_refinement_start: 50
-  mask_refinement_end: 80
+  mask_refinement_end: 80 # 變短
   mask_update_interval: 5
-  mask_overlap_threshold: 0.9
-  num_kmeans_init: 500
-  rect_mask: True
+  mask_overlap_threshold: 0.99
+  num_kmeans_init: 200 # 改
+  rect_mask: True # 長方形
 
   use_loss_mask: True
   visualization: True
-
-
 
