@@ -64,7 +64,7 @@ attention_operations:
   mask_refinement_start: 50
   mask_refinement_end: 80 # 變短
   mask_update_interval: 5
-  mask_overlap_threshold: 0.99
+  mask_overlap_threshold: 0.7 #0.99
   num_kmeans_init: 200 # 改
   rect_mask: True # 長方形
 
