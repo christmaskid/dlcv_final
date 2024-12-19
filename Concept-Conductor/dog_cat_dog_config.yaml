@@ -65,6 +65,7 @@ attention_operations:
   mask_refinement_end: 70 # 變短
   mask_update_interval: 5
   mask_overlap_threshold: 0 #0.99
+  mask_refinement_penalty: True
   num_kmeans_init: 100 # 改
   num_clusters: 7
   rect_mask: False #True # 長方形

@@ -556,8 +556,6 @@ class AttentionController(object):
             
     # Update masks and handle overlaps          
     def refine_feature_masks(self): 
-
-        penalty = 0.0
         
         for branch_idx in range(1, len(self.all_token_ids)):
             self.update_custom_masks(branch_idx)       
@@ -582,10 +580,6 @@ class AttentionController(object):
                 combined_mask = combined_masks[branch_idx - 1]
                 refined_mask = old_combined_mask * inter_overlap_mask + combined_mask * (1 - inter_overlap_mask)
                 self.store(branch_idx, '', f'feature_mask_{factor}', refined_mask)       
-
-                penalty += F.mse_loss(old_combined_mask, combined_mask)
-
-        return penalty
                 
     def visualize_labels(self, batch_labels):
         bs = len(batch_labels)
@@ -689,3 +683,59 @@ class AttentionController(object):
                             outdir.mkdir(exist_ok=True, parents=True)                        
                             mask_image.save(str(Path(outdir) / Path(f"{self.step:03d}.png")))
                     
+    # Inspired by GPT-4o. GPT is so strong...I'm afraid.
+    # Chat link: https://chatgpt.com/share/6764455e-1d1c-8003-87f9-7ff7eb015ef8
+    def compute_attention_overlap_penalty(self, mask_1, mask_2):
+        """
+        Compute overlap penalty for soft masks.
+        """
+        intersection = (mask_1 * mask_2).sum(dim=(-1, -2))  # Sum over spatial dimensions
+        union = (mask_1 + mask_2 - mask_1 * mask_2).sum(dim=(-1, -2))
+        overlap_penalty = (intersection / (union + 1e-6)).mean()
+        return overlap_penalty
+
+    def compute_mask_smoothness_penalty(self, mask):
+        """
+        Computes a smoothness penalty for masks to encourage spatial regularity.
+        """
+        dx = torch.abs(mask[:, :, :-1, :] - mask[:, :, 1:, :])
+        dy = torch.abs(mask[:, :, :, :-1] - mask[:, :, :, 1:])
+        smoothness_penalty = (dx + dy).mean()
+        return smoothness_penalty
+
+    def compute_exclusive_mask_penalty(self, masks):
+        """
+        Computes a penalty for overlapping masks across branches.
+        """
+        combined_mask = sum(masks)  # Combine masks from all branches
+        overlap = (combined_mask > 1).float().sum(dim=(1, 2, 3))  # Count overlapping pixels
+        exclusive_penalty = overlap.mean()  # Average across batches
+        return exclusive_penalty
+
+    def soft_kmeans_cluster(self, attn_map, num_clusters, temperature=1.0):
+        """
+        Perform soft k-means clustering for differentiability.
+        """
+        # Flatten spatial dimensions
+        attn_map_flat = attn_map.view(attn_map.size(0), -1, attn_map.size(-1))  # [B, H*W, H*W]
+
+        # Randomly initialize cluster centers
+        cluster_centers = torch.randn(
+            num_clusters, attn_map_flat.size(-1), device=attn_map.device, requires_grad=True
+        )
+
+        for _ in range(10):  # Iterate for clustering
+            distances = torch.cdist(attn_map_flat, cluster_centers.unsqueeze(0), p=2)  # [B, H*W, K]
+            soft_assignments = torch.softmax(-distances / temperature, dim=-1)  # [B, H*W, K]
+            cluster_centers = torch.einsum("bik,bij->kj", soft_assignments, attn_map_flat) / (
+                soft_assignments.sum(dim=1).sum(dim=0).unsqueeze(-1) + 1e-6
+            )
+
+        return soft_assignments
+
+    def compute_soft_mask(self, attention_map, threshold=0.5):
+        """
+        Generate a differentiable soft mask using a sigmoid.
+        """
+        return torch.sigmoid((attention_map - threshold) * 10)  # Adjust sharpness with scaling
+    
