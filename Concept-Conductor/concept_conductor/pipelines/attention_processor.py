@@ -698,8 +698,8 @@ class AttentionController(object):
         """
         Computes a smoothness penalty for masks to encourage spatial regularity.
         """
-        dx = torch.abs(mask[:, :, :-1, :] - mask[:, :, 1:, :])
-        dy = torch.abs(mask[:, :, :, :-1] - mask[:, :, :, 1:])
+        dx = torch.abs(mask[:, :-1, :] - mask[:, 1:, :])
+        dy = torch.abs(mask[:, :, :-1] - mask[:, :, 1:])
         smoothness_penalty = (dx + dy).mean()
         return smoothness_penalty
 

@@ -939,6 +939,7 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                         attn = attention_controller.extract(model_idx, processor_name, param_name)
                         soft_mask = attention_controller.compute_soft_mask(attn)
                         soft_masks.append(soft_mask)
+                        print("soft mask", soft_mask.shape, flush=True)
 
             # Compute overlap penalty
             overlap_penalty = 0.0
