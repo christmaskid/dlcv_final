@@ -4,8 +4,8 @@ import subprocess
 from PIL import Image, ImageDraw
 
 task_name = "dog-cat-dog_{}".format(sys.argv[1])
-img_width = 512
-img_height = 512
+img_width = 1024 #512
+img_height = 1024 #512
 n_concept = 3
 
 bboxes = []
