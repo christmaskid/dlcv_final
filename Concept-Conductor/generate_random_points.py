@@ -3,7 +3,7 @@ import random
 import subprocess
 from PIL import Image, ImageDraw
 
-task_name = "dog-cat-dog_{}_".format(sys.argv[1])
+task_name = "dog-cat-dog_{}".format(sys.argv[1])
 img_width = 512
 img_height = 512
 n_concept = 3
@@ -43,7 +43,7 @@ while len(bboxes) < n_concept:
 
 for i, bbox in enumerate(bboxes):
 	mask = create_and_save_mask([bbox], "examples/{}_{}.png".format(task_name, i+1))
-# create_and_save_mask(bboxes, "examples/{}_mask.png".format(task_name))
+create_and_save_mask(bboxes, "examples/{}_mask.png".format(task_name))
 
 
 cmd = """
