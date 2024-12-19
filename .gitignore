@@ -1,6 +1,6 @@
 Concept-Conductor/experiments/pretrained_models
 Concept-Conductor/experiments_model
-prompt*
+prompt*_img
 # SAM
 sam_vit_h_4b8939.pth
 **__pycache__**
