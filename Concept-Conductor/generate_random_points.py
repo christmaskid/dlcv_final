@@ -28,7 +28,7 @@ def create_and_save_mask(bboxes, save_fn):
 	print("Save to {}".format(save_fn))
 
 
-if sys.argc >= 2 and isinstance(eval(sys.argv[2]), list):
+if len(sys.argv) >= 2 and isinstance(eval(sys.argv[2]), list):
 	bboxes = eval(sys.argv[2])
 
 else:
@@ -46,6 +46,7 @@ else:
 			if flag: break
 		if not flag: bboxes.append(bbox)
 
+print(bboxes)
 for i, bbox in enumerate(bboxes):
 	mask = create_and_save_mask([bbox], "examples/{}_{}.png".format(task_name, i+1))
 create_and_save_mask(bboxes, "examples/{}_mask.png".format(task_name))
