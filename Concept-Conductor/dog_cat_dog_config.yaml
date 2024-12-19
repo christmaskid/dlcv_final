@@ -1,5 +1,5 @@
 inputs:
-  ref_prompt: "The layout of a dog, a pet cat and a dog near a forest." #"The layout of a cat-shaped mask."
+  ref_prompt: "A dog, a pet cat and a dog near a forest." #"The layout of a cat-shaped mask."
   base_prompt: "A dog, a pet cat and a dog near a forest."
   negative_prompt: ""
   custom_prompts:
