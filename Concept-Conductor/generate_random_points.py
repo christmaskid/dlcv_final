@@ -3,7 +3,7 @@ import random
 import subprocess
 from PIL import Image, ImageDraw
 
-task_name = "dog-cat-dog_{}_".format(sys.argv[1])
+task_name = "dog-cat-dog_{}_".format("rect")#sys.argv[1])
 img_width = 512
 img_height = 512
 n_concept = 3
@@ -43,27 +43,27 @@ while len(bboxes) < n_concept:
 
 for i, bbox in enumerate(bboxes):
 	mask = create_and_save_mask([bbox], "examples/{}_{}.png".format(task_name, i+1))
-create_and_save_mask(bboxes, "examples/{}_mask.png".format(task_name))
+# create_and_save_mask(bboxes, "examples/{}_mask.png".format(task_name))
 
 
-cmd = """
-python sample.py \
---sd_ckpt "/content/dlcv_final/Concept-Conductor/experiments/pretrained_models/stable-diffusion-v1-5" \
---outroot "outputs/dog_pet_cat1_dog6_mask_foreground1" \
---ref_prompt 'A dog, a pet cat and a dog near a forest.' \
---base_prompt 'A dog, a pet cat and a dog near a forest.' \
---custom_prompts 'A <dog_1> <dog_2>, a <dog_1> <dog_2> and a <dog_1> <dog_2> near a forest.' \
-  'A <pet_cat1_1> <pet_cat1_2>, a <pet_cat1_1> <pet_cat1_2> and a <pet_cat1_1> <pet_cat1_2> near a `forest.' \
-  'A <dog6_1> `<dog6_2>, a <dog6_1> <dog6_2> and a <dog6_1> <dog6_2> near a forest.' \
---ref_image_path "examples/{}_mask.png" \
---ref_mask_paths "examples/{}_{}.png" "examples/{}_{}.png" "examples/{}_{}.png" \
---edlora_paths "experiments/dog/models/edlora_model-latest.pth" "experiments/pet_cat1/models/edlora_model-latest.pth" "experiments/dog6/models/edlora_model-latest.pth" \
---start_seed 0 \
---batch_size 4 \
---n_batches 1 \
---use_loss_mask \
---visualization \
---mask_update_interval 10
-""".format(task_name, task_name, 1, task_name, 2, task_name, 3)
-print(cmd)
-# subprocess.run(cmd.replace("\n", "").split(" "))
+# cmd = """
+# python sample.py \
+# --sd_ckpt "/content/dlcv_final/Concept-Conductor/experiments/pretrained_models/stable-diffusion-v1-5" \
+# --outroot "outputs/dog_pet_cat1_dog6_mask_foreground1" \
+# --ref_prompt 'A dog, a pet cat and a dog near a forest.' \
+# --base_prompt 'A dog, a pet cat and a dog near a forest.' \
+# --custom_prompts 'A <dog_1> <dog_2>, a <dog_1> <dog_2> and a <dog_1> <dog_2> near a forest.' \
+#   'A <pet_cat1_1> <pet_cat1_2>, a <pet_cat1_1> <pet_cat1_2> and a <pet_cat1_1> <pet_cat1_2> near a `forest.' \
+#   'A <dog6_1> `<dog6_2>, a <dog6_1> <dog6_2> and a <dog6_1> <dog6_2> near a forest.' \
+# --ref_image_path "examples/{}_mask.png" \
+# --ref_mask_paths "examples/{}_{}.png" "examples/{}_{}.png" "examples/{}_{}.png" \
+# --edlora_paths "experiments/dog/models/edlora_model-latest.pth" "experiments/pet_cat1/models/edlora_model-latest.pth" "experiments/dog6/models/edlora_model-latest.pth" \
+# --start_seed 0 \
+# --batch_size 4 \
+# --n_batches 1 \
+# --use_loss_mask \
+# --visualization \
+# --mask_update_interval 10
+# """.format(task_name, task_name, 1, task_name, 2, task_name, 3)
+# print(cmd)
+# # subprocess.run(cmd.replace("\n", "").split(" "))

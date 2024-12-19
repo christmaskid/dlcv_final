@@ -234,7 +234,8 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
             mask_update_interval (int, optional): Update the masks every how many steps.
             mask_overlap_threshold (float, optional): The mask will only be updated if the area of the new mask and the area of the old mask are greater than this threshold.
             num_kmeans_init (int, optional): Number of times the k-means algorithm is run with different centroid seeds. 
-            rect_mask (bool, optional): Whether to use a rectangular mask to specify the region for feature fusion instead of a shape-aware mask based on self-attentive clustering.
+            rect_mask (bool, optional): Whether to use a rectangular mask to specify the region for feature fusion instead of a shape-aware mask based on self-attentive 
+            .
             use_loss_mask (bool, optional): Whether to use a mask for layout-aligned loss thus controlling only the foreground.
             visualization (bool, optional): Whether to visualize some intermediate quantities, such as attention maps and feature masks.
 
@@ -607,7 +608,7 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
 
 
         # Initialize masks.
-        num_clusters = len(custom_prompts) * 2
+        num_clusters = 6 #len(custom_prompts) * 2
         attention_controller.init_feature_masks(feature_masks=feature_masks, points=mask_center_points, num_clusters=num_clusters, bs=batch_size)
         attention_controller.step = 0
         
@@ -920,6 +921,7 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                 for model_idx in range(len(attention_controller)-1):
                     attn = attention_controller.extract(model_idx, processor_name, param_name)
                     
+                    # Try guidance
                     model_loss = (F.mse_loss(attn, ref_attn, reduction='none') * foreground_mask).sum(dim=0).mean()
                     model_losses.append(model_loss)
    
