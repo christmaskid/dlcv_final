@@ -43,8 +43,8 @@ else:
 		w = random.randint(img_width//5, img_width//(n_concept+1))
 
 		bbox = [
-			max(0, center[1]-w//2), max(0, center[0]-h//2), 
-			min(img_width-1, center[1]+w//2), min(img_height-1, center[0]+h//2), 
+			max(0, center[0]-w//2), max(0, center[1]-h//2), 
+			min(img_width-1, center[0]+w//2), min(img_height-1, center[1]+h//2), 
 		]
 		print(center, h, w, bbox, bboxes)
 
