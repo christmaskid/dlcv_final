@@ -1,5 +1,5 @@
 inputs:
-  ref_prompt: "A dog, a pet cat and a dog near a forest." #"The layout of a cat-shaped mask."
+  ref_prompt: "The layout of a dog-shaped mask, a pet-cat-shaped mask, and a dog-shaped mask."
   base_prompt: "A dog, a pet cat and a dog near a forest."
   negative_prompt: ""
   custom_prompts:
@@ -19,7 +19,7 @@ inputs:
     - "experiments/pet_cat1/models/edlora_model-latest.pth"
     - "experiments/dog6/models/edlora_model-latest.pth"
   load_edlora: True
-  lora_alpha: 0.8
+  lora_alpha: 0.4
 
 outputs:
   # outroot: "outputs/dog_pet_cat1_dog6_rect"
