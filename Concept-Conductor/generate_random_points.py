@@ -35,7 +35,7 @@ else:
 	while len(bboxes) < n_concept:
 		center = [random.randint(img_height//6, img_height*5//6-1), 
 				  random.randint(img_width//6, img_width*5//6-1)]
-		h = random.randint(img_height//5, img_height//2-1)
+		h = img_height #random.randint(img_height//5, img_height//2-1)
 		w = random.randint(img_width//5, img_width//3-1)
 		bbox = [center[0]-h//2, center[1]-w//2, center[0]+h//2, center[1]+w//2]
 		print(bbox)
