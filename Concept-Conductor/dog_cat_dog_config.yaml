@@ -45,7 +45,7 @@ sd_t2i:
   verbose: False
 
 attention_operations:
-  attn_guidance_end: 60 # 變長
+  attn_guidance_end: -1 # 變長
   attn_guidance_interval: 1
   attn_guidance_weight: 10 #7.0
   custom_attn_guidance_factor: 1.0 #1.2
@@ -61,8 +61,8 @@ attention_operations:
   processor_filter_view_ca: '.*up_blocks\.2\.attentions\.1.*attn2.*'
   params_view_ca: ["attention_probs"]    
 
-  mask_refinement_start: 50
-  mask_refinement_end: 80 # 變短
+  mask_refinement_start: 0
+  mask_refinement_end: 200 # 變短
   mask_update_interval: 5
   mask_overlap_threshold: 0 #0.7 #0.99
   num_kmeans_init: 200 # 改
