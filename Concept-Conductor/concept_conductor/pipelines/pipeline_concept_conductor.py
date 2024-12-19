@@ -112,6 +112,7 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
         mask_update_interval: int = 5,
         mask_overlap_threshold: float = 0.7,
         num_kmeans_init: int = 100,
+        num_cluster: int = 6,
         rect_mask: bool = False,
 
         use_loss_mask: bool = False,
@@ -606,7 +607,7 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                 )[0]        
 
         # Initialize masks.
-        attention_controller.init_feature_masks(feature_masks=feature_masks, points=mask_center_points, num_clusters=6, bs=batch_size)
+        attention_controller.init_feature_masks(feature_masks=feature_masks, points=mask_center_points, num_clusters=num_cluster, bs=batch_size)
         attention_controller.step = 0
         
         # 7. Denoising loop
@@ -793,7 +794,7 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                         attention_controller.view_cross_attn(processors_view_ca, cross_attn_outdir)  
                         attention_controller.view_self_attn(processors_view_sa, self_attn_outdir) 
                         
-                    if visualization and ((step % 5 == 0) or (step < 3)):    
+                    if visualization and ((step % 10 == 0) or (step < 3)):    
                         attention_controller.view_feature_mask(feature_mask_outdir)
                         attention_controller.view_feature_mask(feature_mask_outdir.strip('/')+'_custom', prefix="custom_")
                         attention_controller.view_feature_mask(feature_mask_outdir.strip('/')+'_base', prefix="base_")
@@ -904,6 +905,7 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
         for processor_name in processors_guidance:
             for param_name in params_guidance:
                 ref_attn = attention_controller.extract('ref', processor_name, param_name).detach()
+                print("ref_attn shape", processor_name, param_name, ref_attn.shape, flush=True)
                 
                 factor = int(np.sqrt(ref_attn.shape[1] // (attention_controller.h_min*attention_controller.w_min)))
                 
