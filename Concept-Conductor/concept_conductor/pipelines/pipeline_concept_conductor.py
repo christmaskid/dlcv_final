@@ -112,7 +112,7 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
         mask_update_interval: int = 5,
         mask_overlap_threshold: float = 0.7,
         num_kmeans_init: int = 100,
-        num_cluster: int = 6,
+        num_clusters: int = 6,
         rect_mask: bool = False,
 
         use_loss_mask: bool = False,
@@ -607,9 +607,10 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                 )[0]        
 
         # Initialize masks.
-        attention_controller.init_feature_masks(feature_masks=feature_masks, points=mask_center_points, num_clusters=num_cluster, bs=batch_size)
+        attention_controller.init_feature_masks(feature_masks=feature_masks, points=mask_center_points, num_clusters=num_clusters, bs=batch_size)
         attention_controller.step = 0
         
+        losses = 0.0
         # 7. Denoising loop
         num_warmup_steps = len(timesteps) - num_inference_steps * self.scheduler.order
         self._num_timesteps = len(timesteps)
@@ -621,10 +622,8 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
 
                 attention_controller.step = step
 
-                
-                
                 requires_attn_guidance = (step <= attn_guidance_end) and (step % attn_guidance_interval == 0)
-                
+
                 # Attention-based layout guidance.
                 if requires_attn_guidance:
                     attention_controller.mode = 'attn_guidance'
@@ -716,7 +715,9 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                                 
                     layout_loss = self._compute_layout_loss(attention_controller,processors_guidance=processors_guidance, params_guidance=params_guidance, 
                                                                   custom_attn_guidance_factor=custom_attn_guidance_factor, use_loss_mask=use_loss_mask)
-                    
+                    losses += layout_loss                     
+
+                if losses != 0.0:
                     # Update input latents with gradient descent.
                     gradient = torch.autograd.grad(layout_loss, latents, allow_unused=True)[0]  
                     score = gradient[:bs] * attn_guidance_weight  
@@ -792,19 +793,23 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                     
                     if visualization and ((step % 10 == 0) or (step < 3)):
                         attention_controller.view_cross_attn(processors_view_ca, cross_attn_outdir)  
-                        attention_controller.view_self_attn(processors_view_sa, self_attn_outdir) 
+                        attention_controller.view_self_attn(processors_view_sa, self_attn_outdir, num_clusters=num_clusters) 
                         
                     if visualization and ((step % 10 == 0) or (step < 3)):    
                         attention_controller.view_feature_mask(feature_mask_outdir)
                         attention_controller.view_feature_mask(feature_mask_outdir.strip('/')+'_custom', prefix="custom_")
                         attention_controller.view_feature_mask(feature_mask_outdir.strip('/')+'_base', prefix="base_")
-                    
-                    # Mask refinement.
-                    if  (step >= mask_refinement_start) and (step <= mask_refinement_end) and (step % mask_update_interval == 0):
-                        # print('\nrefinemnt\n')
-                        attention_controller.refine_feature_masks()      
-                    # else:
-                    #     print(f'\nstep:{step} start:{args.mask_refinement_start} end:{args.mask_refinement_end} interval:{args.mask_update_interval}\n')                          
+                
+
+                losses = 0.0
+
+                # Mask refinement.
+                if  (step >= mask_refinement_start) and (step <= mask_refinement_end) and (step % mask_update_interval == 0):
+                    # print('\nrefinemnt\n')
+                    penalty = attention_controller.refine_feature_masks()      
+                    losses += penalty # do gradient descent on the next step
+                # else:
+                #     print(f'\nstep:{step} start:{args.mask_refinement_start} end:{args.mask_refinement_end} interval:{args.mask_update_interval}\n')                          
 
                 attention_controller.empty()
                 del latent_model_input
@@ -908,13 +913,16 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                 print("ref_attn shape", processor_name, param_name, ref_attn.shape, flush=True)
                 
                 factor = int(np.sqrt(ref_attn.shape[1] // (attention_controller.h_min*attention_controller.w_min)))
-                
+                print("factor:", factor, flush=True)
+
                 if use_loss_mask:
                     prefix = ''
                     ref_mask = attention_controller.extract('ref', '', f'{prefix}feature_mask_{factor}')
                     foreground_mask = ref_mask.sum(dim=-1, keepdim=True)
                 else:
                     foreground_mask = torch.ones_like(ref_attn)
+
+                print("foreground_mask", foreground_mask.sum(), foreground_mask.shape, flush=True)
 
                 model_losses = [] 
 

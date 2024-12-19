@@ -17,6 +17,7 @@
 
 
 import torch
+import torch.nn.functional as F
 from diffusers.models.attention_processor import Attention
 from diffusers.utils import deprecate
 from typing import Optional
@@ -404,6 +405,7 @@ class AttentionController(object):
                     if overlap > max_overlap:
                         max_overlap = overlap
                         max_idx = idx
+                print("mas_overlap", max_overlap, flush=True)
                 if max_overlap >= self.mask_overlap_threshold:
                     chosen_masks.append(seed_masks[max_idx])  
                 else:
@@ -554,6 +556,8 @@ class AttentionController(object):
             
     # Update masks and handle overlaps          
     def refine_feature_masks(self): 
+
+        penalty = 0.0
         
         for branch_idx in range(1, len(self.all_token_ids)):
             self.update_custom_masks(branch_idx)       
@@ -577,7 +581,11 @@ class AttentionController(object):
                 old_combined_mask = old_combined_masks[branch_idx - 1]
                 combined_mask = combined_masks[branch_idx - 1]
                 refined_mask = old_combined_mask * inter_overlap_mask + combined_mask * (1 - inter_overlap_mask)
-                self.store(branch_idx, '', f'feature_mask_{factor}', refined_mask)               
+                self.store(branch_idx, '', f'feature_mask_{factor}', refined_mask)       
+
+                penalty += F.mse_loss(old_combined_mask, combined_mask)
+
+        return penalty
                 
     def visualize_labels(self, batch_labels):
         bs = len(batch_labels)
@@ -680,5 +688,4 @@ class AttentionController(object):
                             outdir = Path(feature_mask_outdir) / Path(f"seed_{seed}") / Path(f"branch_{branch_idx}") / Path(f"factor_{factor}") / Path(f"mask_{mid}")
                             outdir.mkdir(exist_ok=True, parents=True)                        
                             mask_image.save(str(Path(outdir) / Path(f"{self.step:03d}.png")))
-                    
                     
