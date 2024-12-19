@@ -38,7 +38,7 @@ else:
 		# h = random.randint(img_height//5, img_height//2-1)
 		# w = random.randint(img_width//5, img_width//4-1)
 
-		center = [img_height//2, random.randint(img_width//n_concept*len(bboxes-1), img_width//n_concept*len(bboxes))]
+		center = [img_height//2, random.randint(img_width//n_concept*(len(bboxes)-1), img_width//n_concept*len(bboxes))]
 		h = img_height
 		w = random.randint(img_width//5, img_width//n_concept)
 
