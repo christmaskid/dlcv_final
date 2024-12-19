@@ -611,7 +611,6 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
         attention_controller.init_feature_masks(feature_masks=feature_masks, points=mask_center_points, num_clusters=num_clusters, bs=batch_size)
         attention_controller.step = 0
         
-        losses = 0.0
         # 7. Denoising loop
         num_warmup_steps = len(timesteps) - num_inference_steps * self.scheduler.order
         self._num_timesteps = len(timesteps)
@@ -718,7 +717,6 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                                                                   custom_attn_guidance_factor=custom_attn_guidance_factor, use_loss_mask=use_loss_mask, \
                                                                   mask_refinement_penalty=mask_refinement_penalty)
                     print("layout_loss:", layout_loss.item(), flush=True)
-                    losses += layout_loss                     
 
                     # Update input latents with gradient descent.
                     gradient = torch.autograd.grad(layout_loss, latents, allow_unused=True)[0]  
@@ -731,8 +729,6 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                     del gradient
                     del score
                     del layout_loss
-                    
-                    
                     
                     gc.collect()
                     torch.cuda.empty_cache()    

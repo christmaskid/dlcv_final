@@ -61,13 +61,13 @@ attention_operations:
   processor_filter_view_ca: '.*up_blocks\.2\.attentions\.1.*attn2.*'
   params_view_ca: ["attention_probs"]    
 
-  mask_refinement_start: 0 # for debug #50
+  mask_refinement_start: 50
   mask_refinement_end: 70 # 變短
   mask_update_interval: 5
   mask_overlap_threshold: 0 #0.99
   mask_refinement_penalty: True
   num_kmeans_init: 100 # 改
-  num_clusters: 7
+  num_clusters: 6
   rect_mask: False #True # 長方形
 
   use_loss_mask: True
