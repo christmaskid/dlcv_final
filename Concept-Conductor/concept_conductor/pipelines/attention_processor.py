@@ -685,32 +685,39 @@ class AttentionController(object):
                     
     # Inspired by GPT-4o. GPT is so strong...I'm afraid.
     # Chat link: https://chatgpt.com/share/6764455e-1d1c-8003-87f9-7ff7eb015ef8
-    def compute_attention_overlap_penalty(self, mask_1, mask_2):
+    def compute_attention_overlap_penalty(self, attn_1, attn_2):
         """
-        Compute overlap penalty for soft masks.
+        Compute overlap penalty for attention maps in latent space.
         """
-        intersection = (mask_1 * mask_2).sum(dim=(-1, -2))  # Sum over spatial dimensions
-        union = (mask_1 + mask_2 - mask_1 * mask_2).sum(dim=(-1, -2))
-        overlap_penalty = (intersection / (union + 1e-6)).mean()
+        # Normalize the feature vectors to unit length
+        attn_1 = F.normalize(attn_1, dim=-1)
+        attn_2 = F.normalize(attn_2, dim=-1)
+
+        # Compute cosine similarity
+        similarity = torch.einsum("bik,bjk->bij", attn_1, attn_2)  # [B, H*W//(latent_size**2), H*W//(latent_size**2)]
+
+        # Compute the penalty as the mean similarity
+        overlap_penalty = similarity.mean()
         return overlap_penalty
 
-    def compute_mask_smoothness_penalty(self, mask):
+
+    def compute_mask_smoothness_penalty(self, attn_map):
         """
-        Computes a smoothness penalty for masks to encourage spatial regularity.
+        Smoothness penalty for latent attention maps.
         """
-        dx = torch.abs(mask[:, :-1, :] - mask[:, 1:, :])
-        dy = torch.abs(mask[:, :, :-1] - mask[:, :, 1:])
-        smoothness_penalty = (dx + dy).mean()
+        dx = torch.abs(attn_map[:, :-1, :] - attn_map[:, 1:, :])  # Differences along the token sequence
+        smoothness_penalty = dx.mean()
         return smoothness_penalty
 
-    def compute_exclusive_mask_penalty(self, masks):
-        """
-        Computes a penalty for overlapping masks across branches.
-        """
-        combined_mask = sum(masks)  # Combine masks from all branches
-        overlap = (combined_mask > 1).float().sum(dim=(1, 2, 3))  # Count overlapping pixels
-        exclusive_penalty = overlap.mean()  # Average across batches
-        return exclusive_penalty
+
+    # def compute_exclusive_mask_penalty(self, masks):
+    #     """
+    #     Computes a penalty for overlapping masks across branches.
+    #     """
+    #     combined_mask = sum(masks)  # Combine masks from all branches
+    #     overlap = (combined_mask > 1).float().sum(dim=(1, 2, 3))  # Count overlapping pixels
+    #     exclusive_penalty = overlap.mean()  # Average across batches
+    #     return exclusive_penalty
 
     def soft_kmeans_cluster(self, attn_map, num_clusters, temperature=1.0):
         """
