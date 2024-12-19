@@ -28,7 +28,7 @@ def create_and_save_mask(bboxes, save_fn):
 	print("Save to {}".format(save_fn))
 
 
-if len(sys.argv) >= 2 and isinstance(eval(sys.argv[2]), list):
+if len(sys.argv) > 2 and isinstance(eval(sys.argv[2]), list):
 	bboxes = eval(sys.argv[2])
 
 else:
