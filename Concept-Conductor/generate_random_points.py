@@ -43,7 +43,7 @@ while len(bboxes) < n_concept:
 			  int(img_width//n_concept*(len(bboxes)+0.5)),
 			  random.randint(img_height//2, img_height-1-margin_h),
 			  ]
-	h = random.randint(margin_h, img_height//2-1)
+	h = random.randint(margin_h, int(img_height*0.7-1))
 	w = img_width//(n_concept+1) #random.randint(img_width//(n_concept+1), img_width//n_concept)
 	bbox = [
 			max(0, center[0]-w//2), max(0, center[1]-h//2), 
