@@ -71,7 +71,9 @@ python sample.py \
 --config_file dog_cat_dog_config.yaml \
 --ref_image_path examples/{}_mask.png \
 --ref_mask_paths examples/{}_{}.png examples/{}_{}.png examples/{}_{}.png \
+--height {} \
+--width {} \
 --outroot outputs/{}
-""".format(task_name, task_name, 1, task_name, 2, task_name, 3, task_name)
+""".format(task_name, task_name, 1, task_name, 2, task_name, 3, img_height, img_width, task_name)
 print(cmd)
 subprocess.run(cmd.replace("\n", "").split(" "))

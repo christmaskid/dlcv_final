@@ -715,7 +715,8 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                        
                                 
                     layout_loss = self._compute_layout_loss(attention_controller,processors_guidance=processors_guidance, params_guidance=params_guidance, 
-                                                                  custom_attn_guidance_factor=custom_attn_guidance_factor, use_loss_mask=use_loss_mask)
+                                                                  custom_attn_guidance_factor=custom_attn_guidance_factor, use_loss_mask=use_loss_mask, \
+                                                                  mask_refinement_penalty=mask_refinement_penalty)
                     print("layout_loss:", layout_loss.item(), flush=True)
                     losses += layout_loss                     
 
@@ -894,7 +895,7 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
             
 
     # Calculate the self-attention loss between the reference branch and generated branches for layout alignment.
-    def _compute_layout_loss(self, attention_controller, processors_guidance, params_guidance,  custom_attn_guidance_factor=1.0, use_loss_mask=False):
+    def _compute_layout_loss(self, attention_controller, processors_guidance, params_guidance,  custom_attn_guidance_factor=1.0, use_loss_mask=False, mask_refinement_penalty=Fakse):
         
         loss_list = []
         for processor_name in processors_guidance:
@@ -929,16 +930,16 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                 loss_list.append(current_loss) 
         layout_loss = torch.stack(loss_list, dim=0).mean(dim=0)
 
-        # Generate soft masks for penalties
-        soft_masks = []
-        for processor_name in processors_guidance:
-            for param_name in params_guidance:
-                for model_idx in range(len(attention_controller)-1):
-                    attn = attention_controller.extract(model_idx, processor_name, param_name)
-                    soft_mask = attention_controller.compute_soft_mask(attn)
-                    soft_masks.append(soft_mask)
-
         if mask_refinement_penalty:
+            # Generate soft masks for penalties
+            soft_masks = []
+            for processor_name in processors_guidance:
+                for param_name in params_guidance:
+                    for model_idx in range(len(attention_controller)-1):
+                        attn = attention_controller.extract(model_idx, processor_name, param_name)
+                        soft_mask = attention_controller.compute_soft_mask(attn)
+                        soft_masks.append(soft_mask)
+
             # Compute overlap penalty
             overlap_penalty = 0.0
             for i, mask_1 in enumerate(soft_masks):
