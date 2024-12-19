@@ -69,5 +69,5 @@ attention_operations:
   rect_mask: False #True # 長方形
 
   use_loss_mask: True
-  visualization: True
+  visualization: False #True
 
