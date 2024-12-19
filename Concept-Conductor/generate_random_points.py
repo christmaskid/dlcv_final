@@ -17,7 +17,7 @@ def collide(a, b):
 	# x: vertical, y: horizontal
 	ax1, ay1, ax2, ay2 = a
 	bx1, by1, bx2, by2 = b
-	return (between(ax1, bx1, bx2) or between(bx1, ax1, ax2)) #and (between(ay1, by1, by2) or between(by1, ay1, ay2))
+	return (between(ay1, by1, by2) or between(by1, ay1, ay2)) #and (between(ax1, bx1, bx2) or between(bx1, ax1, ax2))
 
 def create_and_save_mask(bboxes, save_fn):
 	mask = Image.new("L", (img_height, img_width), 0)
@@ -38,15 +38,15 @@ else:
 		# h = random.randint(img_height//5, img_height//2-1)
 		# w = random.randint(img_width//5, img_width//4-1)
 
-		center = [img_height//2, random.randint(img_width//n_concept*(len(bboxes)-1), img_width//n_concept*len(bboxes))]
+		center = [img_height//2, int(img_width//n_concept*(len(bboxes)+0.5))]
 		h = img_height
-		w = random.randint(img_width//5, img_width//n_concept)
+		w = random.randint(img_width//5, img_width//(n_concept+1))
 
 		bbox = [
 			max(0, center[0]-h//2), max(0, center[1]-w//2), 
 			min(img_height-1, center[0]+h//2), min(img_width-1, center[1]+w//2)
 		]
-		print(bbox)
+		print(center, h, w, bbox, bboxes)
 
 		flag = False
 		for other in bboxes:
