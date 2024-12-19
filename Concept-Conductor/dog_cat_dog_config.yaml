@@ -35,8 +35,8 @@ base_model:
   variant: ""
 
 sd_t2i:
-  height: 1024 #512
-  width: 1024 #512
+  height: 768 #512
+  width: 768 #512
   guidance_scale: 7.5
   num_inference_steps: 200
   start_seed: 0
