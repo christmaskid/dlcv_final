@@ -1,10 +1,11 @@
 inputs:
-  ref_prompt: "The layout of a vase-shaped mask."
+  ref_prompt: "The layout of a flower in a vase shaped mask."
   base_prompt: "A flower in a vase."
   negative_prompt: ""
   custom_prompts:
     - "A <flower_1_1> `<flower_1_2> in a vase."
     - "A flower in a <vase_1> `<vase_2>"
+  # Need to be changed to new layout mask
   ref_image_path: "./prompt1_mask/mask1/layout_mask.png" 
   ref_mask_paths:
     - "./prompt1_mask/mask1/flower_mask.png"
@@ -21,8 +22,9 @@ inputs:
   load_edlora: True
   lora_alpha: 0.4
 
+# Need to be changed to new output directory
 outputs:
-  outroot: "outputs/prompt1_1"
+  outroot: "outputs/prompt1_7"
   image_outdir: "inference_results"
   latents_outdir: "inverted_latents"
   self_attn_outdir: "self_attn"
@@ -71,6 +73,6 @@ attention_operations:
   use_loss_mask: True
   visualization: True
 
-
+# 
 
 
