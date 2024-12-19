@@ -3,9 +3,9 @@ inputs:
   base_prompt: "A dog, a pet cat and a dog near a forest."
   negative_prompt: ""
   custom_prompts:
-    - "A <dog_1> <dog_2>, a <dog_1> <dog_2> and a <dog_1> <dog_2> near a forest."
-    - "A <pet_cat1_1> <pet_cat1_2>, a <pet_cat1_1> <pet_cat1_2> and a <pet_cat1_1> <pet_cat1_2> near a forest."
-    - "A <dog6_1> <dog6_2>, a <dog6_1> <dog6_2> and a <dog6_1> <dog6_2> near a forest."
+    - "A <dog_1> `<dog_2>, a <dog_1> `<dog_2> and a <dog_1> `<dog_2> near a forest."
+    - "A <pet_cat1_1> `<pet_cat1_2>, a <pet_cat1_1> `<pet_cat1_2> and a <pet_cat1_1> `<pet_cat1_2> near a forest."
+    - "A <dog6_1> `<dog6_2>, a <dog6_1> `<dog6_2> and a <dog6_1> `<dog6_2> near a forest."
   # ref_image_path: "examples/mask_cat.png"
   # ref_mask_paths:
   #   - "examples/dog-cat-dog_rect_0.png"
@@ -51,7 +51,7 @@ attention_operations:
   custom_attn_guidance_factor: 1.0 #1.2
 
   processor_filter_guidance: '.*up_blocks\.1\.attentions\.0.*attn1.*'
-  params_guidance: ["key"], #[query", "key"]
+  params_guidance: ["key"] #[query", "key"]
   processor_filter_mask: '.*up_blocks\.2\.attentions\.2.*attn1.*'
   params_mask: ['attention_probs']
   processor_filter_merge: '.*up_blocks.*'
