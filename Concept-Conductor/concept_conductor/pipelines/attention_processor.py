@@ -540,7 +540,7 @@ class AttentionController(object):
             self.store_masks(rid+1, custom_feature_mask.repeat(bs, 1, 1, 1), prefix="base_")
             
     # Get a new mask for all resolutions based on the current attention, and the mask from the previous step, not taking into account overlaps.
-    def update_custom_masks(self, branch_idx, n_clusters_list, fine_clustering=fine_clustering): 
+    def update_custom_masks(self, branch_idx, n_clusters_list, fine_clustering=False): 
         assert branch_idx != 'ref'
         assert branch_idx != 0
         
@@ -612,7 +612,7 @@ class AttentionController(object):
             self.store_masks(branch_idx, new_base_masks, prefix="base_")       
             
     # Update masks and handle overlaps          
-    def refine_feature_masks(self, fine_clustering=fine_clustering): 
+    def refine_feature_masks(self, fine_clustering=False): 
         
         for branch_idx in range(1, len(self.all_token_ids)):
             if fine_clustering:

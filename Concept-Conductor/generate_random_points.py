@@ -4,10 +4,10 @@ import numpy as np
 import subprocess
 from PIL import Image, ImageDraw
 
-task_name = "{}_{}".format(sys.argv[1], sys.argv[2])
+task_name = "{}_{}".format(sys.argv[2], sys.argv[3])
 img_width = 512 # 768 #
 img_height = 512 # 768 #
-n_concept = eval(sys.argv[3]) #3
+n_concept = eval(sys.argv[4]) #3
 
 bboxes = []
 sep = 10
@@ -33,8 +33,8 @@ def create_and_save_mask(bboxes, save_fn, bg=None):
 	print("Save to {}".format(save_fn))
 
 
-if len(sys.argv) > 4 and isinstance(eval(sys.argv[4]), list):
-	bboxes = eval(sys.argv[4])
+if len(sys.argv) > 5 and isinstance(eval(sys.argv[5]), list):
+	bboxes = eval(sys.argv[5])
 
 margin_h = img_height//(n_concept+1)
 margin_w = img_width//(n_concept+1)
@@ -78,13 +78,13 @@ create_and_save_mask(bboxes, "examples/{}_mask.png".format(task_name))
 
 cmd = """
 python sample.py \
---config_file dog_cat_dog_config.yaml \
+--config_file {} \
 --ref_image_path examples/{}_mask.png \
 --ref_mask_paths {} \
 --height {} \
 --width {} \
 --outroot outputs/{}
-""".format(task_name, " ".join(["examples/{}_{}.png".format(task_name, i+1) for i in range(n_concept)]), img_height, img_width, task_name)
+""".format(sys.argv[1], task_name, " ".join(["examples/{}_{}.png".format(task_name, i+1) for i in range(n_concept)]), img_height, img_width, task_name)
 # --init_image_path examples/{}_mask.png \
 # --init_mask_path examples/{}_mask.png \
 # """.format(task_name, task_name, 1, task_name, 2, task_name, 3, task_name, task_name, img_height, img_width, task_name)
