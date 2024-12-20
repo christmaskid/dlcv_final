@@ -389,7 +389,7 @@ class AttentionController(object):
                 torch.cuda.empty_cache()                
             batch_masks.append(seed_masks)
                 
-        return batch_masks
+        return batch_masks # [B, num_clusters, w*h, w*h]
 
     # def choose_mask(self, batch_masks, ref_masks=None, point=None): 
     #     # ref_mask: [w, h]
@@ -551,7 +551,7 @@ class AttentionController(object):
             self.store_masks(rid+1, custom_feature_mask.repeat(bs, 1, 1, 1), prefix="base_")
             
     # Get a new mask for all resolutions based on the current attention, and the mask from the previous step, not taking into account overlaps.
-    def update_custom_masks(self, branch_idx, num_clusters_list): 
+    def update_custom_masks(self, branch_idx, n_clusters_list): 
         assert branch_idx != 'ref'
         assert branch_idx != 0
         
@@ -573,20 +573,20 @@ class AttentionController(object):
             
             factor = int(np.sqrt(mean_custom_attn.shape[1] // (self.w_min*self.h_min)))            
             
-            # M_{t+1}^{Vi}
+            # M_{t+1}^{Vi, custom}
             old_custom_masks_1d = self.extract(branch_idx, '', f'custom_feature_mask_{factor}')
             old_custom_masks = old_custom_masks_1d.reshape(-1, self.h_min*factor, self.w_min*factor)
             
-            # M_{t+1}^{Vi}
+            # M_{t+1}^{Vi, base}
             old_base_masks_1d = self.extract(branch_idx, '', f'base_feature_mask_{factor}')
             old_base_masks = old_base_masks_1d.reshape(-1, self.h_min*factor, self.w_min*factor)
             
             
             if not self.rect_mask:
                 # Line 2 ~ 5 (A_t^{Vi})
-                batch_custom_masks = self.get_masks_from_attn(mean_custom_attn, n_clusters_list)
+                batch_custom_masks = self.get_masks_from_attn(mean_custom_attn, n_clusters_list) # S^{Vi}
                 # Line 7 ~ 10 (A_t^{base})
-                batch_base_masks = self.get_masks_from_attn(mean_base_attn, n_clusters_list)         
+                batch_base_masks = self.get_masks_from_attn(mean_base_attn, n_clusters_list) # S^{base}
                 
                 # Line 6
                 chosen_custom_masks = self.choose_mask(batch_custom_masks, ref_masks=old_custom_masks)
@@ -628,7 +628,7 @@ class AttentionController(object):
             n_clusters_list = list(range(num_clusters_min, num_clusters_max))       
             # |V|, |V|+1, ..., 2|V|
             # print("n_clusters_list:", n_clusters_list)
-            self.update_custom_masks(branch_idx)       
+            self.update_custom_masks(branch_idx, n_clusters_list)       
             
         # Line 13 ~ 17
         for factor in [1, 2, 4, 8]:
@@ -638,6 +638,7 @@ class AttentionController(object):
             for branch_idx in range(1, len(self.all_token_ids)):
                 custom_mask = self.extract(branch_idx, '', f'custom_feature_mask_{factor}')
                 base_mask = self.extract(branch_idx, '', f'base_feature_mask_{factor}')  
+                # Line 12
                 combined_mask = custom_mask + base_mask
                 combined_mask[combined_mask > 1.] = 1.
                 combined_masks.append(combined_mask)

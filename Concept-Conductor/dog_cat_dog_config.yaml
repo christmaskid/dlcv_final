@@ -1,5 +1,5 @@
 inputs:
-  ref_prompt: "A `dog, a pet `cat and a `dog near a forest."
+  ref_prompt: "A dog, a pet cat and a dog near a forest."
   base_prompt: "A `dog, a pet `cat and a `dog near a forest."
   negative_prompt: ""
   custom_prompts:
@@ -22,7 +22,7 @@ inputs:
     # - "experiments/pet_cat1/models/edlora_model-latest.pth"
     # - "experiments/dog6/models/edlora_model-latest.pth"
   load_edlora: True
-  lora_alpha: 2.0 #0.8
+  lora_alpha: 0.8
 
 outputs:
   # outroot: "outputs/dog_pet_cat1_dog6_rect"
@@ -50,8 +50,8 @@ sd_t2i:
 attention_operations:
   attn_guidance_end: 60 # 變長
   attn_guidance_interval: 1
-  attn_guidance_weight: 15 #7.0
-  custom_attn_guidance_factor: 5.0 #1.2
+  attn_guidance_weight: 7.0
+  custom_attn_guidance_factor: 1.2
 
   processor_filter_guidance: '.*up_blocks\.1\.attentions\.0.*attn1.*'
   params_guidance: ["key"] #[query", "key"]
