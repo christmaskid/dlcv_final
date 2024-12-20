@@ -412,7 +412,7 @@ class AttentionController(object):
                     values.append( (idx, overlap) )
                     
                 values = sorted(values, key=lambda x: x[1])
-                print("max_overlap", max_overlap, flush=True)
+                print(values)
 
                 # if max_overlap >= self.mask_overlap_threshold:
                 #     chosen_masks.append(seed_masks[max_idx])  
