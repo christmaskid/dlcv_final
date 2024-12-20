@@ -73,7 +73,7 @@ for i, bbox in enumerate(bboxes):
 
 # Ref image
 bg = np.random.randint(0, 256, (img_height, img_width), dtype=np.uint8)
-create_and_save_mask(bboxes, "examples/{}_mask.png".format(task_name), bg=bg)
+create_and_save_mask(bboxes, "examples/{}_mask.png".format(task_name))
 
 
 cmd = """
