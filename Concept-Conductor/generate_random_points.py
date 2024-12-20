@@ -9,6 +9,7 @@ img_height = 512 # 768 #
 n_concept = 3
 
 bboxes = []
+sep = 10
 
 def between(val, m, M):
 	return (val >= m) and (val <= M)
@@ -17,7 +18,7 @@ def collide(a, b):
 	# x: vertical, y: horizontal
 	ax1, ay1, ax2, ay2 = a
 	bx1, by1, bx2, by2 = b
-	return (between(ax1, bx1, bx2) or between(bx1, ax1, ax2)) or (between(ay1, by1, by2) or between(by1, ay1, ay2))
+	return (between(ax1, bx1-sep, bx2+sep) or between(bx1, ax1-sep, ax2+sep)) and (between(ay1, by1-sep, by2+sep) or between(by1, ay1-sep, ay2+sep))
 
 def create_and_save_mask(bboxes, save_fn):
 	mask = Image.new("L", (img_height, img_width), 0)
@@ -32,14 +33,14 @@ if len(sys.argv) > 2 and isinstance(eval(sys.argv[2]), list):
 	bboxes = eval(sys.argv[2])
 
 margin_h = img_height//3
-margin_w = img_width//(n_concept+1)
+margin_w = 1#img_width//(n_concept+1)
 while len(bboxes) < n_concept:
 	center = [
-			  random.randint(margin_w, img_width-1-margin_w), 
-			  random.randint(
-			  	max(margin_w, img_width//n_concept*len(bboxes)), 
-			  	min(img_width-margin_w, img_width//n_concept*(len(bboxes)+1))
-			  ),
+			  random.randint(margin_w, img_height-1-margin_w), 
+			  # random.randint(
+			  # 	max(margin_w, img_width//n_concept*len(bboxes)), 
+			  # 	min(img_width-margin_w, img_width//n_concept*(len(bboxes)+1))
+			  # ),
 			  # int(img_width//n_concept*(len(bboxes)+0.5)),
 			  random.randint(margin_h, img_height-1-margin_h),
 			  ]
