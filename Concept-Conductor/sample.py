@@ -97,6 +97,8 @@ def sample(args):
         
     ref_image = ref_image.resize((args.width, args.height))
     
+    print("init_image_path", args.init_image_path)
+    print("init_mask_path", args.init_mask_path)
     if not(args.init_mask_from_points) and args.init_image_path and args.init_mask_path:
         init_image = Image.open(args.init_image_path).convert("RGB").resize((args.width, args.height))
         init_mask = Image.open(args.init_mask_path).convert("L").resize((args.width, args.height))
