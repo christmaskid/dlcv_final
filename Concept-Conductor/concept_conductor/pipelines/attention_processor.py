@@ -409,9 +409,9 @@ class AttentionController(object):
                     #     max_overlap = overlap
                     #     max_idx = idx
 
-                    values.append( (idx, overlap) )
+                    values.append( (idx, overlap.item()) )
                     
-                values = sorted(values, key=lambda x: x[1])
+                values = sorted(values, key=lambda x: -x[1])
                 print(values)
 
                 # if max_overlap >= self.mask_overlap_threshold:
@@ -429,6 +429,7 @@ class AttentionController(object):
                     if overlap > self.mask_overlap_threshold:
                         found = True
                         chosen_masks.append(merge_mask)
+                        break
                 if not found:
 
                     rect_mask = ref_mask.clone()
