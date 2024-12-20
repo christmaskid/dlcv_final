@@ -934,11 +934,11 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                 for model_idx in range(len(attention_controller)-1):
                     attn = attention_controller.extract(model_idx, processor_name, param_name)
                     
-                    model_loss = (F.mse_loss(attn, ref_attn, reduction='none') * foreground_mask).sum(dim=0).mean() * custom_attn_guidance_factor[model_idx]
+                    model_loss = (F.mse_loss(attn, ref_attn, reduction='none') * foreground_mask).sum(dim=0).mean()
                     model_losses.append(model_loss)
    
                     
-                current_loss = model_losses[0] + torch.stack(model_losses[1:], dim=0).mean(dim=0) #* custom_attn_guidance_factor  
+                current_loss = model_losses[0] + torch.stack(model_losses[1:], dim=0).mean(dim=0) * custom_attn_guidance_factor  
 
 
                 loss_list.append(current_loss) 
