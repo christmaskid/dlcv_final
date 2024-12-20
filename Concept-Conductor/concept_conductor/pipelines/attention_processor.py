@@ -391,64 +391,53 @@ class AttentionController(object):
                 
         return batch_masks # [B, num_clusters, w*h, w*h]
 
-    # def choose_mask(self, batch_masks, ref_masks=None, point=None): 
-    #     # ref_mask: [w, h]
-    #     chosen_masks = []
+    def accumulate_mask(self, batch_masks, ref_masks=None, point=None): 
+        # ref_mask: [w, h]
+        chosen_masks = []
         
-    #     if ref_masks is not None:
-    #         for seed, (seed_masks, ref_mask) in enumerate(zip(batch_masks, ref_masks)):
-    #             max_idx = 0
-    #             max_overlap = 0            
-
-    #             # values = []
-
-    #             for idx, mask in enumerate(seed_masks):
-    #                 m1 = mask * ref_mask
-    #                 m2 = mask + ref_mask
-    #                 m2[m2>1.] = 1.
-    #                 overlap = m1.sum() / m2.sum()
-    #                 if overlap > max_overlap:
-    #                     max_overlap = overlap
-    #                     max_idx = idx
-
-    #                 # values.append( (idx, overlap.item()) )
+        if ref_masks is not None:
+            for seed, (seed_masks, ref_mask) in enumerate(zip(batch_masks, ref_masks)):
+                values = []
+                for idx, mask in enumerate(seed_masks):
+                    m1 = mask * ref_mask
+                    m2 = mask + ref_mask
+                    m2[m2>1.] = 1.
+                    overlap = m1.sum() / m2.sum()
+                    values.append( (idx, overlap.item()) )
                     
-    #             # values = sorted(values, key=lambda x: -x[1])
-    #             # print(values)
+                values = sorted(values, key=lambda x: -x[1])
+                print(values)
+                merge_mask = torch.zeros_like(ref_mask)
+                found = False
 
-    #             if max_overlap >= self.mask_overlap_threshold:
-    #                 chosen_masks.append(seed_masks[max_idx])  
-    #             else:
-    #             # merge_mask = torch.zeros_like(ref_mask)
-    #             # found = False
+                for idx, overlap in values:
+                    merge_mask = merge_mask + seed_masks[idx]
+                    m1 = merge_mask * ref_mask
+                    m2 = mask + ref_mask
+                    m2[m2>1.] = 1.
+                    overlap = m1.sum() / m2.sum()
+                    if overlap > self.mask_overlap_threshold:
+                        found = True
+                        chosen_masks.append(merge_mask)
+                        break
 
-    #             # for idx, overlap in values:
-    #             #     merge_mask = merge_mask + seed_masks[idx]
-    #             #     m1 = merge_mask * ref_mask
-    #             #     m2 = mask + ref_mask
-    #             #     m2[m2>1.] = 1.
-    #             #     overlap = m1.sum() / m2.sum()
-    #             #     if overlap > self.mask_overlap_threshold:
-    #             #         found = True
-    #             #         chosen_masks.append(merge_mask)
-    #             #         break
-    #             # if not found:
-    #                 rect_mask = ref_mask.clone()
-    #                 non_zero_coords = torch.nonzero(rect_mask, as_tuple=False)
-    #                 y_min, x_min = torch.min(non_zero_coords, dim=0).values
-    #                 y_max, x_max = torch.max(non_zero_coords, dim=0).values
-    #                 rect_mask[y_min:y_max+1, x_min:x_max+1] = 1.  # [w, h]
-    #                 chosen_masks.append(rect_mask)
-    #                 # chosen_masks.append(ref_mask)
-    #             # print('seed: ', seed, 'max_overlap: ', max_overlap.item())  
-    #     elif point is not None:
-    #         for seed_masks in batch_masks:
-    #             x, y = point
-    #             for mask in seed_masks:  
-    #                 if mask[y, x]:
-    #                     chosen_masks.append(mask)
-    #                     break
-    #     return chosen_masks
+                if not found:
+                    rect_mask = ref_mask.clone()
+                    non_zero_coords = torch.nonzero(rect_mask, as_tuple=False)
+                    y_min, x_min = torch.min(non_zero_coords, dim=0).values
+                    y_max, x_max = torch.max(non_zero_coords, dim=0).values
+                    rect_mask[y_min:y_max+1, x_min:x_max+1] = 1.  # [w, h]
+                    chosen_masks.append(rect_mask)
+                    # chosen_masks.append(ref_mask)
+                # print('seed: ', seed, 'max_overlap: ', max_overlap.item())  
+        elif point is not None:
+            for seed_masks in batch_masks:
+                x, y = point
+                for mask in seed_masks:  
+                    if mask[y, x]:
+                        chosen_masks.append(mask)
+                        break
+        return chosen_masks
     
     def choose_mask(self, batch_masks, ref_masks=None, point=None): 
         # ref_mask: [w, h]
@@ -551,7 +540,7 @@ class AttentionController(object):
             self.store_masks(rid+1, custom_feature_mask.repeat(bs, 1, 1, 1), prefix="base_")
             
     # Get a new mask for all resolutions based on the current attention, and the mask from the previous step, not taking into account overlaps.
-    def update_custom_masks(self, branch_idx, n_clusters_list): 
+    def update_custom_masks(self, branch_idx, n_clusters_list, fine_clustering=fine_clustering): 
         assert branch_idx != 'ref'
         assert branch_idx != 0
         
@@ -588,10 +577,14 @@ class AttentionController(object):
                 # Line 7 ~ 10 (A_t^{base})
                 batch_base_masks = self.get_masks_from_attn(mean_base_attn, n_clusters_list) # S^{base}
                 
-                # Line 6
-                chosen_custom_masks = self.choose_mask(batch_custom_masks, ref_masks=old_custom_masks)
-                # Line 11
-                chosen_base_masks = self.choose_mask(batch_base_masks, ref_masks=old_base_masks)
+                if fine_clustering:
+                    chosen_custom_masks = self.accumulate_mask(batch_custom_masks, ref_masks=old_custom_masks)
+                    chosen_base_masks = self.accumulate_mask(batch_base_masks, ref_masks=old_base_masks)
+                else:
+                    # Line 6
+                    chosen_custom_masks = self.choose_mask(batch_custom_masks, ref_masks=old_custom_masks)
+                    # Line 11
+                    chosen_base_masks = self.choose_mask(batch_base_masks, ref_masks=old_base_masks)
             else:
                 chosen_custom_masks = []
                 for ref_mask in old_custom_masks:
@@ -619,16 +612,20 @@ class AttentionController(object):
             self.store_masks(branch_idx, new_base_masks, prefix="base_")       
             
     # Update masks and handle overlaps          
-    def refine_feature_masks(self): 
+    def refine_feature_masks(self, fine_clustering=fine_clustering): 
         
         for branch_idx in range(1, len(self.all_token_ids)):
-            # Line 2
-            num_clusters_min = len(self.all_token_ids) #  |V| = number of concept + 1 (base)
-            num_clusters_max = num_clusters_min * 2    # 2|V|
-            n_clusters_list = list(range(num_clusters_min, num_clusters_max))       
-            # |V|, |V|+1, ..., 2|V|
-            # print("n_clusters_list:", n_clusters_list)
-            self.update_custom_masks(branch_idx, n_clusters_list)       
+            if fine_clustering:
+                n_concept = len(self.all_token_ids)
+                n_clusters_list = [n_concept ** 2]
+            else: # original
+                # Line 2
+                num_clusters_min = len(self.all_token_ids) #  |V| = number of concept + 1 (base)
+                num_clusters_max = num_clusters_min * 2    # 2|V|
+                n_clusters_list = list(range(num_clusters_min, num_clusters_max))       
+                # |V|, |V|+1, ..., 2|V|
+            print("n_clusters_list:", n_clusters_list)
+            self.update_custom_masks(branch_idx, n_clusters_list, fine_clustering=fine_clustering)       
             
         # Line 13 ~ 17
         for factor in [1, 2, 4, 8]:
@@ -756,67 +753,4 @@ class AttentionController(object):
                             outdir = Path(feature_mask_outdir) / Path(f"seed_{seed}") / Path(f"branch_{branch_idx}") / Path(f"factor_{factor}") / Path(f"mask_{mid}")
                             outdir.mkdir(exist_ok=True, parents=True)                        
                             mask_image.save(str(Path(outdir) / Path(f"{self.step:03d}.png")))
-                    
-    # Inspired by GPT-4o. GPT is so strong...I'm afraid.
-    # Chat link: https://chatgpt.com/share/6764455e-1d1c-8003-87f9-7ff7eb015ef8
-    def compute_attention_overlap_penalty(self, attn_1, attn_2):
-        """
-        Compute overlap penalty for attention maps in latent space.
-        """
-        # Normalize the feature vectors to unit length
-        attn_1 = F.normalize(attn_1, dim=-1)
-        attn_2 = F.normalize(attn_2, dim=-1)
-
-        # Compute cosine similarity
-        similarity = torch.einsum("bik,bjk->bij", attn_1, attn_2)  # [B, H*W//(latent_size**2), H*W//(latent_size**2)]
-
-        # Compute the penalty as the mean similarity
-        overlap_penalty = similarity.mean()
-        return overlap_penalty
-
-
-    def compute_mask_smoothness_penalty(self, attn_map):
-        """
-        Smoothness penalty for latent attention maps.
-        """
-        dx = torch.abs(attn_map[:, :-1, :] - attn_map[:, 1:, :])  # Differences along the token sequence
-        smoothness_penalty = dx.mean()
-        return smoothness_penalty
-
-
-    # def compute_exclusive_mask_penalty(self, masks):
-    #     """
-    #     Computes a penalty for overlapping masks across branches.
-    #     """
-    #     combined_mask = sum(masks)  # Combine masks from all branches
-    #     overlap = (combined_mask > 1).float().sum(dim=(1, 2, 3))  # Count overlapping pixels
-    #     exclusive_penalty = overlap.mean()  # Average across batches
-    #     return exclusive_penalty
-
-    def soft_kmeans_cluster(self, attn_map, num_clusters, temperature=1.0):
-        """
-        Perform soft k-means clustering for differentiability.
-        """
-        # Flatten spatial dimensions
-        attn_map_flat = attn_map.view(attn_map.size(0), -1, attn_map.size(-1))  # [B, H*W, H*W]
-
-        # Randomly initialize cluster centers
-        cluster_centers = torch.randn(
-            num_clusters, attn_map_flat.size(-1), device=attn_map.device, requires_grad=True
-        )
-
-        for _ in range(10):  # Iterate for clustering
-            distances = torch.cdist(attn_map_flat, cluster_centers.unsqueeze(0), p=2)  # [B, H*W, K]
-            soft_assignments = torch.softmax(-distances / temperature, dim=-1)  # [B, H*W, K]
-            cluster_centers = torch.einsum("bik,bij->kj", soft_assignments, attn_map_flat) / (
-                soft_assignments.sum(dim=1).sum(dim=0).unsqueeze(-1) + 1e-6
-            )
-
-        return soft_assignments
-
-    def compute_soft_mask(self, attention_map, threshold=0.5):
-        """
-        Generate a differentiable soft mask using a sigmoid.
-        """
-        return torch.sigmoid((attention_map - threshold) * 10)  # Adjust sharpness with scaling
     

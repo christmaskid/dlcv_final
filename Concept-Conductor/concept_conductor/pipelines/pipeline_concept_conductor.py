@@ -111,9 +111,9 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
         mask_refinement_end: int = 80,
         mask_update_interval: int = 5,
         mask_overlap_threshold: float = 0.7,
-        mask_refinement_penalty: bool = False,
         num_kmeans_init: int = 100,
         num_clusters: int = 6,
+        fine_clustering: bool = False,
         rect_mask: bool = False,
 
         use_loss_mask: bool = False,
@@ -716,8 +716,7 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                        
                                 
                     layout_loss = self._compute_layout_loss(attention_controller,processors_guidance=processors_guidance, params_guidance=params_guidance, 
-                                                                  custom_attn_guidance_factor=custom_attn_guidance_factor, use_loss_mask=use_loss_mask, \
-                                                                  mask_refinement_penalty=mask_refinement_penalty)
+                                                                  custom_attn_guidance_factor=custom_attn_guidance_factor, use_loss_mask=use_loss_mask)
                     print("layout_loss:", layout_loss.item(), flush=True)
 
                     # Update input latents with gradient descent.
@@ -803,7 +802,7 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                     # Mask refinement.
                     if  (step >= mask_refinement_start) and (step <= mask_refinement_end) and (step % mask_update_interval == 0):
                         # print('\nrefinemnt\n')
-                        attention_controller.refine_feature_masks()      
+                        attention_controller.refine_feature_masks(fine_clustering=fine_clustering)      
                     # else:
                     #     print(f'\nstep:{step} start:{args.mask_refinement_start} end:{args.mask_refinement_end} interval:{args.mask_update_interval}\n')                          
 
@@ -839,15 +838,6 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                 
                 
                 if (init_image is not None) and (init_mask is not None):
-                    init_latents_proper = init_latents
-                    if step < len(timesteps) - 1:
-                        noise_timestep = timesteps[step + 1]
-                        init_latents_proper = self.scheduler.add_noise(
-                            init_latents_proper, noise, torch.tensor([noise_timestep])
-                        )
-                    latents = (1 - init_mask) * init_latents_proper + init_mask * latents
-
-                elif (init_mask is not None):
                     init_latents_proper = init_latents
                     if step < len(timesteps) - 1:
                         noise_timestep = timesteps[step + 1]
@@ -909,7 +899,7 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
             
 
     # Calculate the self-attention loss between the reference branch and generated branches for layout alignment.
-    def _compute_layout_loss(self, attention_controller, processors_guidance, params_guidance,  custom_attn_guidance_factor=1.0, use_loss_mask=False, mask_refinement_penalty=False):
+    def _compute_layout_loss(self, attention_controller, processors_guidance, params_guidance,  custom_attn_guidance_factor=1.0, use_loss_mask=False):
         
         loss_list = []
         for processor_name in processors_guidance:
@@ -943,40 +933,8 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
 
                 loss_list.append(current_loss) 
         layout_loss = torch.stack(loss_list, dim=0).mean(dim=0)
+        return layout_loss
 
-        if mask_refinement_penalty:
-            # Generate soft masks for penalties
-            soft_masks = []
-            for processor_name in processors_guidance:
-                for param_name in params_guidance:
-                    for model_idx in range(len(attention_controller)-1):
-                        attn = attention_controller.extract(model_idx, processor_name, param_name)
-                        soft_mask = attention_controller.compute_soft_mask(attn)
-                        soft_masks.append(soft_mask)
-                        print("soft mask", soft_mask.shape, flush=True)
-
-            # Compute overlap penalty
-            overlap_penalty = 0.0
-            # for i, mask_1 in enumerate(soft_masks):
-            #     for mask_2 in soft_masks[i + 1:]:
-            #         overlap_penalty += attention_controller.compute_attention_overlap_penalty(mask_1, mask_2)
-
-            # Compute smoothness penalty
-            smoothness_penalty = sum(
-                attention_controller.compute_mask_smoothness_penalty(mask) for mask in soft_masks
-            )
-
-            # Combine losses with weights
-            lambda_overlap = 0
-            lambda_smooth = 1.0 #0.5
-            total_loss = layout_loss + lambda_overlap * overlap_penalty + lambda_smooth * smoothness_penalty
-
-            return total_loss
-
-        else:
-            return layout_loss
-        
-        
         
     @torch.no_grad()
     def invert(self,
