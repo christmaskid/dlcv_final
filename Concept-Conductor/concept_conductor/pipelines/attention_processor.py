@@ -389,6 +389,65 @@ class AttentionController(object):
                 
         return batch_masks
 
+    # def choose_mask(self, batch_masks, ref_masks=None, point=None): 
+    #     # ref_mask: [w, h]
+    #     chosen_masks = []
+        
+    #     if ref_masks is not None:
+    #         for seed, (seed_masks, ref_mask) in enumerate(zip(batch_masks, ref_masks)):
+    #             max_idx = 0
+    #             max_overlap = 0            
+
+    #             # values = []
+
+    #             for idx, mask in enumerate(seed_masks):
+    #                 m1 = mask * ref_mask
+    #                 m2 = mask + ref_mask
+    #                 m2[m2>1.] = 1.
+    #                 overlap = m1.sum() / m2.sum()
+    #                 if overlap > max_overlap:
+    #                     max_overlap = overlap
+    #                     max_idx = idx
+
+    #                 # values.append( (idx, overlap.item()) )
+                    
+    #             # values = sorted(values, key=lambda x: -x[1])
+    #             # print(values)
+
+    #             if max_overlap >= self.mask_overlap_threshold:
+    #                 chosen_masks.append(seed_masks[max_idx])  
+    #             else:
+    #             # merge_mask = torch.zeros_like(ref_mask)
+    #             # found = False
+
+    #             # for idx, overlap in values:
+    #             #     merge_mask = merge_mask + seed_masks[idx]
+    #             #     m1 = merge_mask * ref_mask
+    #             #     m2 = mask + ref_mask
+    #             #     m2[m2>1.] = 1.
+    #             #     overlap = m1.sum() / m2.sum()
+    #             #     if overlap > self.mask_overlap_threshold:
+    #             #         found = True
+    #             #         chosen_masks.append(merge_mask)
+    #             #         break
+    #             # if not found:
+    #                 rect_mask = ref_mask.clone()
+    #                 non_zero_coords = torch.nonzero(rect_mask, as_tuple=False)
+    #                 y_min, x_min = torch.min(non_zero_coords, dim=0).values
+    #                 y_max, x_max = torch.max(non_zero_coords, dim=0).values
+    #                 rect_mask[y_min:y_max+1, x_min:x_max+1] = 1.  # [w, h]
+    #                 chosen_masks.append(rect_mask)
+    #                 # chosen_masks.append(ref_mask)
+    #             # print('seed: ', seed, 'max_overlap: ', max_overlap.item())  
+    #     elif point is not None:
+    #         for seed_masks in batch_masks:
+    #             x, y = point
+    #             for mask in seed_masks:  
+    #                 if mask[y, x]:
+    #                     chosen_masks.append(mask)
+    #                     break
+    #     return chosen_masks
+    
     def choose_mask(self, batch_masks, ref_masks=None, point=None): 
         # ref_mask: [w, h]
         chosen_masks = []
@@ -397,9 +456,6 @@ class AttentionController(object):
             for seed, (seed_masks, ref_mask) in enumerate(zip(batch_masks, ref_masks)):
                 max_idx = 0
                 max_overlap = 0            
-
-                values = []
-
                 for idx, mask in enumerate(seed_masks):
                     m1 = mask * ref_mask
                     m2 = mask + ref_mask
@@ -408,30 +464,9 @@ class AttentionController(object):
                     if overlap > max_overlap:
                         max_overlap = overlap
                         max_idx = idx
-
-                    # values.append( (idx, overlap.item()) )
-                    
-                # values = sorted(values, key=lambda x: -x[1])
-                # print(values)
-
                 if max_overlap >= self.mask_overlap_threshold:
                     chosen_masks.append(seed_masks[max_idx])  
                 else:
-                # merge_mask = torch.zeros_like(ref_mask)
-                # found = False
-
-                # for idx, overlap in values:
-                #     merge_mask = merge_mask + seed_masks[idx]
-                #     m1 = merge_mask * ref_mask
-                #     m2 = mask + ref_mask
-                #     m2[m2>1.] = 1.
-                #     overlap = m1.sum() / m2.sum()
-                #     if overlap > self.mask_overlap_threshold:
-                #         found = True
-                #         chosen_masks.append(merge_mask)
-                #         break
-                # if not found:
-
                     rect_mask = ref_mask.clone()
                     non_zero_coords = torch.nonzero(rect_mask, as_tuple=False)
                     y_min, x_min = torch.min(non_zero_coords, dim=0).values

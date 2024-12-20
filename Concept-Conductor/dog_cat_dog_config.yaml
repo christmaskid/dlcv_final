@@ -22,7 +22,7 @@ inputs:
     # - "experiments/pet_cat1/models/edlora_model-latest.pth"
     # - "experiments/dog6/models/edlora_model-latest.pth"
   load_edlora: True
-  lora_alpha: 0.8
+  lora_alpha: 2.0 #0.8
 
 outputs:
   # outroot: "outputs/dog_pet_cat1_dog6_rect"
@@ -43,7 +43,7 @@ sd_t2i:
   guidance_scale: 7.5
   num_inference_steps: 100
   start_seed: 0
-  batch_size: 4
+  batch_size: 8
   n_batches: 1
   verbose: False
 
@@ -51,7 +51,7 @@ attention_operations:
   attn_guidance_end: 60 # 變長
   attn_guidance_interval: 1
   attn_guidance_weight: 15 #7.0
-  custom_attn_guidance_factor: 5.0 #1.2
+  custom_attn_guidance_factor: [5.0, 5.0, 10.0] #1.2
 
   processor_filter_guidance: '.*up_blocks\.1\.attentions\.0.*attn1.*'
   params_guidance: ["key"] #[query", "key"]
