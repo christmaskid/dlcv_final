@@ -26,7 +26,6 @@ def create_and_save_mask(bboxes, save_fn):
 	bg = numpy.random.randint((img_height, img_width))
 	mask = Image.fromarray(bg,'RGB')
 	draw = ImageDraw.Draw(mask)
-	draw.rectangle()
 	for bbox in bboxes:
 		draw.rectangle(bbox, fill=255)
 	mask.save(save_fn)
