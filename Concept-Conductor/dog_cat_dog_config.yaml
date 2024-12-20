@@ -12,8 +12,8 @@ inputs:
   #   - "examples/dog-cat-dog_rect_1.png" 
   #   - "examples/dog-cat-dog_rect_2.png" 
   init_mask_from_points: False
-  init_image_path: ~
-  init_mask_path: ~       
+  # init_image_path: ~
+  # init_mask_path: ~       
   edlora_paths:
     - "experiments/chilloutmix/dog/models/edlora_model-latest.pth"
     - "experiments/chilloutmix/pet_cat1/models/edlora_model-latest.pth"
@@ -67,7 +67,7 @@ attention_operations:
   mask_refinement_start: 50
   mask_refinement_end: 80 # 變短
   mask_update_interval: 5
-  mask_overlap_threshold: 0.9
+  mask_overlap_threshold: 0.3
   mask_refinement_penalty: False #True
   num_kmeans_init: 300 # 改
   num_clusters: 6

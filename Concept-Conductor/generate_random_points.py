@@ -71,6 +71,8 @@ python sample.py \
 --config_file dog_cat_dog_config.yaml \
 --ref_image_path examples/{}_mask.png \
 --ref_mask_paths examples/{}_{}.png examples/{}_{}.png examples/{}_{}.png \
+--init_image_path examples/{}_mask.png \
+--init_mask_path examples/{}_mask.png \
 --height {} \
 --width {} \
 --outroot outputs/{}
