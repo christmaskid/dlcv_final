@@ -23,7 +23,7 @@ def collide(a, b):
 
 def create_and_save_mask(bboxes, save_fn):
 	# mask = Image.new("L", (img_height, img_width), 0)
-	bg = numpy.randn((img_height, img_width))
+	bg = numpy.random.randint((img_height, img_width))
 	mask = Image.fromarray(bg,'RGB')
 	draw = ImageDraw.Draw(mask)
 	draw.rectangle()
