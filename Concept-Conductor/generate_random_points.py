@@ -21,8 +21,11 @@ def collide(a, b):
 	return (between(ax1, bx1-sep, bx2+sep) or between(bx1, ax1-sep, ax2+sep)) and (between(ay1, by1-sep, by2+sep) or between(by1, ay1-sep, ay2+sep))
 
 def create_and_save_mask(bboxes, save_fn):
-	mask = Image.new("L", (img_height, img_width), 0)
+	# mask = Image.new("L", (img_height, img_width), 0)
+	bg = torch.randn((img_height, img_width))
+	mask = Image.fromarray(bg,'RGB')
 	draw = ImageDraw.Draw(mask)
+	draw.rectangle()
 	for bbox in bboxes:
 		draw.rectangle(bbox, fill=255)
 	mask.save(save_fn)
