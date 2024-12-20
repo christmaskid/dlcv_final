@@ -14,8 +14,8 @@ inputs:
   init_image_path: ~
   init_mask_path: ~       
   edlora_paths:
-    - "experiments/cat2/models/edlora_model-latest.pth"
-    - "experiments/dog6/models/edlora_model-latest.pth"
+    - "experiments/chilloutmix/cat2/models/edlora_model-latest.pth"
+    - "experiments/chilloutmix/dog6/models/edlora_model-latest.pth"
   load_edlora: True
   lora_alpha: 2.0 #0.8
 
@@ -29,7 +29,7 @@ outputs:
 
 
 base_model:
-  sd_ckpt: "experiments/pretrained_models/stable-diffusion-v1-5" #chilloutmix" #
+  sd_ckpt: "experiments/pretrained_models/chilloutmix" #stable-diffusion-v1-5" #
   variant: ""
 
 sd_t2i:
