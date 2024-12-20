@@ -75,7 +75,7 @@ python sample.py \
 --width {} \
 --init_image_path ~ \
 --init_mask_path ~ \
---outroot outputs/{} \
+--outroot outputs/{}
 """.format(task_name, task_name, 1, task_name, 2, task_name, 3, img_height, img_width, task_name)
 # --init_image_path examples/{}_mask.png \
 # --init_mask_path examples/{}_mask.png \
