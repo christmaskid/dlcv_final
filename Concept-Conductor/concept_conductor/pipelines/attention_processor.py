@@ -395,8 +395,8 @@ class AttentionController(object):
         
         if ref_masks is not None:
             for seed, (seed_masks, ref_mask) in enumerate(zip(batch_masks, ref_masks)):
-                # max_idx = 0
-                # max_overlap = 0            
+                max_idx = 0
+                max_overlap = 0            
 
                 values = []
 
