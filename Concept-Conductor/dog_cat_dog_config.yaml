@@ -43,7 +43,7 @@ sd_t2i:
   guidance_scale: 7.5
   num_inference_steps: 100
   start_seed: 0
-  batch_size: 1
+  batch_size: 4
   n_batches: 1
   verbose: False
 
@@ -67,11 +67,11 @@ attention_operations:
   mask_refinement_start: 50
   mask_refinement_end: 60 # 變短
   mask_update_interval: 5
-  mask_overlap_threshold: 0 #0.99
-  mask_refinement_penalty: True
+  mask_overlap_threshold: 0.9
+  mask_refinement_penalty: False #True
   num_kmeans_init: 100 # 改
   num_clusters: 6
-  rect_mask: True # 長方形
+  rect_mask: False #True # 長方形
 
   use_loss_mask: True
   visualization: True
