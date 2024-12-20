@@ -434,10 +434,12 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
         ref_latents_dict = self.invert(image=ref_image, prompt=ref_prompt, prompt_embeds=ref_prompt_embeds, latents_outdir=latents_outdir)
         
          
-        if init_image and init_mask:
+        if init_image:
             init_image = self.image_processor.preprocess(init_image).to(dtype=self.vae.dtype, device=self.vae.device)   # [1, 3, h, w]
             init_latents = self.vae.encode(init_image).latent_dist.mean
             init_latents = self.vae.config.scaling_factor * init_latents    # [1, 4, h//8, w//8]
+
+        if init_mask:
             init_mask = transforms.Resize((height // 8, width // 8))(init_mask)
             init_mask = transforms.PILToTensor()(init_mask)
             init_mask = init_mask > 127 # [1, h//8, w//8]
@@ -837,6 +839,15 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
                 
                 
                 if (init_image is not None) and (init_mask is not None):
+                    init_latents_proper = init_latents
+                    if step < len(timesteps) - 1:
+                        noise_timestep = timesteps[step + 1]
+                        init_latents_proper = self.scheduler.add_noise(
+                            init_latents_proper, noise, torch.tensor([noise_timestep])
+                        )
+                    latents = (1 - init_mask) * init_latents_proper + init_mask * latents
+
+                elif (init_mask is not None):
                     init_latents_proper = init_latents
                     if step < len(timesteps) - 1:
                         noise_timestep = timesteps[step + 1]

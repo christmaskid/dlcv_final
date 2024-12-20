@@ -32,16 +32,16 @@ def create_and_save_mask(bboxes, save_fn):
 if len(sys.argv) > 2 and isinstance(eval(sys.argv[2]), list):
 	bboxes = eval(sys.argv[2])
 
-margin_h = img_height//3
-margin_w = 1#img_width//(n_concept+1)
+margin_h = img_height//(n_concept+1)
+margin_w = img_width//(n_concept+1)
 while len(bboxes) < n_concept:
 	center = [
-			  random.randint(margin_w, img_height-1-margin_w), 
+			  # random.randint(margin_w, img_height-1-margin_w), 
 			  # random.randint(
 			  # 	max(margin_w, img_width//n_concept*len(bboxes)), 
 			  # 	min(img_width-margin_w, img_width//n_concept*(len(bboxes)+1))
 			  # ),
-			  # int(img_width//n_concept*(len(bboxes)+0.5)),
+			  int(img_width//n_concept*(len(bboxes)+0.5)),
 			  random.randint(margin_h, img_height-1-margin_h),
 			  ]
 	h = random.randint(margin_h, int(img_height*0.7-1))

@@ -395,20 +395,42 @@ class AttentionController(object):
         
         if ref_masks is not None:
             for seed, (seed_masks, ref_mask) in enumerate(zip(batch_masks, ref_masks)):
-                max_idx = 0
-                max_overlap = 0            
+                # max_idx = 0
+                # max_overlap = 0            
+
+                values = []
+
                 for idx, mask in enumerate(seed_masks):
                     m1 = mask * ref_mask
                     m2 = mask + ref_mask
                     m2[m2>1.] = 1.
                     overlap = m1.sum() / m2.sum()
-                    if overlap > max_overlap:
-                        max_overlap = overlap
-                        max_idx = idx
-                print("mas_overlap", max_overlap, flush=True)
-                if max_overlap >= self.mask_overlap_threshold:
-                    chosen_masks.append(seed_masks[max_idx])  
-                else:
+                    # if overlap > max_overlap:
+                    #     max_overlap = overlap
+                    #     max_idx = idx
+
+                    values.append( (idx, overlap) )
+                    
+                values = sorted(values, key=lambda x: x[1])
+                print("max_overlap", max_overlap, flush=True)
+
+                # if max_overlap >= self.mask_overlap_threshold:
+                #     chosen_masks.append(seed_masks[max_idx])  
+                # else:
+                merge_mask = torch.zeros_like(ref_mask)
+                found = False
+
+                for idx, overlap in values:
+                    merge_mask = merge_mask + seed_masks[idx]
+                    m1 = merge_mask * ref_mask
+                    m2 = mask + ref_mask
+                    m2[m2>1.] = 1.
+                    overlap = m1.sum() / m2.sum()
+                    if overlap > self.mask_overlap_threshold:
+                        found = True
+                        chosen_masks.append(merge_mask)
+                if not found:
+
                     rect_mask = ref_mask.clone()
                     non_zero_coords = torch.nonzero(rect_mask, as_tuple=False)
                     y_min, x_min = torch.min(non_zero_coords, dim=0).values
@@ -498,6 +520,7 @@ class AttentionController(object):
             num_clusters_min = len(self.all_token_ids)
             num_clusters_max = num_clusters_min * 2     
             n_clusters_list = list(range(num_clusters_min, num_clusters_max))       
+            print("n_clusters_list:", n_clusters_list)
             
             custom_attns = []
             base_attns = []
