@@ -71,7 +71,7 @@ attention_operations:
   mask_refinement_penalty: True
   num_kmeans_init: 100 # 改
   num_clusters: 6
-  rect_mask: False #True # 長方形
+  rect_mask: True # 長方形
 
   use_loss_mask: True
   visualization: True
