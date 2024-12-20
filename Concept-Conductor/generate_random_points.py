@@ -71,11 +71,14 @@ python sample.py \
 --config_file dog_cat_dog_config.yaml \
 --ref_image_path examples/{}_mask.png \
 --ref_mask_paths examples/{}_{}.png examples/{}_{}.png examples/{}_{}.png \
---init_image_path examples/{}_mask.png \
---init_mask_path examples/{}_mask.png \
 --height {} \
 --width {} \
---outroot outputs/{}
-""".format(task_name, task_name, 1, task_name, 2, task_name, 3, task_name, task_name, img_height, img_width, task_name)
+--init_image_path ~ \
+--init_mask_path ~ \
+--outroot outputs/{} \
+""".format(task_name, task_name, 1, task_name, 2, task_name, 3, img_height, img_width, task_name)
+# --init_image_path examples/{}_mask.png \
+# --init_mask_path examples/{}_mask.png \
+# """.format(task_name, task_name, 1, task_name, 2, task_name, 3, task_name, task_name, img_height, img_width, task_name)
 print(cmd)
 subprocess.run(cmd.replace("\n", "").split(" "))

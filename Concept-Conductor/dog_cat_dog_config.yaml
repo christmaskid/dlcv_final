@@ -51,7 +51,7 @@ attention_operations:
   attn_guidance_end: 60 # 變長
   attn_guidance_interval: 1
   attn_guidance_weight: 10 #7.0
-  custom_attn_guidance_factor: 1.0 #1.2
+  custom_attn_guidance_factor: 5.0 #1.2
 
   processor_filter_guidance: '.*up_blocks\.1\.attentions\.0.*attn1.*'
   params_guidance: ["key"] #[query", "key"]
