@@ -12,8 +12,8 @@ inputs:
   #   - "examples/dog-cat-dog_rect_1.png" 
   #   - "examples/dog-cat-dog_rect_2.png" 
   init_mask_from_points: False
-  # init_image_path: ~
-  # init_mask_path: ~       
+  init_image_path: ~
+  init_mask_path: ~       
   edlora_paths:
     - "experiments/chilloutmix/dog/models/edlora_model-latest.pth"
     - "experiments/chilloutmix/pet_cat1/models/edlora_model-latest.pth"
