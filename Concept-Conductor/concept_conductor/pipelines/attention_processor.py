@@ -617,7 +617,7 @@ class AttentionController(object):
         for branch_idx in range(1, len(self.all_token_ids)):
             if fine_clustering:
                 n_concept = len(self.all_token_ids)
-                n_clusters_list = [n_concept ** 2]
+                n_clusters_list = [n_concept * 3]
             else: # original
                 # Line 2
                 num_clusters_min = len(self.all_token_ids) #  |V| = number of concept + 1 (base)
