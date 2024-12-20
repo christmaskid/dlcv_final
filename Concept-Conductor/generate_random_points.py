@@ -35,12 +35,12 @@ margin_h = img_height//3
 margin_w = img_width//(n_concept+1)
 while len(bboxes) < n_concept:
 	center = [
-			  # random.randint(margin_w, img_height-1-margin_w), 
+			  random.randint(margin_w, img_height-1-margin_w), 
 			  # random.randint(
 			  # 	max(margin_w, img_width//n_concept*len(bboxes)), 
 			  # 	min(img_width-margin_w, img_width//n_concept*(len(bboxes)+1))
 			  # ),
-			  int(img_width//n_concept*(len(bboxes)+0.5)),
+			  # int(img_width//n_concept*(len(bboxes)+0.5)),
 			  random.randint(img_height//2, img_height-1-margin_h),
 			  ]
 	h = random.randint(margin_h, int(img_height*0.7-1))
@@ -70,11 +70,11 @@ cmd = """
 python sample.py \
 --config_file dog_cat_dog_config.yaml \
 --ref_image_path examples/{}_mask.png \
---ref_mask_paths examples/{}_{}.png examples/{}_{}.png examples/{}_{}.png \
+--ref_mask_paths {} \
 --height {} \
 --width {} \
 --outroot outputs/{}
-""".format(task_name, task_name, 1, task_name, 2, task_name, 3, img_height, img_width, task_name)
+""".format(task_name, " ".join(["examples/{}_{}.png".format(task_name, i+1) for i in range(n_concept)]), img_height, img_width, task_name)
 # --init_image_path examples/{}_mask.png \
 # --init_mask_path examples/{}_mask.png \
 # """.format(task_name, task_name, 1, task_name, 2, task_name, 3, task_name, task_name, img_height, img_width, task_name)
