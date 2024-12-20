@@ -1,6 +1,6 @@
 inputs:
-  ref_prompt: "A dog, a pet cat and a dog near a forest."
-  base_prompt: "A dog, a pet cat and a dog near a forest."
+  ref_prompt: "A `dog, a pet `cat and a `dog near a forest."
+  base_prompt: "A `dog, a pet `cat and a `dog near a forest."
   negative_prompt: ""
   custom_prompts:
     - "A <dog_1> `<dog_2>, a <dog_1> `<dog_2> and a <dog_1> `<dog_2> near a forest."
@@ -41,7 +41,7 @@ sd_t2i:
   # height: 768 #512
   # width: 768 #512
   guidance_scale: 7.5
-  num_inference_steps: 200
+  num_inference_steps: 100
   start_seed: 0
   batch_size: 4
   n_batches: 1
@@ -69,7 +69,7 @@ attention_operations:
   mask_update_interval: 5
   mask_overlap_threshold: 0.9
   mask_refinement_penalty: False #True
-  num_kmeans_init: 500 # 改
+  num_kmeans_init: 300 # 改
   num_clusters: 6
   rect_mask: False #True # 長方形
 
