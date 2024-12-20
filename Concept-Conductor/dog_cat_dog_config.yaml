@@ -3,9 +3,9 @@ inputs:
   base_prompt: "A `dog, a pet `cat and a `dog near a forest."
   negative_prompt: ""
   custom_prompts:
-    - "A <dog_1> `<dog_2>, a <dog_1> `<dog_2> and a <dog_1> `<dog_2> near a forest."
-    - "A <pet_cat1_1> `<pet_cat1_2>, a <pet_cat1_1> `<pet_cat1_2> and a <pet_cat1_1> `<pet_cat1_2> near a forest."
-    - "A <dog6_1> `<dog6_2>, a <dog6_1> `<dog6_2> and a <dog6_1> `<dog6_2> near a forest."
+    - "A <dog_1> `<dog_2>, a pet cat and a dog near a forest."
+    - "A dog, a <pet_cat1_1> `<pet_cat1_2> and a dog near a forest."
+    - "A dog, a pet cat and a <dog6_1> `<dog6_2> near a forest."
   # ref_image_path: "examples/mask_cat.png"
   # ref_mask_paths:
   #   - "examples/dog-cat-dog_rect_0.png"

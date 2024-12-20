@@ -372,11 +372,13 @@ class AttentionController(object):
     def get_masks_from_attn(self, attn, num_clusters_list=[5]):
         # attn: [1, w*h, w*h]
         batch_masks = []
-        for seed in range(attn.shape[0]):
+        for seed in range(attn.shape[0]): # [B, 576, 1280]
+            # 每張圖
             seed_attn = attn[seed].unsqueeze(dim=0)
             seed_masks = []
-            for num_clusters in num_clusters_list:
+            for num_clusters in num_clusters_list: # |V| ~ 2|V|
                 cluster_labels = self.kmeans_cluster(seed_attn, num_clusters=num_clusters)
+                # torch_kmeans 套件 (output一堆 Fully converge ...)
                 for label in range(num_clusters):
                     mask_1d = (cluster_labels == label).to(dtype=attn.dtype)   # [1, w*h]
                     factor = int(np.sqrt(mask_1d.shape[1] // (self.w_min * self.h_min)))
@@ -455,13 +457,14 @@ class AttentionController(object):
         if ref_masks is not None:
             for seed, (seed_masks, ref_mask) in enumerate(zip(batch_masks, ref_masks)):
                 max_idx = 0
-                max_overlap = 0            
+                max_overlap = 0       
+                # for k in num_cluster_list (idx)     
                 for idx, mask in enumerate(seed_masks):
                     m1 = mask * ref_mask
                     m2 = mask + ref_mask
                     m2[m2>1.] = 1.
-                    overlap = m1.sum() / m2.sum()
-                    if overlap > max_overlap:
+                    overlap = m1.sum() / m2.sum() # D(.., ..) = intersection / union
+                    if overlap > max_overlap: # Line 5: k_max
                         max_overlap = overlap
                         max_idx = idx
                 if max_overlap >= self.mask_overlap_threshold:
@@ -483,7 +486,7 @@ class AttentionController(object):
                         chosen_masks.append(mask)
                         break
         return chosen_masks
-    
+
     def store_masks(self, branch_idx, feature_masks_tensor, prefix=""):
         bs = feature_masks_tensor.shape[0]
         n_tokens = feature_masks_tensor.shape[1]
@@ -548,15 +551,11 @@ class AttentionController(object):
             self.store_masks(rid+1, custom_feature_mask.repeat(bs, 1, 1, 1), prefix="base_")
             
     # Get a new mask for all resolutions based on the current attention, and the mask from the previous step, not taking into account overlaps.
-    def update_custom_masks(self, branch_idx): 
+    def update_custom_masks(self, branch_idx, num_clusters_list): 
         assert branch_idx != 'ref'
         assert branch_idx != 0
         
         if branch_idx in list(range(len(self.all_token_ids))):
-            num_clusters_min = len(self.all_token_ids)
-            num_clusters_max = num_clusters_min * 2     
-            n_clusters_list = list(range(num_clusters_min, num_clusters_max))       
-            print("n_clusters_list:", n_clusters_list)
             
             custom_attns = []
             base_attns = []
@@ -574,18 +573,24 @@ class AttentionController(object):
             
             factor = int(np.sqrt(mean_custom_attn.shape[1] // (self.w_min*self.h_min)))            
             
+            # M_{t+1}^{Vi}
             old_custom_masks_1d = self.extract(branch_idx, '', f'custom_feature_mask_{factor}')
             old_custom_masks = old_custom_masks_1d.reshape(-1, self.h_min*factor, self.w_min*factor)
             
+            # M_{t+1}^{Vi}
             old_base_masks_1d = self.extract(branch_idx, '', f'base_feature_mask_{factor}')
             old_base_masks = old_base_masks_1d.reshape(-1, self.h_min*factor, self.w_min*factor)
             
             
             if not self.rect_mask:
+                # Line 2 ~ 5 (A_t^{Vi})
                 batch_custom_masks = self.get_masks_from_attn(mean_custom_attn, n_clusters_list)
+                # Line 7 ~ 10 (A_t^{base})
                 batch_base_masks = self.get_masks_from_attn(mean_base_attn, n_clusters_list)         
                 
+                # Line 6
                 chosen_custom_masks = self.choose_mask(batch_custom_masks, ref_masks=old_custom_masks)
+                # Line 11
                 chosen_base_masks = self.choose_mask(batch_base_masks, ref_masks=old_base_masks)
             else:
                 chosen_custom_masks = []
@@ -617,8 +622,15 @@ class AttentionController(object):
     def refine_feature_masks(self): 
         
         for branch_idx in range(1, len(self.all_token_ids)):
+            # Line 2
+            num_clusters_min = len(self.all_token_ids) #  |V| = number of concept + 1 (base)
+            num_clusters_max = num_clusters_min * 2    # 2|V|
+            n_clusters_list = list(range(num_clusters_min, num_clusters_max))       
+            # |V|, |V|+1, ..., 2|V|
+            # print("n_clusters_list:", n_clusters_list)
             self.update_custom_masks(branch_idx)       
             
+        # Line 13 ~ 17
         for factor in [1, 2, 4, 8]:
             combined_masks = []
             old_combined_masks = []          
@@ -633,7 +645,9 @@ class AttentionController(object):
                 old_combined_masks.append(old_combined_mask)
             inter_overlap_mask = torch.stack(combined_masks, dim=0).sum(dim=0)
             inter_overlap_mask[inter_overlap_mask<=1] = 0.
-            inter_overlap_mask[inter_overlap_mask>1] = 1.     
+            inter_overlap_mask[inter_overlap_mask>1] = 1.  
+            # Replace overlapping region with old mask
+            # 如果吉娃娃跟柴犬有重疊，這塊歸誰就看上一步是歸誰。   
             for branch_idx in range(1, len(self.all_token_ids)):
                 old_combined_mask = old_combined_masks[branch_idx - 1]
                 combined_mask = combined_masks[branch_idx - 1]
