@@ -76,6 +76,6 @@ python sample.py \
 --height {} \
 --width {} \
 --outroot outputs/{}
-""".format(task_name, task_name, 1, task_name, 2, task_name, 3, img_height, img_width, task_name)
+""".format(task_name, task_name, 1, task_name, 2, task_name, 3, task_name, task_name, img_height, img_width, task_name)
 print(cmd)
 subprocess.run(cmd.replace("\n", "").split(" "))
