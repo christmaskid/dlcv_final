@@ -1,5 +1,6 @@
 import sys
 import random
+import numpy
 import subprocess
 from PIL import Image, ImageDraw
 
@@ -22,7 +23,7 @@ def collide(a, b):
 
 def create_and_save_mask(bboxes, save_fn):
 	# mask = Image.new("L", (img_height, img_width), 0)
-	bg = torch.randn((img_height, img_width))
+	bg = numpy.randn((img_height, img_width))
 	mask = Image.fromarray(bg,'RGB')
 	draw = ImageDraw.Draw(mask)
 	draw.rectangle()
