@@ -551,7 +551,7 @@ class AttentionController(object):
             self.store_masks(rid+1, custom_feature_mask.repeat(bs, 1, 1, 1), prefix="base_")
             
     # Get a new mask for all resolutions based on the current attention, and the mask from the previous step, not taking into account overlaps.
-    def update_custom_masks(self, branch_idx, num_clusters_list): 
+    def update_custom_masks(self, branch_idx, n_clusters_list): 
         assert branch_idx != 'ref'
         assert branch_idx != 0
         
@@ -628,7 +628,7 @@ class AttentionController(object):
             n_clusters_list = list(range(num_clusters_min, num_clusters_max))       
             # |V|, |V|+1, ..., 2|V|
             # print("n_clusters_list:", n_clusters_list)
-            self.update_custom_masks(branch_idx)       
+            self.update_custom_masks(branch_idx, n_clusters_list)       
             
         # Line 13 ~ 17
         for factor in [1, 2, 4, 8]:
