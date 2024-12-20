@@ -226,7 +226,9 @@ def load_config():
     parser.add_argument('--mask_refinement_end', type=int, default=default_config.attention_operations.mask_refinement_end)   
     parser.add_argument('--mask_update_interval', type=int, default=default_config.attention_operations.mask_update_interval)
     parser.add_argument('--mask_overlap_threshold', type=float, default=default_config.attention_operations.mask_overlap_threshold)
+    parser.add_argument('--mask_refinement_penalty', action='store_true', default=False)
     parser.add_argument('--num_kmeans_init', type=int, default=default_config.attention_operations.num_kmeans_init)
+    parser.add_argument('--num_clusters', type=int, default=6)
     
     parser.add_argument('--rect_mask', action='store_true', default=default_config.attention_operations.rect_mask)
     parser.add_argument('--use_loss_mask', action='store_true', default=default_config.attention_operations.use_loss_mask)
