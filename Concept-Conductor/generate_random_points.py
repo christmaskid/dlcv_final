@@ -17,7 +17,7 @@ def collide(a, b):
 	# x: vertical, y: horizontal
 	ax1, ay1, ax2, ay2 = a
 	bx1, by1, bx2, by2 = b
-	return (between(ax1, bx1, bx2) or between(bx1, ax1, ax2)) and (between(ay1, by1, by2) or between(by1, ay1, ay2))
+	return (between(ax1, bx1, bx2) or between(bx1, ax1, ax2)) or (between(ay1, by1, by2) or between(by1, ay1, ay2))
 
 def create_and_save_mask(bboxes, save_fn):
 	mask = Image.new("L", (img_height, img_width), 0)
@@ -35,7 +35,7 @@ margin_h = img_height//3
 margin_w = img_width//(n_concept+1)
 while len(bboxes) < n_concept:
 	center = [
-			  # random.randint(margin_w, img_width-1-margin_w), 
+			  random.randint(margin_w, img_width-1-margin_w), 
 			  random.randint(
 			  	max(margin_w, img_width//n_concept*len(bboxes)), 
 			  	min(img_width-margin_w, img_width//n_concept*(len(bboxes)+1))
