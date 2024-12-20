@@ -1,6 +1,6 @@
 inputs:
   ref_prompt: "A dog, a pet cat and a dog near a forest."
-  base_prompt: "A dog, a pet cat and a dog near a forest."
+  base_prompt: "A `dog, a pet `cat and a `dog near a forest."
   negative_prompt: ""
   custom_prompts:
     - "A <dog_1> `<dog_2> near a forest."
