@@ -183,7 +183,8 @@ def load_config():
     parser.add_argument('--init_mask_from_points', action='store_true', default=default_config.inputs.init_mask_from_points)
     parser.add_argument('--mask_center_points', nargs='+', default=default_config.inputs.mask_center_points)
     parser.add_argument('--init_image_path', type=str, default=default_config.inputs.init_image_path)
-    parser.add_argument('--init_mask_path', nargs='+', default=default_config.inputs.init_mask_path)    
+    # parser.add_argument('--init_mask_path', nargs='+', default=default_config.inputs.init_mask_path)    
+    parser.add_argument('--init_mask_path', type=str, default=default_config.inputs.init_mask_path)    
     
     parser.add_argument('--edlora_paths', nargs='+', default=default_config.inputs.edlora_paths)
     parser.add_argument('--load_edlora', action='store_true', default=default_config.inputs.load_edlora)
