@@ -1,6 +1,6 @@
 import sys
 import random
-import numpy
+import numpy as np
 import subprocess
 from PIL import Image, ImageDraw
 
