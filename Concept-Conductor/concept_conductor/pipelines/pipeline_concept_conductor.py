@@ -946,9 +946,9 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
 
             # Compute overlap penalty
             overlap_penalty = 0.0
-            for i, mask_1 in enumerate(soft_masks):
-                for mask_2 in soft_masks[i + 1:]:
-                    overlap_penalty += attention_controller.compute_attention_overlap_penalty(mask_1, mask_2)
+            # for i, mask_1 in enumerate(soft_masks):
+            #     for mask_2 in soft_masks[i + 1:]:
+            #         overlap_penalty += attention_controller.compute_attention_overlap_penalty(mask_1, mask_2)
 
             # Compute smoothness penalty
             smoothness_penalty = sum(
@@ -956,8 +956,8 @@ class ConceptConductorPipeline(StableDiffusionPipeline):
             )
 
             # Combine losses with weights
-            lambda_overlap = 1.0
-            lambda_smooth = 0.5
+            lambda_overlap = 0
+            lambda_smooth = 1.0 #0.5
             total_loss = layout_loss + lambda_overlap * overlap_penalty + lambda_smooth * smoothness_penalty
 
             return total_loss

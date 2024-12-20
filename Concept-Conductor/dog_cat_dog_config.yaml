@@ -15,9 +15,12 @@ inputs:
   init_image_path: ~
   init_mask_path: ~       
   edlora_paths:
-    - "experiments/dog/models/edlora_model-latest.pth"
-    - "experiments/pet_cat1/models/edlora_model-latest.pth"
-    - "experiments/dog6/models/edlora_model-latest.pth"
+    - "experiments/chilloutmix/dog/models/edlora_model-latest.pth"
+    - "experiments/chilloutmix/pet_cat1/models/edlora_model-latest.pth"
+    - "experiments/chilloutmix/dog6/models/edlora_model-latest.pth"
+    # - "experiments/dog/models/edlora_model-latest.pth"
+    # - "experiments/pet_cat1/models/edlora_model-latest.pth"
+    # - "experiments/dog6/models/edlora_model-latest.pth"
   load_edlora: True
   lora_alpha: 0.8
 
@@ -31,7 +34,7 @@ outputs:
 
 
 base_model:
-  sd_ckpt: "experiments/pretrained_models/stable-diffusion-v1-5" #
+  sd_ckpt: "experiments/pretrained_models/chilloutmix" #stable-diffusion-v1-5" #
   variant: ""
 
 sd_t2i:
@@ -62,7 +65,7 @@ attention_operations:
   params_view_ca: ["attention_probs"]    
 
   mask_refinement_start: 50
-  mask_refinement_end: 70 # 變短
+  mask_refinement_end: 60 # 變短
   mask_update_interval: 5
   mask_overlap_threshold: 0 #0.99
   mask_refinement_penalty: True
