@@ -4,10 +4,10 @@ import numpy
 import subprocess
 from PIL import Image, ImageDraw
 
-task_name = "dog-cat-dog_{}".format(sys.argv[1])
+task_name = "{}_{}".format(sys.argv[1], sys.argv[2])
 img_width = 512 # 768 #
 img_height = 512 # 768 #
-n_concept = 3
+n_concept = eval(sys.argv[3]) #3
 
 bboxes = []
 sep = 10
@@ -22,9 +22,9 @@ def collide(a, b):
 	return (between(ax1, bx1-sep, bx2+sep) or between(bx1, ax1-sep, ax2+sep)) and (between(ay1, by1-sep, by2+sep) or between(by1, ay1-sep, ay2+sep))
 
 def create_and_save_mask(bboxes, save_fn):
-	# mask = Image.new("L", (img_height, img_width), 0)
-	bg = numpy.random.randint((img_height, img_width))
-	mask = Image.fromarray(bg,'RGB')
+	mask = Image.new("L", (img_height, img_width), 0)
+	# bg = numpy.random.randint((img_height, img_width, 3)) * 255
+	# mask = Image.fromarray(bg.astype('uint8')).convert('RGBA')
 	draw = ImageDraw.Draw(mask)
 	for bbox in bboxes:
 		draw.rectangle(bbox, fill=255)
@@ -32,8 +32,8 @@ def create_and_save_mask(bboxes, save_fn):
 	print("Save to {}".format(save_fn))
 
 
-if len(sys.argv) > 2 and isinstance(eval(sys.argv[2]), list):
-	bboxes = eval(sys.argv[2])
+if len(sys.argv) > 4 and isinstance(eval(sys.argv[4]), list):
+	bboxes = eval(sys.argv[4])
 
 margin_h = img_height//(n_concept+1)
 margin_w = img_width//(n_concept+1)
