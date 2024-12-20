@@ -1,6 +1,6 @@
 inputs:
   ref_prompt: "A dog, a pet cat and a dog near a forest."
-  base_prompt: "A `dog, a pet `cat and a `dog near a forest."
+  base_prompt: "A dog, a pet cat and a dog near a forest."
   negative_prompt: ""
   custom_prompts:
     - "A <dog_1> `<dog_2>, a pet cat and a dog near a forest."
@@ -51,7 +51,7 @@ attention_operations:
   attn_guidance_end: 60 # 變長
   attn_guidance_interval: 1
   attn_guidance_weight: 7.0
-  custom_attn_guidance_factor: 1.2
+  custom_attn_guidance_factor: 5.0 #1.2
 
   processor_filter_guidance: '.*up_blocks\.1\.attentions\.0.*attn1.*'
   params_guidance: ["key"] #[query", "key"]
@@ -70,7 +70,7 @@ attention_operations:
   mask_overlap_threshold: 0.7
   mask_refinement_penalty: False # True #
   num_kmeans_init: 300 # 改
-  num_clusters: 6
+  num_clusters: 7
   rect_mask: False #True # 長方形
 
   use_loss_mask: True
