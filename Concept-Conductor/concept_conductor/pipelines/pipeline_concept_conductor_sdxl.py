@@ -1135,7 +1135,7 @@ class SDXLConceptConductorPipeline(StableDiffusionXLPipeline):
                     t,
                     encoder_hidden_states=prompt_embeds,
                     added_cond_kwargs=added_cond_kwargs
-                ).sample
+                )[0]#.sample
 
                 # compute the previous noisy sample x_t -> x_t-1
                 latents = self.inverse_scheduler.step(noise_pred, t, latents).prev_sample

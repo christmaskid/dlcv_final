@@ -369,6 +369,8 @@ class AttentionController(object):
         return all_cluster_labels_tensor
     
     def get_masks_from_attn(self, attn, num_clusters_list=[5]):
+        print("get masks from attn", flush=True)
+        print(attn[0]==attn[1])
         # attn: [1, w*h, w*h]
         batch_masks = []
         for seed in range(attn.shape[0]):
@@ -423,6 +425,7 @@ class AttentionController(object):
     #                     chosen_masks.append(mask)
     #                     break
     #     return chosen_masks
+    def choose_mask(self, batch_masks, ref_masks=None, point=None): 
         # ref_mask: [w, h]
         chosen_masks = []
         
